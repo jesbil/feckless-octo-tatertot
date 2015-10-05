@@ -1,0 +1,7 @@
+package ClientInterface;
+
+/**
+ * Created by c12jbr on 2015-10-05.
+ */
+public interface ClientInterface {
+}
