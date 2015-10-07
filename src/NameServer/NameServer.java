@@ -1,97 +1,105 @@
 package NameServer;
 
-import Interface.Constants;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
-
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.Hashtable;
-import java.util.Random;
+import java.util.ArrayList;
 
 /**
  * Created by c12jbr on 2015-10-05.
  */
 public class NameServer {
-    private static Hashtable<Integer,String> state =
-            new Hashtable<Integer, String>();
-    private static Hashtable<Integer,String> color =
-            new Hashtable<Integer, String>();
-    private static Hashtable<Integer,String> creature =
-            new Hashtable<Integer, String>();
+
 
     private static final int port = 4444;
     private static DatagramSocket serverSocket;
+    private ArrayList<String> members = new ArrayList<String>();
 
-    
-    
-    
-    public static void main(String[] args) throws RemoteException, AlreadyBoundException {
-//        try {
-//            serverSocket = new DatagramSocket(port);
-//        } catch (SocketException e) {
-//            System.out.println("port is probably in use already");
-//        }
-//        initializeNameTables();
-//        System.out.println("Naming service Server Started");
-//        byte[] receiveData = new byte[1024];
-//
-//        while(true) {
-//            DatagramPacket receivePacket = new DatagramPacket(
-//                    receiveData, receiveData.length);
-//            try {
-//                serverSocket.receive(receivePacket);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            String sentence = new String( receivePacket.getData());
-//            System.out.println("Received: "+sentence);
-//            InetAddress IPAddress = receivePacket.getAddress();
-//            int port = receivePacket.getPort();
-//            byte[] sendData = generateName().getBytes();
-//            DatagramPacket sendPacket = new DatagramPacket(
-//                    sendData, sendData.length, IPAddress, port);
-//            try {
-//                serverSocket.send(sendPacket);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-        MyRemoteImplementation impl = new MyRemoteImplementation();
-        Registry reg = LocateRegistry.createRegistry(Constants.port);
-        reg.bind(Constants.RMI_ID, impl);
+
+
+
+    public static void main(String[] args) {
+        NameServer nameServer = new NameServer();
+        try {
+            serverSocket = new DatagramSocket(port);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Naming service Server Started");
+        byte[] receiveData = new byte[1024];
+
+        while(true) {
+            DatagramPacket receivePacket = new DatagramPacket(
+                    receiveData, receiveData.length);
+            try {
+                System.out.println("waiting for receive");
+                serverSocket.receive(receivePacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String pw = new String( receivePacket.getData());
+            String hej = "hej";
+            System.out.println("Received: "+pw);
+            if(pw.equals(pw)) {
+                System.out.println("hej hej");
+                InetAddress IPAddress = receivePacket.getAddress();
+                int port = receivePacket.getPort();
+                try {
+                    nameServer.sendMembers(IPAddress, port);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            //invalid password
+        }
+
+
+    }
+
+    public void sendMembers(InetAddress IPAddress, int port) throws IOException {
+        members.add("GCOM wdsfsdfsdf");
+        members.add("werwerwerwer");
+        members.add("sdfsdfsfsf");
+        members.add("192.169.0.1");
+        members.add("139.193.234.122");
+        byte[] nrOfMembers = BigInteger.valueOf(members.size()).toByteArray();
+        byte[] nomAs4bytes = new byte[4];
+        switch (nrOfMembers.length){
+            case 1:
+                nomAs4bytes[3] = nrOfMembers[0];
+                break;
+            case 2:
+                nomAs4bytes[2] = nrOfMembers[0];
+                nomAs4bytes[3] = nrOfMembers[1];
+                break;
+            case 3:
+                nomAs4bytes[1] = nrOfMembers[2];
+                nomAs4bytes[2] = nrOfMembers[1];
+                nomAs4bytes[3] = nrOfMembers[0];
+                break;
+            case 4:
+                nomAs4bytes[0] = nrOfMembers[0];
+                nomAs4bytes[1] = nrOfMembers[1];
+                nomAs4bytes[2] = nrOfMembers[2];
+                nomAs4bytes[3] = nrOfMembers[3];
+                break;
+        }
+        serverSocket.send(new DatagramPacket(nomAs4bytes,nomAs4bytes.length,IPAddress,port));
+        int i=0;
+        for(String member : members){
+            System.out.println("sent member: "+ members.get(i));
+            serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
+            i++;
+        }
+
 
     }
 
 
-    private static String generateName(){
-        Random rn = new Random();
-        return state.get(rn.nextInt(state.size())) + color.get(rn.nextInt(color.size())) + creature.get(rn.nextInt(creature.size()));
-    }
-
-
-    private static void initializeNameTables() {
-
-        state.put(0, "Rabid");
-        state.put(1, "Disgusting");
-        state.put(2, "Kinky");
-
-        color.put(0, "Blue");
-        color.put(1, "Red");
-        color.put(2, "Green");
-
-        creature.put(0,"Donkey");
-        creature.put(1,"Monkey");
-        creature.put(2,"Seahorse");
-
-    }
 
 
 
