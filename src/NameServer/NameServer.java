@@ -1,11 +1,18 @@
 package NameServer;
 
+import Interface.Constants;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -26,38 +33,40 @@ public class NameServer {
     
     
     
-    public static void main(String[] args)  {
-        try {
-            serverSocket = new DatagramSocket(port);
-        } catch (SocketException e) {
-            System.out.println("port is probably in use already");
-        }
-        initializeNameTables();
-        System.out.println("Naming service Server Started");
-        byte[] receiveData = new byte[1024];
-
-        while(true) {
-            DatagramPacket receivePacket = new DatagramPacket(
-                    receiveData, receiveData.length);
-            try {
-                serverSocket.receive(receivePacket);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            String sentence = new String( receivePacket.getData());
-            System.out.println("Received: "+sentence);
-            InetAddress IPAddress = receivePacket.getAddress();
-            int port = receivePacket.getPort();
-            byte[] sendData = generateName().getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(
-                    sendData, sendData.length, IPAddress, port);
-            try {
-                serverSocket.send(sendPacket);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException {
+//        try {
+//            serverSocket = new DatagramSocket(port);
+//        } catch (SocketException e) {
+//            System.out.println("port is probably in use already");
+//        }
+//        initializeNameTables();
+//        System.out.println("Naming service Server Started");
+//        byte[] receiveData = new byte[1024];
+//
+//        while(true) {
+//            DatagramPacket receivePacket = new DatagramPacket(
+//                    receiveData, receiveData.length);
+//            try {
+//                serverSocket.receive(receivePacket);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            String sentence = new String( receivePacket.getData());
+//            System.out.println("Received: "+sentence);
+//            InetAddress IPAddress = receivePacket.getAddress();
+//            int port = receivePacket.getPort();
+//            byte[] sendData = generateName().getBytes();
+//            DatagramPacket sendPacket = new DatagramPacket(
+//                    sendData, sendData.length, IPAddress, port);
+//            try {
+//                serverSocket.send(sendPacket);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+        MyRemoteImplementation impl = new MyRemoteImplementation();
+        Registry reg = LocateRegistry.createRegistry(Constants.port);
+        reg.bind(Constants.RMI_ID, impl);
 
     }
 

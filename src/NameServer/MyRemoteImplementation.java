@@ -16,8 +16,11 @@ public class MyRemoteImplementation extends UnicastRemoteObject implements MyRem
 
     @Override
     public boolean is(String str) throws RemoteException {
-        if(str.equals("is"))
-            return false;
-        return true;
+        if(str.equals("is")){
+            System.out.println("hej");
+            return true;
+        }
+        System.out.println("nej");
+        return false;
     }
 }
