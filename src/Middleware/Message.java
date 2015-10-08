@@ -10,5 +10,6 @@ public class Message {
     public Message(String name, String message){
         this.name = name;
         this.message = message;
+
     }
 }
