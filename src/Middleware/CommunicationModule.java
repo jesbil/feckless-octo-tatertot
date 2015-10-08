@@ -19,28 +19,28 @@ import static Interface.Constants.*;
 public class CommunicationModule implements  MyRemote{
 
     // send
-    public void nonReliableMulticast(int type, String msg, Group group) throws RemoteException, NotBoundException, UnknownHostException {
+    public void nonReliableMulticast(int type, Group group, String msg) throws RemoteException, NotBoundException, UnknownHostException {
 
         switch (type){
             case TYPE_LEAVE_GROUP:
                 for(Member m : group.getMembers()){
                     Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.leaveGroup(InetAddress.getLocalHost().getHostAddress());
+                    remote.leaveGroup(InetAddress.getLocalHost().getHostAddress(),group.getName());
                 }
                 break;
             case TYPE_JOIN_GROUP:
                 for(Member m : group.getMembers()){
                     Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.joinGroup(InetAddress.getLocalHost().getHostAddress());
+                    remote.joinGroup(InetAddress.getLocalHost().getHostAddress(),group.getName());
                 }
                 break;
             case TYPE_CREATE_GROUP:
                 for(Member m : group.getMembers()){
                     Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.createGroup(InetAddress.getLocalHost().getHostAddress());
+                    remote.createGroup(msg);
                 }
                 break;
 
@@ -49,7 +49,7 @@ public class CommunicationModule implements  MyRemote{
                 for(Member m : group.getMembers()){
                     Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.message(new Message(InetAddress.getLocalHost().getHostAddress(),msg));
+                    remote.message(new Message(InetAddress.getLocalHost().getHostAddress(),msg),group.getName());
                 }
                 break;
         }
@@ -66,17 +66,18 @@ public class CommunicationModule implements  MyRemote{
     }
 
     @Override
-    public void joinGroup(String name) throws RemoteException {
+    public void joinGroup(String name, String groupName) throws RemoteException {
 
     }
 
     @Override
-    public void leaveGroup(String name) throws RemoteException {
+    public void leaveGroup(String name, String groupName) throws RemoteException {
 
     }
 
     @Override
-    public void message(Message message) throws RemoteException {
+    public void message(Message message, String groupName) throws RemoteException {
 
     }
+
 }

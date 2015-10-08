@@ -8,19 +8,11 @@ import java.rmi.server.UnicastRemoteObject;
 /**
  * Created by c12jbr on 2015-10-05.
  */
-public class MyRemoteImplementation extends UnicastRemoteObject implements MyRemote {
+public class MyRemoteImplementation extends UnicastRemoteObject {
 
     public MyRemoteImplementation() throws RemoteException {
         super();
     }
 
-    @Override
-    public boolean is(String str) throws RemoteException {
-        if(str.equals("is")){
-            System.out.println("hej");
-            return true;
-        }
-        System.out.println("nej");
-        return false;
-    }
+
 }
