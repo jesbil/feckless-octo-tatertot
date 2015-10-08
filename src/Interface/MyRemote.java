@@ -1,5 +1,7 @@
 package Interface;
 
+import Middleware.Message;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -12,8 +14,9 @@ public interface MyRemote extends Remote{
 
     public void joinGroup(String name) throws RemoteException;
 
-    public void leaveGroup() throws RemoteException;
+    public void leaveGroup(String name) throws RemoteException;
 
+    public void message(Message message) throws RemoteException;
 
 
 

@@ -30,7 +30,7 @@ public class NameServer {
             e.printStackTrace();
         }
         System.out.println("Naming service Server Started");
-        byte[] receiveData = new byte[1024];
+        byte[] receiveData = new byte[3];
 
         while(true) {
             DatagramPacket receivePacket = new DatagramPacket(
@@ -42,9 +42,9 @@ public class NameServer {
                 e.printStackTrace();
             }
             String pw = new String( receivePacket.getData());
-            String hej = "hej";
+            System.out.println(pw.length());
             System.out.println("Received: "+pw);
-            if(pw.equals(pw)) {
+            if(pw.equals("hej")) {
                 System.out.println("hej hej");
                 InetAddress IPAddress = receivePacket.getAddress();
                 int port = receivePacket.getPort();
@@ -54,18 +54,12 @@ public class NameServer {
                     e.printStackTrace();
                 }
             }
-            //invalid password
         }
 
 
     }
 
     public void sendMembers(InetAddress IPAddress, int port) throws IOException {
-        members.add("GCOM wdsfsdfsdf");
-        members.add("werwerwerwer");
-        members.add("sdfsdfsfsf");
-        members.add("192.169.0.1");
-        members.add("139.193.234.122");
         byte[] nrOfMembers = BigInteger.valueOf(members.size()).toByteArray();
         byte[] nomAs4bytes = new byte[4];
         switch (nrOfMembers.length){
