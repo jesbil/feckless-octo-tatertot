@@ -7,10 +7,13 @@ import java.util.ArrayList;
  */
 public class Group {
 
+    private String name;
+
     private ArrayList<Member> members;
 
-    public Group(){
+    public Group(String name){
         members = new ArrayList<Member>();
+        this.name=name;
     }
     public void addMemberToGroup(Member m){
         members.add(m);
@@ -21,5 +24,9 @@ public class Group {
 
     public ArrayList<Member> getMembers(){
         return members;
+    }
+
+    public String getName(){
+        return name;
     }
 }

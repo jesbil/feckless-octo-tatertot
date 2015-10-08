@@ -8,6 +8,14 @@ import java.rmi.RemoteException;
  */
 public interface MyRemote extends Remote{
 
-    public boolean is(String str) throws RemoteException;
+    public void createGroup(String name) throws RemoteException;
+
+    public void joinGroup(String name) throws RemoteException;
+
+    public void leaveGroup() throws RemoteException;
+
+
+
+
 
 }

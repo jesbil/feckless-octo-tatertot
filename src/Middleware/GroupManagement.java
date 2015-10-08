@@ -12,6 +12,18 @@ public class GroupManagement {
 
     public GroupManagement(){
         groups = new ArrayList<Group>();
+        members = new ArrayList<Member>();
     }
 
+    public void createGroup(String name) {
+
+    }
+
+    public void joinGroup(String name) {
+
+    }
+
+    public void leaveGroup() {
+
+    }
 }
