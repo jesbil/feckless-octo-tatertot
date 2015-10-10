@@ -53,9 +53,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        Group newGroup = new Group(msg);
-                        newGroup.addMemberToGroup(localMember);
-                        remote.createGroup(newGroup);
+                        remote.createGroup(msg,localMember.getIP());
                         System.out.println("fixade biffen");
                     }
                 }
@@ -78,9 +76,9 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     // receive
 
     @Override
-    public void createGroup(Group group) throws RemoteException {
+    public void createGroup(String groupName, String leader) throws RemoteException {
         System.out.println("fan då");
-        GCom.groupCreated(group);
+        GCom.groupCreated(groupName,leader);
     }
 
     @Override

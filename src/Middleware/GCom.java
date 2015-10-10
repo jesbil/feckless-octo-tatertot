@@ -46,7 +46,7 @@ public class GCom {
 
     public static void groupCreated(Group group) {
 //        messageOrdering.order(groupName);
-        groupManagement.groupCreated(group);
+
     }
 
     public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException {
@@ -56,5 +56,11 @@ public class GCom {
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
         nameServerCommunicator = new NameServerCommunicator();
+    }
+
+    public static void groupCreated(String groupName, String leader) throws RemoteException {
+        Group newGroup = new Group(groupName);
+        newGroup.addMemberToGroup(new Member(leader));
+        groupManagement.groupCreated(newGroup);
     }
 }

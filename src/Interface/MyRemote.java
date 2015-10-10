@@ -12,7 +12,8 @@ import java.rmi.RemoteException;
 public interface MyRemote extends Remote{
 
 
-    public void createGroup(Group group) throws RemoteException;
+
+    public void createGroup(String groupName, String leader) throws RemoteException;
 
     public void joinGroup(String name, String groupname) throws RemoteException;
 

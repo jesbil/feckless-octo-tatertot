@@ -1,25 +1,19 @@
 package Middleware;
 
-import Interface.GroupRemote;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteObject;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 /**
  * Created by oi12pjn on 2015-10-07.
  */
-public class Group extends UnicastRemoteObject implements GroupRemote{
+public class Group {
 
     private String name;
 
     private ArrayList<Member> members;
     private RemoteObject ro;
-
-    public RemoteObject getRo(){
-        return ro;
-    }
 
     public Group(String name) throws RemoteException {
         super();
