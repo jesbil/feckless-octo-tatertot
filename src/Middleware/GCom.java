@@ -29,7 +29,7 @@ public class GCom {
 
     public static void connectToNameService(String nameService) throws IOException {
         GCom.nameServiceAddress = nameService;
-        nameServerCommunicator.retrieveMembers();
+        nameServerCommunicator.retrieveMembers(nameServiceAddress);
     }
 
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
