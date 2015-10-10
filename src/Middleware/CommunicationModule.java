@@ -24,8 +24,6 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     public CommunicationModule(Member localMember) throws RemoteException, AlreadyBoundException {
         super();
-        Registry register = LocateRegistry.createRegistry(Constants.port);
-        register.bind(Constants.RMI_ID, this);
         this.localMember = localMember;
     }
 

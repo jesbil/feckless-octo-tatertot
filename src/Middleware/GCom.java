@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 
 import static Interface.Constants.*;
@@ -50,6 +52,8 @@ public class GCom {
         groupManagement = new GroupManagement();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
+        Registry register = LocateRegistry.createRegistry(Constants.port);
+        register.bind(Constants.RMI_ID, communication);
         nameServerCommunicator = new NameServerCommunicator();
     }
 }
