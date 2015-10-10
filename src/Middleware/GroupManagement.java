@@ -8,27 +8,33 @@ import java.util.ArrayList;
  * Created by oi12pjn on 2015-10-07.
  */
 public class GroupManagement {
-    private ArrayList<Member> members;
+    private Group allMembers;
     private ArrayList<Group> groups;
-    private Member LocalMember;
+    private Member localMember;
 
 
     public GroupManagement() throws UnknownHostException {
         groups = new ArrayList<Group>();
-        members = new ArrayList<Member>();
-        LocalMember = new Member(InetAddress.getLocalHost().getHostAddress());
+        allMembers = new Group("allMembers");
+        localMember = new Member(InetAddress.getLocalHost().getHostAddress());
     }
 
-    public void createGroup(String name) {
+    public boolean createGroup(String name) {
+        for(Group g : groups){
+            if(g.getName().equals(name)){
+                return false;
+            }
+        }
         groups.add(new Group(name));
-
+        groups.get(groups.size()-1).addMemberToGroup(localMember);
+        return true;
         //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
     public void joinGroup(String name) throws UnknownHostException {
         for (int i = 0; i <groups.size() ; i++) {
             if (groups.get(i).getName().equals(name)){
-                groups.get(i).addMemberToGroup(LocalMember);
+                groups.get(i).addMemberToGroup(localMember);
             }
         }
 
@@ -38,7 +44,7 @@ public class GroupManagement {
     public void leaveGroup(String name) {
         for (int i = 0; i <groups.size() ; i++) {
             if (groups.get(i).getName().equals(name)){
-                groups.get(i).removeMemberFromGroup(LocalMember);
+                groups.get(i).removeMemberFromGroup(localMember);
             }
         }
 
@@ -52,4 +58,15 @@ public class GroupManagement {
     }
 
 
+    public Group getAllMembers() {
+        return allMembers;
+    }
+
+    public Member getLocalMember() {
+        return localMember;
+    }
+
+    public void groupCreated(Group group) {
+        groups.add(group);
+    }
 }

@@ -15,6 +15,7 @@ public class Group {
         members = new ArrayList<Member>();
         this.name=name;
     }
+
     public void addMemberToGroup(Member m){
         members.add(m);
     }

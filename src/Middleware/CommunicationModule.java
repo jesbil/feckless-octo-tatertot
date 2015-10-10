@@ -17,6 +17,12 @@ import static Interface.Constants.*;
  * Created by c12jbr on 2015-10-08.
  */
 public class CommunicationModule implements  MyRemote{
+    private static Member localMember;
+
+
+    public CommunicationModule(Member localMember){
+        this.localMember = localMember;
+    }
 
     // send
     public void nonReliableMulticast(int type, Group group, String msg) throws RemoteException, NotBoundException, UnknownHostException {
@@ -24,9 +30,12 @@ public class CommunicationModule implements  MyRemote{
         switch (type){
             case TYPE_LEAVE_GROUP:
                 for(Member m : group.getMembers()){
-                    Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
-                    MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.leaveGroup(InetAddress.getLocalHost().getHostAddress(),group.getName());
+                    if(m!=localMember){
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
+                        remote.leaveGroup(InetAddress.getLocalHost().getHostAddress(),group.getName());
+
+                    }
                 }
                 break;
             case TYPE_JOIN_GROUP:
@@ -38,9 +47,13 @@ public class CommunicationModule implements  MyRemote{
                 break;
             case TYPE_CREATE_GROUP:
                 for(Member m : group.getMembers()){
-                    Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
-                    MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.createGroup(msg);
+                    if(!m.equals(localMember)){
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
+                        Group newGroup = new Group(msg);
+                        newGroup.addMemberToGroup(localMember);
+                        remote.createGroup(newGroup);
+                    }
                 }
                 break;
 
@@ -61,8 +74,8 @@ public class CommunicationModule implements  MyRemote{
     // receive
 
     @Override
-    public void createGroup(String name) throws RemoteException {
-
+    public void createGroup(Group group) throws RemoteException {
+        GCom.groupCreated(group);
     }
 
     @Override

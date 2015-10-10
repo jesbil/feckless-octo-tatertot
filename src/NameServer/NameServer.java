@@ -17,7 +17,7 @@ public class NameServer {
 
     private static final int port = 4444;
     private static DatagramSocket serverSocket;
-    private ArrayList<String> members = new ArrayList<String>();
+    private static ArrayList<String> members = new ArrayList<String>();
 
 
 
@@ -47,6 +47,8 @@ public class NameServer {
             if(pw.equals("hej")) {
                 System.out.println("hej hej");
                 InetAddress IPAddress = receivePacket.getAddress();
+                System.out.println(IPAddress.toString());
+                members.add(IPAddress.toString());
                 int port = receivePacket.getPort();
                 try {
                     nameServer.sendMembers(IPAddress, port);

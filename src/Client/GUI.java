@@ -13,14 +13,7 @@ import java.awt.event.WindowListener;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 /**
  * The graphical user interface of the program
@@ -40,9 +33,16 @@ public class GUI implements Observer{
      * Creates the GUI and asks the user of its name.
      */
     public GUI() {
-    buildAndStart("GCom");
-
     }
+
+    public String nameServerRequest() {
+        String nameService = null;
+        while (nameService==null){
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "draco.cs.umu.se");
+        }
+        return nameService;
+    }
+
 
     /**
      * Builds the components of the gui and makes the gui visible
@@ -72,7 +72,7 @@ public class GUI implements Observer{
         JMenuBar mb = new JMenuBar();
 
         JMenu fm = new JMenu("Options");
-        fm.add(createChangeKeyButton());
+        fm.add(createGroupButton());
         mb.add(fm);
 
         return mb;
@@ -83,7 +83,7 @@ public class GUI implements Observer{
      *
      * @return
      */
-    private JMenuItem createChangeKeyButton(){
+    private JMenuItem createGroupButton(){
         JMenuItem item = new JMenuItem("Create Group");
         item.addActionListener(new CreateGroupListener());
 
