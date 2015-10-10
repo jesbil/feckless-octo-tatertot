@@ -10,6 +10,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 import static Interface.Constants.*;
@@ -53,6 +54,7 @@ public class GCom {
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
         Registry register = LocateRegistry.createRegistry(Constants.port);
+        UnicastRemoteObject.exportObject(communication);
         register.bind(Constants.RMI_ID, communication);
         nameServerCommunicator = new NameServerCommunicator();
     }
