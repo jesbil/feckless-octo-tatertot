@@ -4,6 +4,7 @@ import Middleware.GCom;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.rmi.AlreadyBoundException;
 
 /**
  * Created by c12jbr on 2015-10-10.
@@ -24,6 +25,9 @@ public class Main {
             e.printStackTrace();
         } catch (IOException e) {
             //connect to nameService
+            e.printStackTrace();
+        } catch (AlreadyBoundException e) {
+            //GCOM initiate
             e.printStackTrace();
         }
 

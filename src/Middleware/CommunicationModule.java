@@ -6,6 +6,7 @@ import Interface.MyRemote;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -21,8 +22,10 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     private static Member localMember;
 
 
-    public CommunicationModule(Member localMember) throws RemoteException {
+    public CommunicationModule(Member localMember) throws RemoteException, AlreadyBoundException {
         super();
+        Registry register = LocateRegistry.createRegistry(Constants.port);
+        register.bind(Constants.RMI_ID, this);
         this.localMember = localMember;
     }
 

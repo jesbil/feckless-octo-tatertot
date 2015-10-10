@@ -5,6 +5,7 @@ import Interface.Constants;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -45,7 +46,7 @@ public class GCom {
         groupManagement.groupCreated(group);
     }
 
-    public static void initiate() throws UnknownHostException, RemoteException {
+    public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException {
         groupManagement = new GroupManagement();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
