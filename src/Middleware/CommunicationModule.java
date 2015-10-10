@@ -10,17 +10,19 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 import static Interface.Constants.*;
 
 /**
  * Created by c12jbr on 2015-10-08.
  */
-public class CommunicationModule implements  MyRemote{
+public class CommunicationModule extends UnicastRemoteObject implements  MyRemote{
     private static Member localMember;
 
 
-    public CommunicationModule(Member localMember){
+    public CommunicationModule(Member localMember) throws RemoteException {
+        super();
         this.localMember = localMember;
     }
 

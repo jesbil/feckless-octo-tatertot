@@ -45,7 +45,7 @@ public class GCom {
         groupManagement.groupCreated(group);
     }
 
-    public static void initiate() throws UnknownHostException {
+    public static void initiate() throws UnknownHostException, RemoteException {
         groupManagement = new GroupManagement();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());

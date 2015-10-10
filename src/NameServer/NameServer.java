@@ -43,12 +43,9 @@ public class NameServer {
             }
             String pw = new String( receivePacket.getData());
             System.out.println(pw.length());
-            System.out.println("Received: "+pw);
             if(pw.equals("hej")) {
-                System.out.println("hej hej");
                 InetAddress IPAddress = receivePacket.getAddress();
-                System.out.println(IPAddress.toString());
-                members.add(IPAddress.toString());
+                members.add(IPAddress.toString().substring(1));
                 int port = receivePacket.getPort();
                 try {
                     nameServer.sendMembers(IPAddress, port);
