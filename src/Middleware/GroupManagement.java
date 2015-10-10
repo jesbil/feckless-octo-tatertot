@@ -2,6 +2,7 @@ package Middleware;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -13,13 +14,13 @@ public class GroupManagement {
     private Member localMember;
 
 
-    public GroupManagement() throws UnknownHostException {
+    public GroupManagement() throws UnknownHostException, RemoteException {
         groups = new ArrayList<Group>();
         allMembers = new Group("allMembers");
         localMember = new Member(InetAddress.getLocalHost().getHostAddress());
     }
 
-    public boolean createGroup(String name) {
+    public boolean createGroup(String name) throws RemoteException {
         for(Group g : groups){
             if(g.getName().equals(name)){
                 return false;
