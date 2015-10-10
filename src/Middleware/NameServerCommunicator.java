@@ -29,7 +29,7 @@ public class NameServerCommunicator {
     public static void main(String[] args) {
         NameServerCommunicator asd = new NameServerCommunicator();
         try {
-            asd.retrieveMembers();
+            asd.retrieveMembers("Draco");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,10 +39,10 @@ public class NameServerCommunicator {
         members=new ArrayList<Member>();
     }
 
-    public void retrieveMembers() throws IOException {
+    public void retrieveMembers(String nameServiceAddress) throws IOException {
 
         DatagramSocket clientSocket = new DatagramSocket();
-        InetAddress IPAddress = InetAddress.getByName("storm");
+        InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
         byte[] sendData = "hej".getBytes();
         byte[] nrOfMemz = new byte[4];
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);
