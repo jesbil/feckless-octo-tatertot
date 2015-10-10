@@ -54,7 +54,6 @@ public class GCom {
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
         Registry register = LocateRegistry.createRegistry(Constants.port);
-        UnicastRemoteObject.exportObject(communication);
         register.bind(Constants.RMI_ID, communication);
         nameServerCommunicator = new NameServerCommunicator();
     }
