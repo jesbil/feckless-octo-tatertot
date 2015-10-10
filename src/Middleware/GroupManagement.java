@@ -73,4 +73,11 @@ public class GroupManagement {
         }
     }
 
+    public void setAllMembers(ArrayList<Member> mlist){
+        for(Member m: mlist){
+            allMembers.addMemberToGroup(m);
+
+        }
+    }
+
 }

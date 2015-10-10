@@ -47,12 +47,14 @@ public class CommunicationModule implements  MyRemote{
                 break;
             case TYPE_CREATE_GROUP:
                 for(Member m : group.getMembers()){
-                    if(!m.equals(localMember)){
+                    if(!m.getIP().equals(localMember.getIP())){
+
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         Group newGroup = new Group(msg);
                         newGroup.addMemberToGroup(localMember);
                         remote.createGroup(newGroup);
+                        System.out.println("fixade biffen");
                     }
                 }
                 break;
@@ -75,6 +77,7 @@ public class CommunicationModule implements  MyRemote{
 
     @Override
     public void createGroup(Group group) throws RemoteException {
+        System.out.println("fan då");
         GCom.groupCreated(group);
     }
 

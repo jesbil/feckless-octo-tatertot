@@ -39,7 +39,7 @@ public class NameServerCommunicator {
         members=new ArrayList<Member>();
     }
 
-    public void retrieveMembers(String nameServiceAddress) throws IOException {
+    public ArrayList<Member> retrieveMembers(String nameServiceAddress) throws IOException {
 
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
@@ -57,12 +57,15 @@ public class NameServerCommunicator {
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            Member m = new Member(new String(receivePacket.getData()));
+            Member m = new Member(new String(receivePacket.getData()).trim());
             members.add(m);
+
 
         }
 
         clientSocket.close();
+        return members;
     }
+
 
 }

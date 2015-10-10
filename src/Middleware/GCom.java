@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import static Interface.Constants.*;
 
@@ -29,7 +30,8 @@ public class GCom {
 
     public static void connectToNameService(String nameService) throws IOException {
         GCom.nameServiceAddress = nameService;
-        nameServerCommunicator.retrieveMembers(nameServiceAddress);
+        ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
+        groupManagement.setAllMembers(allMembers);
     }
 
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
