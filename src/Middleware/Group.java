@@ -3,6 +3,7 @@ package Middleware;
 import Interface.GroupRemote;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteObject;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
@@ -14,6 +15,11 @@ public class Group extends UnicastRemoteObject implements GroupRemote{
     private String name;
 
     private ArrayList<Member> members;
+    private RemoteObject ro;
+
+    public RemoteObject getRo(){
+        return ro;
+    }
 
     public Group(String name) throws RemoteException {
         super();
