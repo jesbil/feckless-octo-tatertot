@@ -15,6 +15,7 @@ public class Group {
     private ArrayList<Member> members;
     private RemoteObject ro;
 
+
     public Group(String name) throws RemoteException {
         super();
         members = new ArrayList<Member>();
