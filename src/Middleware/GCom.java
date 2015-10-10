@@ -47,5 +47,6 @@ public class GCom {
         groupManagement = new GroupManagement();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
+        nameServerCommunicator = new NameServerCommunicator();
     }
 }

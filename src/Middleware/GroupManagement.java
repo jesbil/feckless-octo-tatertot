@@ -68,5 +68,9 @@ public class GroupManagement {
 
     public void groupCreated(Group group) {
         groups.add(group);
+        for (int i = 0; i <groups.size() ; i++) {
+            System.out.println(groups.get(i).getName());
+        }
     }
+
 }

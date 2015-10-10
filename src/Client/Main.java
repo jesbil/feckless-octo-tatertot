@@ -15,8 +15,10 @@ public class Main {
         try {
             GUI gui = new GUI();
             GCom.initiate();
+
             GCom.connectToNameService(gui.nameServerRequest());
             gui.buildAndStart("GCom");
+
         } catch (UnknownHostException e) {
             //GCOM initiate
             e.printStackTrace();
