@@ -23,11 +23,20 @@ public class Main {
 
 
             while(true){
+
+
+                gui.getJtaNameList().setText("");
+                if(GCom.getGroupNames()!=null){
+                    for(String groupName : GCom.getGroupNames()){
+                        gui.getJtaNameList().append(groupName);
+                    }
+                }
+
                 Message message;
                 if((message=GCom.getNextMessage("balle"))!=null){
                     gui.getChatField().append(message.getSender()+": "+message.getMessage()+"\n");
-                    gui.update();
                 }
+                gui.update();
             }
 
         } catch (UnknownHostException e) {

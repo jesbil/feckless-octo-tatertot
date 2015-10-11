@@ -3,6 +3,7 @@ package Middleware;
 import Interface.Constants;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
@@ -33,6 +34,14 @@ public class GCom extends Observable {
         nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
+    }
+
+    public static ArrayList<String> getGroupNames(){
+        ArrayList<String> groupNames = new ArrayList<String>();
+        for(Group group : groupManagementModule.getGroups()){
+            groupNames.add(group.getName());
+        }
+        return  groupNames;
     }
 
     public static void connectToNameService(String nameService) throws IOException {

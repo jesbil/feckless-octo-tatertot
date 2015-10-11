@@ -10,6 +10,11 @@ import java.util.ArrayList;
  */
 public class GroupManagementModule {
     private Group allMembers;
+
+    public ArrayList<Group> getGroups() {
+        return groups;
+    }
+
     private ArrayList<Group> groups;
     private Member localMember;
 
