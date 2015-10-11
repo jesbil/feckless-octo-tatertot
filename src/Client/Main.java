@@ -6,14 +6,15 @@ import Middleware.Message;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
+import java.util.ArrayList;
 
 /**
  * Created by c12jbr on 2015-10-10.
  */
 public class Main {
+    private static ArrayList<String> groupNames = new ArrayList<String>();
 
     public static void main(String[] args) {
-
         try {
             GUI gui = new GUI();
             GCom.initiate();
@@ -24,19 +25,29 @@ public class Main {
 
             while(true){
 
-
+                boolean changed = false;
                 gui.getJtaNameList().setText("");
                 if(GCom.getGroupNames()!=null){
                     for(String groupName : GCom.getGroupNames()){
-                        gui.getJtaNameList().append(groupName);
+                        if(!groupNames.contains(groupName)){
+                            changed = true;
+                            groupNames.add(groupName);
+                            gui.getJtaNameList().append(groupName);
+                        }
+
                     }
                 }
 
                 Message message;
                 if((message=GCom.getNextMessage("balle"))!=null){
-                    gui.getChatField().append(message.getSender()+": "+message.getMessage()+"\n");
+                    gui.getChatField().append(message.getSender() + ": " + message.getMessage() + "\n");
+                    changed = true;
                 }
-                gui.update();
+
+                if(changed){
+                    gui.update();
+                }
+
             }
 
         } catch (UnknownHostException e) {
