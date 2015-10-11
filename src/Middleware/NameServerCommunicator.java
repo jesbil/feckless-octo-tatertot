@@ -1,17 +1,9 @@
 package Middleware;
 
-import Interface.Constants;
-import Interface.MyRemote;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.net.*;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+
 import java.util.ArrayList;
 
 /**
@@ -68,4 +60,11 @@ public class NameServerCommunicator {
     }
 
 
+    public void leave(String nameServiceAddress) throws IOException {
+        DatagramSocket clientSocket = new DatagramSocket();
+        InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
+        byte[] sendData = "baj".getBytes();
+        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);
+        clientSocket.send(sendPacket);
+    }
 }

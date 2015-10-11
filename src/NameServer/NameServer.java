@@ -52,6 +52,9 @@ public class NameServer {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }else if(pw.equals("baj")) {
+                InetAddress IPAddress = receivePacket.getAddress();
+                members.remove(IPAddress.toString().substring(1));
             }
         }
 

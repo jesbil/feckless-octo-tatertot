@@ -93,7 +93,10 @@ public class GCom extends Observable {
         groupManagement.joinGroup(groupName);
         communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName);
     }
-    public static void leaveGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void leaveGroup(String groupName) throws IOException, NotBoundException {
+        if(groupName.equals(groupManagement.getAllMembers().getName())){
+            nameServerCommunicator.leave(nameServiceAddress);
+        }
         System.out.println(groupName);
         Group temp = groupManagement.getGroupByName(groupName);
         groupManagement.leaveGroup(groupName);
