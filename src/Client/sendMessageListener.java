@@ -23,7 +23,7 @@ public class sendMessageListener implements ActionListener {
     public void actionPerformed(ActionEvent actionEvent) {
         //TODO RIKTIGT GROUPNAME
         try {
-            GCom.sendMessage(writeField.getText(),"balle");
+            GCom.sendMessage(writeField.getText(),Main.getCurrentGroup());
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
