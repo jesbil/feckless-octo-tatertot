@@ -3,13 +3,17 @@ package Client;
 /**
  * Created by c12jbr on 2015-10-08.
  */
+import Middleware.GCom;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-
+import java.net.UnknownHostException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 
 import javax.swing.*;
@@ -102,6 +106,14 @@ public class GUI{
         return item;
     }
 
+    private JMenuItem leaveGroupButton(){
+        JMenuItem item = new JMenuItem("Leave Group");
+        item.addActionListener(new LeaveGroupListener());
+
+        return item;
+    }
+
+
     public JTextArea getJtaNameList() {
         return jtaNameList;
     }
@@ -192,8 +204,20 @@ public class GUI{
             // disconnect possible connection before shutting down
             @Override
             public void windowClosing(WindowEvent e) {
-                //LEAVE GROUP
-                //LEAVE MASTER-GROUP
+                try {
+                    if(Main.getCurrentGroup()!=null){
+                        GCom.leaveGroup(Main.getCurrentGroup());
+                    }
+                    GCom.leaveGroup(GCom.getAllMembersGroupName());
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                } catch (NotBoundException e1) {
+                    e1.printStackTrace();
+                } catch (UnknownHostException e1) {
+                    e1.printStackTrace();
+                }
+
+                //TODO Gcom.getAllMembers
 
             }
         };

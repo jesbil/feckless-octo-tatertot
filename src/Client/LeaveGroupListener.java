@@ -12,19 +12,22 @@ import java.rmi.RemoteException;
 /**
  * Created by c12jbr on 2015-10-11.
  */
-public class JoinGroupListener implements ActionListener {
+public class LeaveGroupListener implements ActionListener {
+
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        String groupName = JOptionPane.showInputDialog(null, "What group do you want to join", "groupName");
-        Main.setCurrentGroup(groupName);
+        String groupName = JOptionPane.showInputDialog(null, "What group do you want to leave", "groupName");
+        Main.setCurrentGroup(null);
         try {
-            GCom.joinGroup(groupName);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            GCom.leaveGroup(groupName);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
+
     }
 }

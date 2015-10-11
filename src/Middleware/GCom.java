@@ -3,7 +3,6 @@ package Middleware;
 import Interface.Constants;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
@@ -13,7 +12,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Observable;
-import java.util.Observer;
 
 import static Interface.Constants.*;
 
@@ -22,15 +20,19 @@ import static Interface.Constants.*;
  */
 public class GCom extends Observable {
     private static String nameServiceAddress;
-    private static GroupManagementModule groupManagementModule;
+    private static GroupManagementModule groupManagement;
     private static MessageOrderingModule messageOrdering;
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
 
+    public static String getAllMembersGroupName(){
+        return groupManagement.getAllMembers().getName();
+    }
+
     public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException {
-        groupManagementModule = new GroupManagementModule();
+        groupManagement = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
-        communication = new CommunicationModule(groupManagementModule.getLocalMember());
+        communication = new CommunicationModule(groupManagement.getLocalMember());
         nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
@@ -38,7 +40,7 @@ public class GCom extends Observable {
 
     public static ArrayList<String> getGroupNames(){
         ArrayList<String> groupNames = new ArrayList<String>();
-        for(Group group : groupManagementModule.getGroups()){
+        for(Group group : groupManagement.getGroups()){
             groupNames.add(group.getName());
         }
         return  groupNames;
@@ -47,19 +49,19 @@ public class GCom extends Observable {
     public static void connectToNameService(String nameService) throws IOException {
         GCom.nameServiceAddress = nameService;
         ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
-        groupManagementModule.setAllMembers(allMembers);
+        groupManagement.setAllMembers(allMembers);
     }
 
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        groupManagementModule.createGroup(groupName);
+        groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
 //        messageOrdering.order(groupName);
-        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagementModule.getAllMembers(), groupName);
+        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName);
     }
 
     public static void sendMessage(String text, String groupName) throws RemoteException, NotBoundException, UnknownHostException {
 //        messageOrdering.order(text);
-        communication.nonReliableMulticast(TYPE_MESSAGE, groupManagementModule.getGroupByName(groupName),text);
+        communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text);
     }
 
     public static Message getNextMessage(String groupName){
@@ -69,7 +71,7 @@ public class GCom extends Observable {
     protected static void groupCreated(String groupName, String leader) throws RemoteException {
         Group newGroup = new Group(groupName);
         newGroup.addMemberToGroup(new Member(leader));
-        groupManagementModule.groupCreated(newGroup);
+        groupManagement.groupCreated(newGroup);
         messageOrdering.addGroup(groupName);
     }
 
@@ -84,21 +86,22 @@ public class GCom extends Observable {
     }
 
     protected static void groupJoined(String name, String groupName){
-        groupManagementModule.addMemberToGroup(name, groupName);
+        groupManagement.addMemberToGroup(name, groupName);
     }
 
     public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException {
-        groupManagementModule.joinGroup(groupName);
-        communication.nonReliableMulticast(TYPE_JOIN_GROUP,groupManagementModule.getGroupByName(groupName),groupName);
+        groupManagement.joinGroup(groupName);
+        communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName);
     }
     public static void leaveGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        Group temp = groupManagementModule.getGroupByName(groupName);
-        groupManagementModule.leaveGroup(groupName);
-        communication.nonReliableMulticast(TYPE_LEAVE_GROUP,temp,groupName);
+        System.out.println(groupName);
+        Group temp = groupManagement.getGroupByName(groupName);
+        groupManagement.leaveGroup(groupName);
+        communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName);
     }
 
     protected static void leftGroup(String groupName,String name){
-        groupManagementModule.removeMemberFromGroup(groupName,name);
+        groupManagement.removeMemberFromGroup(groupName, name);
     }
 
 }
