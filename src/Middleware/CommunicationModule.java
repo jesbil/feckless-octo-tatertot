@@ -67,7 +67,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                     Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                     System.out.println("Sending message:\nMessage: "+msg+"\nSent from: "+ InetAddress.getLocalHost().getHostAddress()+"\nTo group: "+group.getName()+"\n");
-                    remote.message(msg ,InetAddress.getLocalHost().getHostAddress(),group.getName());
+                    remote.message(msg, InetAddress.getLocalHost().getHostAddress(), group.getName());
                 }
                 break;
         }
@@ -80,13 +80,13 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public void createGroup(String groupName, String leader) throws RemoteException {
-        System.out.println("fan då");
+        System.out.println("Group created:\nGroup name: "+groupName+"\nHost: "+leader+"\n");
         GCom.groupCreated(groupName,leader);
     }
 
     @Override
     public void joinGroup(String name, String groupName) throws RemoteException {
-        System.out.println("Går med i grupp "+groupName+" "+ name+"\n");
+        System.out.println("Member joined group:\nGroup name:"+groupName+"\nMember: "+ name+"\n");
         GCom.groupJoined(name, groupName);
     }
 
