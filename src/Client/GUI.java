@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -214,6 +215,8 @@ public class GUI{
                 } catch (NotBoundException e1) {
                     e1.printStackTrace();
                 } catch (UnknownHostException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
                     e1.printStackTrace();
                 }
 
