@@ -89,4 +89,8 @@ public class GroupManagementModule {
         }
         return null;
     }
+
+    public void addMemberToGroup(String name, String groupName) {
+        getGroupByName(groupName).addMemberToGroup(new Member(name));
+    }
 }

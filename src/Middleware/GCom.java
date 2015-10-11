@@ -74,4 +74,13 @@ public class GCom extends Observable {
         }
     }
 
+    protected static void groupJoined(String name, String groupName){
+        groupManagementModule.addMemberToGroup(name, groupName);
+    }
+
+    public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException {
+        groupManagementModule.joinGroup(groupName);
+        communication.nonReliableMulticast(TYPE_JOIN_GROUP,groupManagementModule.getGroupByName(groupName),groupName);
+    }
+
 }

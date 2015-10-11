@@ -42,9 +42,11 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                 break;
             case TYPE_JOIN_GROUP:
                 for(Member m : group.getMembers()){
-                    Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
-                    MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.joinGroup(InetAddress.getLocalHost().getHostAddress(),group.getName());
+                    if(!m.getIP().equals(localMember.getIP())) {
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
+                        remote.joinGroup(InetAddress.getLocalHost().getHostAddress(), group.getName());
+                    }
                 }
                 break;
             case TYPE_CREATE_GROUP:
@@ -84,7 +86,8 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public void joinGroup(String name, String groupName) throws RemoteException {
-
+        System.out.println("Går med i grupp "+groupName+" "+ name+"\n");
+        GCom.groupJoined();
     }
 
     @Override
