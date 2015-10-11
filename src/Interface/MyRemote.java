@@ -19,7 +19,7 @@ public interface MyRemote extends Remote{
 
     public void leaveGroup(String name, String groupname) throws RemoteException;
 
-    public void message(Message message, String groupname) throws RemoteException;
 
 
+    void message(String message, String sender, String groupName) throws RemoteException;
 }

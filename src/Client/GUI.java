@@ -10,8 +10,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-import java.util.Observable;
-import java.util.Observer;
+
 
 import javax.swing.*;
 
@@ -21,9 +20,14 @@ import javax.swing.*;
  * @author c12jbr
  *
  */
-public class GUI implements Observer{
+public class GUI{
     private JFrame frame;
     private JTextArea jtaNameList;
+
+    public JTextArea getChatField() {
+        return chatField;
+    }
+
     private JTextArea chatField;
     private JTextArea writeField;
     private JScrollPane nlsp;
@@ -38,7 +42,7 @@ public class GUI implements Observer{
     public String nameServerRequest() {
         String nameService = null;
         while (nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "draco.cs.umu.se");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "dolores.cs.umu.se");
         }
         return nameService;
     }
@@ -158,6 +162,7 @@ public class GUI implements Observer{
         wfsp.setPreferredSize(new Dimension(300,60));
 
         JButton sendButton = new JButton("Send");
+        sendButton.addActionListener(new sendMessageListener(writeField));
 
 
         wfp.add(wfsp,BorderLayout.CENTER);
@@ -190,8 +195,7 @@ public class GUI implements Observer{
      * Gets a byte[] and parse it to make changes in the gui
      * for example update the user list or show a received message in the chat
      */
-    @Override
-    public void update(Observable arg0, Object obj) {
+    public void update() {
 
         frame.repaint();
 

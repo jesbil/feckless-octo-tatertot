@@ -1,16 +1,15 @@
 package Middleware;
 
-import Client.GUI;
 import Interface.Constants;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
 import static Interface.Constants.*;
@@ -20,7 +19,7 @@ import static Interface.Constants.*;
  */
 public class GCom {
     private static String nameServiceAddress;
-    private static GroupManagement groupManagement;
+    private static GroupManagementModule groupManagementModule;
     private static MessageOrderingModule messageOrdering;
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
@@ -32,35 +31,50 @@ public class GCom {
     }
 
 
-    public static void connectToNameService(String nameService) throws IOException {
-        GCom.nameServiceAddress = nameService;
-        ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
-        groupManagement.setAllMembers(allMembers);
-    }
-
-    public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        groupManagement.createGroup(groupName);
-//        messageOrdering.order(groupName);
-        communication.nonReliableMulticast(TYPE_CREATE_GROUP,groupManagement.getAllMembers(),groupName);
-    }
-
-    public static void groupCreated(Group group) {
-//        messageOrdering.order(groupName);
-
-    }
-
     public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException {
-        groupManagement = new GroupManagement();
+        groupManagementModule = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
-        communication = new CommunicationModule(groupManagement.getLocalMember());
+        communication = new CommunicationModule(groupManagementModule.getLocalMember());
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
         nameServerCommunicator = new NameServerCommunicator();
     }
 
-    public static void groupCreated(String groupName, String leader) throws RemoteException {
+    public static void connectToNameService(String nameService) throws IOException {
+        GCom.nameServiceAddress = nameService;
+        ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
+        groupManagementModule.setAllMembers(allMembers);
+    }
+
+    public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+        groupManagementModule.createGroup(groupName);
+        messageOrdering.addGroup(groupName);
+//        messageOrdering.order(groupName);
+        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagementModule.getAllMembers(),groupName);
+    }
+
+    public static void sendMessage(String text, String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+//        messageOrdering.order(text);
+        communication.nonReliableMulticast(TYPE_MESSAGE, groupManagementModule.getGroupByName(groupName),text);
+    }
+
+    public static Message getNextMessage(String groupName){
+        return messageOrdering.getNextMessage(groupName);
+    }
+
+    protected static void groupCreated(String groupName, String leader) throws RemoteException {
         Group newGroup = new Group(groupName);
         newGroup.addMemberToGroup(new Member(leader));
-        groupManagement.groupCreated(newGroup);
+        groupManagementModule.groupCreated(newGroup);
+    }
+
+
+    protected static void receiveMessage(String message, String sender, String groupName) {
+        messageOrdering.orderMessage(message,sender,groupName);
+        try {
+            System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ InetAddress.getLocalHost().getHostAddress()+"\n");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 }

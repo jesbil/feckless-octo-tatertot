@@ -1,6 +1,7 @@
 package Client;
 
 import Middleware.GCom;
+import Middleware.Message;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -19,6 +20,16 @@ public class Main {
 
             GCom.connectToNameService(gui.nameServerRequest());
             gui.buildAndStart("GCom");
+
+            //GRUPPEN FINS INTE I GMQ!!! ""balle
+
+            while(true){
+                Message message;
+                if((message=GCom.getNextMessage("balle"))!=null){
+                    gui.getChatField().append(message.getSender()+": "+message.getMessage()+"\n");
+                    gui.update();
+                }
+            }
 
         } catch (UnknownHostException e) {
             //GCOM initiate

@@ -10,17 +10,20 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**
- * Created by c12jbr on 2015-10-08.
+ * Created by c12jbr on 2015-10-11.
  */
-public class CreateGroupListener implements ActionListener {
+public class sendMessageListener implements ActionListener {
+    private static JTextArea writeField;
+
+    public sendMessageListener(JTextArea writeField) {
+        this.writeField = writeField;
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        String groupName = null;
-        while (groupName==null){
-            groupName = JOptionPane.showInputDialog(null, "Name your group", "balle");
-        }
+        //TODO RIKTIGT GROUPNAME
         try {
-            GCom.createGroup(groupName);
+            GCom.sendMessage(writeField.getText(),"balle");
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {
@@ -29,4 +32,5 @@ public class CreateGroupListener implements ActionListener {
             e.printStackTrace();
         }
     }
+
 }

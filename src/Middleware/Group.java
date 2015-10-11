@@ -2,7 +2,6 @@ package Middleware;
 
 
 import java.rmi.RemoteException;
-import java.rmi.server.RemoteObject;
 import java.util.ArrayList;
 
 /**
@@ -13,7 +12,6 @@ public class Group {
     private String name;
 
     private ArrayList<Member> members;
-    private RemoteObject ro;
 
 
     public Group(String name) throws RemoteException {

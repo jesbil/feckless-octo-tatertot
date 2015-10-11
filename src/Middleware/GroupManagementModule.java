@@ -8,13 +8,13 @@ import java.util.ArrayList;
 /**
  * Created by oi12pjn on 2015-10-07.
  */
-public class GroupManagement {
+public class GroupManagementModule {
     private Group allMembers;
     private ArrayList<Group> groups;
     private Member localMember;
 
 
-    public GroupManagement() throws UnknownHostException, RemoteException {
+    public GroupManagementModule() throws UnknownHostException, RemoteException {
         groups = new ArrayList<Group>();
         allMembers = new Group("allMembers");
         localMember = new Member(InetAddress.getLocalHost().getHostAddress());
@@ -81,4 +81,12 @@ public class GroupManagement {
         }
     }
 
+    public Group getGroupByName(String groupName) {
+        for(Group group : groups){
+            if(group.getName().equals(groupName)){
+                return group;
+            }
+        }
+        return null;
+    }
 }
