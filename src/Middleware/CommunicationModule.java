@@ -32,7 +32,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
         switch (type){
             case TYPE_LEAVE_GROUP:
                 for(Member m : group.getMembers()){
-                    if(m!=localMember){
+                    if(!m.getIP().equals(localMember.getIP())) {
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         remote.leaveGroup(InetAddress.getLocalHost().getHostAddress(),group.getName());
@@ -92,7 +92,8 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public void leaveGroup(String name, String groupName) throws RemoteException {
-
+        System.out.println(name+" has left the group: "+groupName+"\n");
+        GCom.leftGroup(groupName,name);
     }
 
     @Override

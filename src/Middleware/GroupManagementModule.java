@@ -95,7 +95,22 @@ public class GroupManagementModule {
         return null;
     }
 
+    private Member findMember(String name, Group g){
+        ArrayList<Member> temp = g.getMembers();
+        for(Member m: temp){
+            if(m.getIP().equals(name)){
+                return m;
+            }
+        }
+        return null;
+    }
+
     public void addMemberToGroup(String name, String groupName) {
         getGroupByName(groupName).addMemberToGroup(new Member(name));
+    }
+
+    public void removeMemberFromGroup(String groupName, String name) {
+        getGroupByName(groupName).removeMemberFromGroup(findMember(name,getGroupByName(groupName)));
+
     }
 }
