@@ -21,7 +21,6 @@ public class Main {
             GCom.connectToNameService(gui.nameServerRequest());
             gui.buildAndStart("GCom");
 
-            //GRUPPEN FINS INTE I GMQ!!! ""balle
 
             while(true){
                 Message message;

@@ -11,33 +11,28 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import static Interface.Constants.*;
 
 /**
  * Created by oi12pjn on 2015-10-08.
  */
-public class GCom {
+public class GCom extends Observable {
     private static String nameServiceAddress;
     private static GroupManagementModule groupManagementModule;
     private static MessageOrderingModule messageOrdering;
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
 
-
-    public GCom() throws UnknownHostException {
-
-
-    }
-
-
     public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException {
         groupManagementModule = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagementModule.getLocalMember());
+        nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
-        nameServerCommunicator = new NameServerCommunicator();
     }
 
     public static void connectToNameService(String nameService) throws IOException {
@@ -50,7 +45,7 @@ public class GCom {
         groupManagementModule.createGroup(groupName);
         messageOrdering.addGroup(groupName);
 //        messageOrdering.order(groupName);
-        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagementModule.getAllMembers(),groupName);
+        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagementModule.getAllMembers(), groupName);
     }
 
     public static void sendMessage(String text, String groupName) throws RemoteException, NotBoundException, UnknownHostException {
@@ -66,6 +61,7 @@ public class GCom {
         Group newGroup = new Group(groupName);
         newGroup.addMemberToGroup(new Member(leader));
         groupManagementModule.groupCreated(newGroup);
+        messageOrdering.addGroup(groupName);
     }
 
 
@@ -77,4 +73,5 @@ public class GCom {
             e.printStackTrace();
         }
     }
+
 }

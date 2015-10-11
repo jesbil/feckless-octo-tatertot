@@ -5,11 +5,11 @@ import java.util.ArrayList;
 /**
  * Created by oi12pjn on 2015-10-08.
  */
-public class MessageOrderingModule {
+public class MessageOrderingModule{
     private ArrayList<GroupMessageQueue> groupMessageQueues;
 
 
-    public MessageOrderingModule(){
+    public MessageOrderingModule() {
         groupMessageQueues = new ArrayList<GroupMessageQueue>();
     }
 
