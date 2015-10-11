@@ -15,10 +15,7 @@ import java.rmi.RemoteException;
 public class JoinGroupListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        String groupName = null;
-        while (groupName==null){
-            groupName = JOptionPane.showInputDialog(null, "What group do you want to join", "balle");
-        }
+        String groupName = JOptionPane.showInputDialog(null, "What group do you want to join", "balle");
         try {
             GCom.joinGroup(groupName);
         } catch (UnknownHostException e) {

@@ -26,10 +26,12 @@ public class Main {
             while(true){
 
                 boolean changed = false;
-                gui.getJtaNameList().setText("");
+
+
                 if(GCom.getGroupNames()!=null){
                     for(String groupName : GCom.getGroupNames()){
                         if(!groupNames.contains(groupName)){
+                            gui.getJtaNameList().setText("");
                             changed = true;
                             groupNames.add(groupName);
                             gui.getJtaNameList().append(groupName);

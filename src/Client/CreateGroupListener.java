@@ -15,10 +15,7 @@ import java.rmi.RemoteException;
 public class CreateGroupListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        String groupName = null;
-        while (groupName==null){
-            groupName = JOptionPane.showInputDialog(null, "Name your group", "balle");
-        }
+        String groupName = JOptionPane.showInputDialog(null, "Name your group", "balle");
         try {
             GCom.createGroup(groupName);
         } catch (RemoteException e) {
