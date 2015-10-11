@@ -87,6 +87,10 @@ public class GroupManagementModule {
     }
 
     public Group getGroupByName(String groupName) {
+        if(groupName.equals(allMembers.getName())){
+            return allMembers;
+
+        }
         for(Group group : groups){
             if(group.getName().equals(groupName)){
                 return group;
