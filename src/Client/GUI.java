@@ -77,6 +77,7 @@ public class GUI{
 
         JMenu fm = new JMenu("Options");
         fm.add(createGroupButton());
+        fm.add(joinGroupButton());
         mb.add(fm);
 
         return mb;
@@ -100,9 +101,6 @@ public class GUI{
 
         return item;
     }
-
-
-
 
     public JTextArea getJtaNameList() {
         return jtaNameList;
