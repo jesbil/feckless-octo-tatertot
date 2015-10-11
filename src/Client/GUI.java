@@ -61,7 +61,7 @@ public class GUI{
         frame.setMinimumSize(new Dimension(500,200));
         frame.setLocationRelativeTo(null);
         frame.setJMenuBar(createMenuBar());
-        frame.add(createNameList(),BorderLayout.WEST);
+        frame.add(createGroupNameList(),BorderLayout.WEST);
         frame.add(createChatArea(),BorderLayout.CENTER);
         frame.setEnabled(true);
         frame.setVisible(true);
@@ -94,14 +94,26 @@ public class GUI{
         return item;
     }
 
+    private JMenuItem joinGroupButton(){
+        JMenuItem item = new JMenuItem("Join Group");
+        item.addActionListener(new JoinGroupListener());
 
+        return item;
+    }
+
+
+
+
+    public JTextArea getJtaNameList() {
+        return jtaNameList;
+    }
 
     /**
      * Creates the JTextArea where the user names of users connected to the chat server is shown
      *
      * @return
      */
-    private JScrollPane createNameList(){
+    private JScrollPane createGroupNameList(){
         jtaNameList = new JTextArea();
         jtaNameList.setAlignmentX(JPanel.LEFT_ALIGNMENT);
         jtaNameList.setEditable(false);
