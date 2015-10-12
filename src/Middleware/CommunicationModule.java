@@ -44,6 +44,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                 System.out.println("sending member: "+InetAddress.getLocalHost().getHostAddress()+" to group: "+group.getName()+"\n");
                 for(Member m : group.getMembers()){
                     if(!m.getIP().equals(localMember.getIP())) {
+                        System.out.println(m.getIP()+" received join");
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         remote.joinGroup(InetAddress.getLocalHost().getHostAddress(), group.getName());
