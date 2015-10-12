@@ -29,13 +29,14 @@ public class GCom extends Observable {
         return groupManagement.getAllMembers().getName();
     }
 
-    public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException {
+    public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
         groupManagement = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
         nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
+        joinGroup(groupManagement.getAllMembers().getName());
     }
 
     public static ArrayList<String> getGroupNames(){

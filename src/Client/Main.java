@@ -6,6 +6,7 @@ import Middleware.Message;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.util.ArrayList;
 
 /**
@@ -69,6 +70,9 @@ public class Main {
             e.printStackTrace();
         } catch (AlreadyBoundException e) {
             //GCOM initiate
+            e.printStackTrace();
+        } catch (NotBoundException e) {
+            // GCOM join i initiate
             e.printStackTrace();
         }
 

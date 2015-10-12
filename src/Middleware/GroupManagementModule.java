@@ -87,7 +87,6 @@ public class GroupManagementModule {
     }
 
     public Group getGroupByName(String groupName) {
-        System.out.println(groupName+ " KRASHHHHHHHCHCHCH");
         if(groupName.equals(allMembers.getName())){
             return allMembers;
 
