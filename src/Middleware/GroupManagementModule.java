@@ -14,7 +14,7 @@ public class GroupManagementModule {
     public ArrayList<Group> getGroups() {
         return groups;
     }
-
+    private String  currentGroup;
     private ArrayList<Group> groups;
     private Member localMember;
 
@@ -33,18 +33,20 @@ public class GroupManagementModule {
         }
         groups.add(new Group(name));
         groups.get(groups.size()-1).addMemberToGroup(localMember);
+        currentGroup=name;
         return true;
         //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
     public void joinGroup(String name) throws UnknownHostException {
         getGroupByName(name).addMemberToGroup(localMember);
-
+        currentGroup=name;
         //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
     public void leaveGroup(String name) {
         getGroupByName(name).removeMemberFromGroup(localMember);
+        currentGroup=null;
         //SKICKA VIDARE
     }
 
@@ -108,4 +110,9 @@ public class GroupManagementModule {
         getGroupByName(groupName).removeMemberFromGroup(findMember(name,getGroupByName(groupName)));
 
     }
+
+    public String getCurrentGroup() {
+        return currentGroup;
+    }
+
 }

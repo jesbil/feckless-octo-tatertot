@@ -214,8 +214,8 @@ public class GUI{
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    if(Main.getCurrentGroup()!=null){
-                        GCom.leaveGroup(Main.getCurrentGroup());
+                    if(GCom.getCurrentGroup()!=null){
+                        GCom.leaveGroup(GCom.getCurrentGroup());
                     }
                     GCom.leaveGroup(GCom.getAllMembersGroupName());
                 } catch (RemoteException e1) {

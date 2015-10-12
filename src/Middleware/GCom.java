@@ -39,7 +39,9 @@ public class GCom extends Observable {
 
 
     }
-
+    public static String getCurrentGroup(){
+        return groupManagement.getCurrentGroup();
+    }
     public static ArrayList<String> getGroupNames(){
         ArrayList<String> groupNames = new ArrayList<String>();
         for (int i = 0; i < groupManagement.getGroups().size(); i++) {

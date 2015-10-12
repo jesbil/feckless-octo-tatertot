@@ -14,11 +14,6 @@ import java.util.ArrayList;
  */
 public class Main {
     private static ArrayList<String> groupNames = new ArrayList<String>();
-    private static String currentGroup;
-
-    public static String getCurrentGroup() {
-        return currentGroup;
-    }
 
     public static void main(String[] args) {
         try {
@@ -49,7 +44,7 @@ public class Main {
                 }
 
                 Message message;
-                if((message=GCom.getNextMessage(currentGroup))!=null){
+                if((message=GCom.getNextMessage(GCom.getCurrentGroup()))!=null){
                     gui.getChatField().append(message.getSender() + ": " + message.getMessage() + "\n");
                     changed = true;
                 }
@@ -78,10 +73,6 @@ public class Main {
             e.printStackTrace();
         }
 
-    }
-
-    public static void setCurrentGroup(String currentGroup) {
-        Main.currentGroup = currentGroup;
     }
 
 }
