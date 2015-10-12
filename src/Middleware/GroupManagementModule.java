@@ -38,22 +38,13 @@ public class GroupManagementModule {
     }
 
     public void joinGroup(String name) throws UnknownHostException {
-        for (int i = 0; i <groups.size() ; i++) {
-            if (groups.get(i).getName().equals(name)){
-                groups.get(i).addMemberToGroup(localMember);
-            }
-        }
+        getGroupByName(name).addMemberToGroup(localMember);
 
         //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
     public void leaveGroup(String name) {
-        for (int i = 0; i <groups.size() ; i++) {
-            if (groups.get(i).getName().equals(name)){
-                groups.get(i).removeMemberFromGroup(localMember);
-            }
-        }
-
+        getGroupByName(name).removeMemberFromGroup(localMember);
         //SKICKA VIDARE
     }
 

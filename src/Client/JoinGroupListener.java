@@ -16,6 +16,9 @@ public class JoinGroupListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String groupName = JOptionPane.showInputDialog(null, "What group do you want to join", "groupName");
+
+        //TODO SKA GÖRAS I GCOM !!!!
+        //I join och create- group ska detta göras automagiskt
         Main.setCurrentGroup(groupName);
         try {
             GCom.joinGroup(groupName);
