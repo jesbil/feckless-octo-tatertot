@@ -19,7 +19,9 @@ public class LeaveGroupListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String groupName = JOptionPane.showInputDialog(null, "What group do you want to leave", "groupName");
-        Main.setCurrentGroup(null);
+        if(groupName==null){
+            return;
+        }
         try {
             GCom.leaveGroup(groupName);
         } catch (RemoteException e) {
