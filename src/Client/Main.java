@@ -73,7 +73,7 @@ public class Main {
             // GCOM join i initiate
             e.printStackTrace();
         } catch (GroupException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
         }
 
     }
