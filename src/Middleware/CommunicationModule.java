@@ -86,13 +86,13 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public void joinGroup(String name, String groupName) throws RemoteException {
-        System.out.println("Member joined group:\nGroup name:"+groupName+"\nMember: "+ name+"\n");
+        System.out.println("Member joined group:\nGroup name: "+groupName+"\nMember: "+ name+"\n");
         GCom.groupJoined(name, groupName);
     }
 
     @Override
     public void leaveGroup(String name, String groupName) throws RemoteException {
-        System.out.println(name+" has left the group: "+groupName+"\n");
+        System.out.println("Member left group:\nGroup name: "+groupName +"\nMember: "+name+"\n");
         GCom.leftGroup(groupName,name);
     }
 

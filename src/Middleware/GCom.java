@@ -98,7 +98,6 @@ public class GCom extends Observable {
         if(groupName.equals(groupManagement.getAllMembers().getName())){
             nameServerCommunicator.leave(nameServiceAddress);
         }
-        System.out.println(groupName);
         Group temp = groupManagement.getGroupByName(groupName);
         groupManagement.leaveGroup(groupName);
         communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName);
