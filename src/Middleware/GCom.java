@@ -109,7 +109,7 @@ public class GCom extends Observable {
             groupManagement.removeGroup(groupName);
             communication.nonReliableMulticast(TYPE_REMOVE_GROUP,temp,groupName);
         }else{
-            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName);
+            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, groupManagement.getAllMembers(), groupName);
         }
 
     }
