@@ -43,9 +43,10 @@ public class Main {
 
                     }
                 }
-                for (String groupName : groupNames){
-                    if(!GCom.getGroupNames().contains(groupName)){
-                        groupNames.remove(groupName);
+                for (int i = 0; i < groupNames.size(); i++) {
+                    if(!GCom.getGroupNames().contains(groupNames.get(i))){
+                        groupNames.remove(i);
+                        i--;
                         changed = true;
                     }
                 }
