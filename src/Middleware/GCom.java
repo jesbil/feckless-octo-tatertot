@@ -37,10 +37,7 @@ public class GCom extends Observable {
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
         joinGroup(groupManagement.getAllMembers().getName());
-        System.out.println("IN allMembers:");
-        for(Member m : groupManagement.getAllMembers().getMembers()){
-            System.out.println(m.getIP());
-        }
+
     }
 
     public static ArrayList<String> getGroupNames(){
@@ -55,6 +52,10 @@ public class GCom extends Observable {
         GCom.nameServiceAddress = nameService;
         ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
         groupManagement.setAllMembers(allMembers);
+        System.out.println("IN allMembers:");
+        for(Member m : groupManagement.getAllMembers().getMembers()){
+            System.out.println(m.getIP());
+        }
     }
 
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
