@@ -43,17 +43,19 @@ public class NameServer {
             }
             String pw = new String( receivePacket.getData());
             if(pw.equals("hej")) {
-                InetAddress IPAddress = receivePacket.getAddress();
-                members.add(IPAddress.toString().substring(1));
+                InetAddress iPAddress = receivePacket.getAddress();
+                members.add(iPAddress.toString().substring(1));
+                System.out.println("Added Member: "+iPAddress.toString().substring(1));
                 int port = receivePacket.getPort();
                 try {
-                    nameServer.sendMembers(IPAddress, port);
+                    nameServer.sendMembers(iPAddress, port);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }else if(pw.equals("baj")) {
-                InetAddress IPAddress = receivePacket.getAddress();
-                members.remove(IPAddress.toString().substring(1));
+                InetAddress iPAddress = receivePacket.getAddress();
+                members.remove(iPAddress.toString().substring(1));
+                System.out.println("Removed Member: "+iPAddress.toString().substring(1));
             }
         }
 
@@ -84,11 +86,9 @@ public class NameServer {
                 break;
         }
         serverSocket.send(new DatagramPacket(nomAs4bytes,nomAs4bytes.length,IPAddress,port));
-        int i=0;
         for(String member : members){
-            System.out.println("sent member: "+ members.get(i));
+            System.out.println("sent members to: "+ IPAddress);
             serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
-            i++;
         }
 
 
