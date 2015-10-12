@@ -43,6 +43,12 @@ public class Main {
 
                     }
                 }
+                for (String groupName : groupNames){
+                    if(!GCom.getGroupNames().contains(groupName)){
+                        groupNames.remove(groupName);
+                        changed = true;
+                    }
+                }
 
                 Message message;
                 if((message=GCom.getNextMessage(GCom.getCurrentGroup()))!=null){
