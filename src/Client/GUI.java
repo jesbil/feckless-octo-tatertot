@@ -46,9 +46,16 @@ public class GUI{
 
     public String nameServerRequest() {
         String nameService = null;
-        while (nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "dolores.cs.umu.se");
+        while(nameService==null){
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "nightcrawler.cs.umu.se");
+            if(nameService==null){
+                int answer = JOptionPane.showConfirmDialog (null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
+                if(answer == JOptionPane.YES_OPTION){
+                    return null;
+                }
+            }
         }
+
         return nameService;
     }
 
@@ -83,6 +90,7 @@ public class GUI{
         JMenu fm = new JMenu("Options");
         fm.add(createGroupButton());
         fm.add(joinGroupButton());
+        fm.add(leaveGroupButton());
         mb.add(fm);
 
         return mb;

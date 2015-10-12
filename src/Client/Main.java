@@ -22,8 +22,13 @@ public class Main {
     public static void main(String[] args) {
         try {
             GUI gui = new GUI();
+
+            String nameService = gui.nameServerRequest();
+            if(nameService==null){
+                return;
+            }
             GCom.initiate();
-            GCom.connectToNameService(gui.nameServerRequest());
+            GCom.connectToNameService(nameService);
             gui.buildAndStart("GCom");
 
 
