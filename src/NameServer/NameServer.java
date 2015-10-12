@@ -87,7 +87,7 @@ public class NameServer {
         }
         serverSocket.send(new DatagramPacket(nomAs4bytes,nomAs4bytes.length,IPAddress,port));
         for(String member : members){
-            System.out.println("sent members to: "+ IPAddress);
+            System.out.println("sent member: "+ member +" to: "+ IPAddress);
             serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
         }
 

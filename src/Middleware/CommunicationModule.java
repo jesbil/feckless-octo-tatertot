@@ -41,6 +41,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                 }
                 break;
             case TYPE_JOIN_GROUP:
+                System.out.println("sending member: "+InetAddress.getLocalHost().getHostAddress()+" to group: "+group.getName()+"\n");
                 for(Member m : group.getMembers()){
                     if(!m.getIP().equals(localMember.getIP())) {
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
@@ -93,7 +94,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     @Override
     public void leaveGroup(String name, String groupName) throws RemoteException {
         System.out.println("Member left group:\nGroup name: "+groupName +"\nMember: "+name+"\n");
-        GCom.leftGroup(groupName,name);
+        GCom.leftGroup(groupName, name);
     }
 
     @Override
