@@ -72,6 +72,14 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                     remote.message(msg, InetAddress.getLocalHost().getHostAddress(), group.getName());
                 }
                 break;
+
+            case TYPE_REMOVE_GROUP:
+                for(Member m : group.getMembers()){
+                    Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                    MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
+                    System.out.println("removing group");
+                    remote.removeGroup(group.getName(), InetAddress.getLocalHost().getHostAddress());
+                }
         }
 
 
@@ -102,6 +110,12 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     public void message(String message, String sender, String groupName) throws RemoteException {
         GCom.receiveMessage(message,sender,groupName);
 
+    }
+
+    @Override
+    public void removeGroup(String groupName, String name) throws RemoteException{
+        System.out.println("Group: " + groupName + " was removed from: "+name+"\n");
+                GCom.groupRemoved(groupName);
     }
 
 }

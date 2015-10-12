@@ -60,8 +60,9 @@ public class GroupManagementModule {
 
     public void sendMessage(String msg){
 
-
-
+    }
+    public void removeGroup(String name){
+        groups.remove(getGroupByName(name));
     }
 
 

@@ -102,13 +102,25 @@ public class GCom extends Observable {
         if(groupName.equals(groupManagement.getAllMembers().getName())){
             nameServerCommunicator.leave(nameServiceAddress);
         }
+
         Group temp = groupManagement.getGroupByName(groupName);
         groupManagement.leaveGroup(groupName);
-        communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName);
+        if(groupManagement.getGroupByName(groupName).getMembers().size()==0){
+            groupManagement.removeGroup(groupName);
+            communication.nonReliableMulticast(TYPE_REMOVE_GROUP,temp,groupName);
+        }else{
+            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName);
+        }
+
     }
 
     protected static void leftGroup(String groupName,String name){
         groupManagement.removeMemberFromGroup(groupName, name);
     }
+
+    protected static void groupRemoved(String groupName) {
+        groupManagement.removeGroup(groupName);
+    }
+
 
 }

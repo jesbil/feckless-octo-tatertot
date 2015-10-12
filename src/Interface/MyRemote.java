@@ -22,4 +22,6 @@ public interface MyRemote extends Remote{
 
 
     void message(String message, String sender, String groupName) throws RemoteException;
+
+    void removeGroup(String groupName,String name) throws RemoteException;
 }

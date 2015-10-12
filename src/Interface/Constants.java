@@ -9,6 +9,7 @@ public interface Constants {
     public static final int TYPE_LEAVE_GROUP=0;
     public static final int TYPE_JOIN_GROUP=1;
     public static final int TYPE_CREATE_GROUP=2;
+    public static final int TYPE_REMOVE_GROUP=3;
 
     public static final int TYPE_MESSAGE=6;
 }
