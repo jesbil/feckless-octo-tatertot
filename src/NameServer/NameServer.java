@@ -58,8 +58,6 @@ public class NameServer {
                 System.out.println("Removed Member: "+iPAddress.toString().substring(1));
             }
         }
-
-
     }
 
     public void sendMembers(InetAddress IPAddress, int port) throws IOException {
@@ -87,8 +85,11 @@ public class NameServer {
         }
         serverSocket.send(new DatagramPacket(nomAs4bytes,nomAs4bytes.length,IPAddress,port));
         for(String member : members){
-            System.out.println("sent member: "+ member +" to: "+ IPAddress);
-            serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
+            if(member.equals(IPAddress)){
+            }else{
+                System.out.println("sent member: "+ member +" to: "+ IPAddress);
+                serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
+            }
         }
 
 
