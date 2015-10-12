@@ -78,7 +78,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                     Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                     System.out.println("removing group");
-                    remote.removeGroup(group.getName(), InetAddress.getLocalHost().getHostAddress());
+                    remote.removeGroup(msg, InetAddress.getLocalHost().getHostAddress());
                 }
         }
 
