@@ -57,7 +57,7 @@ public class Main {
                 if(changed){
                     gui.getJtaNameList().setText("");
                     for(String groupName : groupNames){
-                        gui.getJtaNameList().append(groupName);
+                        gui.getJtaNameList().append(groupName+"\n");
                     }
                     gui.update();
                 }
