@@ -1,6 +1,7 @@
 package Client;
 
 import Middleware.GCom;
+import Middleware.GroupException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,8 @@ public class JoinGroupListener implements ActionListener {
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
+        } catch (GroupException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

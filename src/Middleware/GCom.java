@@ -50,14 +50,14 @@ public class GCom extends Observable {
         return  groupNames;
     }
 
-    public static void connectToNameService(String nameService) throws IOException, NotBoundException {
+    public static void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
         GCom.nameServiceAddress = nameService;
         ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
         groupManagement.setAllMembers(allMembers);
         joinGroup(groupManagement.getAllMembers().getName());
     }
 
-    public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException, GroupException {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
 //        messageOrdering.order(groupName);
@@ -94,7 +94,7 @@ public class GCom extends Observable {
         groupManagement.addMemberToGroup(name, groupName);
     }
 
-    public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException {
+    public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException, GroupException {
         groupManagement.joinGroup(groupName);
         communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName);
     }

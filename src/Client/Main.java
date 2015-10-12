@@ -1,6 +1,7 @@
 package Client;
 
 import Middleware.GCom;
+import Middleware.GroupException;
 import Middleware.Message;
 
 import java.io.IOException;
@@ -71,6 +72,8 @@ public class Main {
         } catch (NotBoundException e) {
             // GCOM join i initiate
             e.printStackTrace();
+        } catch (GroupException e) {
+            System.out.println(e.getMessage());
         }
 
     }

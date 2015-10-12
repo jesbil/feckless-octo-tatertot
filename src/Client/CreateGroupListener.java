@@ -1,6 +1,7 @@
 package Client;
 
 import Middleware.GCom;
+import Middleware.GroupException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -24,6 +25,8 @@ public class CreateGroupListener implements ActionListener {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
+        } catch (GroupException e) {
+            System.out.println(e.toString());
         }
     }
 }
