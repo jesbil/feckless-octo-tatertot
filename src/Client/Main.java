@@ -41,10 +41,8 @@ public class Main {
                 if(GCom.getGroupNames()!=null){
                     for(String groupName : GCom.getGroupNames()){
                         if(!groupNames.contains(groupName)){
-                            gui.getJtaNameList().setText("");
                             changed = true;
                             groupNames.add(groupName);
-                            gui.getJtaNameList().append(groupName);
                         }
 
                     }
@@ -57,6 +55,10 @@ public class Main {
                 }
 
                 if(changed){
+                    gui.getJtaNameList().setText("");
+                    for(String groupName : groupNames){
+                        gui.getJtaNameList().append(groupName);
+                    }
                     gui.update();
                 }
 

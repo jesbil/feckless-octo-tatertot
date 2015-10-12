@@ -42,7 +42,6 @@ public class NameServer {
                 e.printStackTrace();
             }
             String pw = new String( receivePacket.getData());
-            System.out.println(pw.length());
             if(pw.equals("hej")) {
                 InetAddress IPAddress = receivePacket.getAddress();
                 members.add(IPAddress.toString().substring(1));
