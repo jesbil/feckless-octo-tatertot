@@ -53,6 +53,20 @@ public class VectorClock implements Serializable{
     }
 
     public int compare(VectorClock vc, String sender){
+        if (clockValue.size()!=vc.getClock().size()){
+            Set<String> keys = clockValue.keySet();
+            for(String key : keys){
+                if(!vc.getClock().containsKey(key)){
+                    vc.getClock().put(key,0);
+                }
+            }
+            keys = vc.getClock().keySet();
+            for(String key : keys){
+                if(!clockValue.containsKey(key)){
+                    clockValue.put(key,0);
+                }
+            }
+        }
         if(this.equals(vc,sender)){
             System.out.println("equals");
             return CLOCK_TYPE_EQ;
@@ -73,22 +87,20 @@ public class VectorClock implements Serializable{
 
         Set<String> vcIds = vc.getClock().keySet();
         System.out.println("mysize: "+clockValue.size()+"\nrecsize: "+vc.getClock().size());
-        if (clockValue.size() == vc.getClock().size()) {
-            int nr = 0;
-            int nrTrue = 0;
-            for (String id : vcIds) {
-                System.out.println("Checking for ID: "+id);
-                if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())){
-                }else{
-                    nr++;
-                    if (clockValue.containsKey(id) && clockValue.get(id) == vc.getClock().get(id)) {
-                        nrTrue++;
-                    }
+        int nr = 0;
+        int nrTrue = 0;
+        for (String id : vcIds) {
+            System.out.println("Checking for ID: "+id);
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())){
+            }else{
+                nr++;
+                if (clockValue.containsKey(id) && clockValue.get(id) == vc.getClock().get(id)) {
+                    nrTrue++;
                 }
             }
-            if (nr == nrTrue) {
-                return true;
-            }
+        }
+        if (nr == nrTrue) {
+            return true;
         }
         return false;
     }
