@@ -91,14 +91,16 @@ public class VectorClock implements Serializable{
         int nr = 0;
         int nrTrue = 0;
         for (String id : vcIds) {
-            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())){
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP()) || sender.equals(GCom.getLocalMember().getIP())){
             }else{
+                System.out.println(id+":s:"+sender+":id:"+GCom.getLocalMember().getIP());
                 nr++;
                 if (clockValue.containsKey(id) && clockValue.get(id) == vc.getClock().get(id)) {
                     nrTrue++;
                 }
             }
         }
+        System.out.println("nr: "+nr +" nrtrue:"+nrTrue);
         if (nr == nrTrue) {
             return true;
         }
