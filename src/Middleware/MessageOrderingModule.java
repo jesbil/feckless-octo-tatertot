@@ -93,8 +93,11 @@ public class MessageOrderingModule{
 
     public void addToAllMembersClock(ArrayList<Member> members) {
         for(Member m: members){
-            System.out.println("Member: "+m.getIP() + " added to allMembers");
-            allMemberVectorClock.getClock().put(m.getIP(),0);
+            if(m.equals(GCom.getLocalMember())){
+            }else{
+                System.out.println("Member: "+m.getIP() + " added to allMembers");
+                allMemberVectorClock.getClock().put(m.getIP(),0);
+            }
         }
     }
 
