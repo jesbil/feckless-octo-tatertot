@@ -23,7 +23,10 @@ public class sendMessageListener implements ActionListener {
     public void actionPerformed(ActionEvent actionEvent) {
         //TODO RIKTIGT GROUPNAME
         try {
-            GCom.sendMessage(writeField.getText(),GCom.getCurrentGroup());
+            String a = "09876543210987654321098765432109876543210987654321";
+            for (int i = 0; i < 50; i++) {
+                GCom.sendMessage(writeField.getText()+a.substring(50-i),GCom.getCurrentGroup());
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (NotBoundException e) {

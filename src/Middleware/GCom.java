@@ -29,6 +29,22 @@ public class GCom extends Observable {
         return groupManagement.getAllMembers().getName();
     }
 
+    public static Member getLocalMember(){
+        return groupManagement.getLocalMember();
+    }
+
+    public static String getCurrentGroup(){
+        return groupManagement.getCurrentGroup();
+    }
+
+    public static ArrayList<String> getGroupNames(){
+        ArrayList<String> groupNames = new ArrayList<String>();
+        for (int i = 0; i < groupManagement.getGroups().size(); i++) {
+            groupNames.add(groupManagement.getGroups().get(i).getName());
+        }
+        return  groupNames;
+    }
+
     public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
         groupManagement = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
@@ -37,17 +53,6 @@ public class GCom extends Observable {
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
 
-
-    }
-    public static String getCurrentGroup(){
-        return groupManagement.getCurrentGroup();
-    }
-    public static ArrayList<String> getGroupNames(){
-        ArrayList<String> groupNames = new ArrayList<String>();
-        for (int i = 0; i < groupManagement.getGroups().size(); i++) {
-            groupNames.add(groupManagement.getGroups().get(i).getName());
-        }
-        return  groupNames;
     }
 
     public static void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
@@ -57,48 +62,28 @@ public class GCom extends Observable {
         joinGroup(groupManagement.getAllMembers().getName());
     }
 
+
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException, GroupException {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
-//        messageOrdering.order(groupName);
-        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName);
+        messageOrdering.triggerSelfEvent();
+        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getVectorClock());
     }
 
     public static void sendMessage(String text, String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-//        messageOrdering.order(text);
-        communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text);
-    }
-
-    public static Message getNextMessage(String groupName){
-        return messageOrdering.getNextMessage(groupName);
-    }
-
-    protected static void groupCreated(String groupName, String leader) throws RemoteException {
-        Group newGroup = new Group(groupName);
-        newGroup.addMemberToGroup(new Member(leader));
-        groupManagement.groupCreated(newGroup);
-        messageOrdering.addGroup(groupName);
-    }
-
-
-    protected static void receiveMessage(String message, String sender, String groupName) {
-        messageOrdering.orderMessage(message,sender,groupName);
-        try {
-            System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ InetAddress.getLocalHost().getHostAddress()+"\n");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected static void groupJoined(String name, String groupName){
-        groupManagement.addMemberToGroup(name, groupName);
+        messageOrdering.triggerSelfEvent();
+        communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text, messageOrdering.getVectorClock());
     }
 
     public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException, GroupException {
+        messageOrdering.triggerSelfEvent();
         groupManagement.joinGroup(groupName);
-        communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName);
+        communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getVectorClock());
     }
+
+
     public static void leaveGroup(String groupName) throws IOException, NotBoundException {
+        messageOrdering.triggerSelfEvent();
         if(groupName.equals(groupManagement.getAllMembers().getName())){
             nameServerCommunicator.leave(nameServiceAddress);
         }
@@ -107,18 +92,48 @@ public class GCom extends Observable {
         groupManagement.leaveGroup(groupName);
         if(groupManagement.getGroupByName(groupName).getMembers().size()==0){
             groupManagement.removeGroup(groupName);
-            communication.nonReliableMulticast(TYPE_REMOVE_GROUP,groupManagement.getAllMembers(),groupName);
+            communication.nonReliableMulticast(TYPE_REMOVE_GROUP,groupManagement.getAllMembers(),groupName, messageOrdering.getVectorClock());
         }else{
-            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName);
+            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getVectorClock());
         }
 
     }
 
-    protected static void leftGroup(String groupName,String name){
+
+
+
+    public static Message getNextMessage(String groupName){
+        return messageOrdering.getNextMessage(groupName);
+    }
+
+    protected static void groupCreated(String groupName, String leader, VectorClock vc) throws RemoteException {
+        Group newGroup = new Group(groupName);
+        newGroup.addMemberToGroup(new Member(leader));
+        groupManagement.groupCreated(newGroup);
+        messageOrdering.addGroup(groupName);
+    }
+
+
+    protected static void receiveMessage(String message, String sender, String groupName, VectorClock vc) {
+        messageOrdering.orderMessage(message,sender,groupName);
+        try {
+            System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ InetAddress.getLocalHost().getHostAddress()+"\n");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected static void groupJoined(String name, String groupName, VectorClock vc){
+        groupManagement.addMemberToGroup(name, groupName);
+    }
+
+
+
+    protected static void leftGroup(String groupName, String name, VectorClock vc){
         groupManagement.removeMemberFromGroup(groupName, name);
     }
 
-    protected static void groupRemoved(String groupName) {
+    protected static void groupRemoved(String groupName, VectorClock vc) {
         groupManagement.removeGroup(groupName);
     }
 

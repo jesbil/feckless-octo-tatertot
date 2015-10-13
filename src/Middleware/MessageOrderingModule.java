@@ -7,15 +7,22 @@ import java.util.ArrayList;
  */
 public class MessageOrderingModule{
     private ArrayList<GroupMessageQueue> groupMessageQueues;
+    private VectorClock vectorClock;
 
 
     public MessageOrderingModule() {
         groupMessageQueues = new ArrayList<GroupMessageQueue>();
+        vectorClock = new VectorClock();
     }
 
     public void order(String message) {
 
 
+    }
+
+
+    public void triggerSelfEvent(){
+        vectorClock.triggerSelfEvent();
     }
 
     /**
@@ -45,6 +52,10 @@ public class MessageOrderingModule{
                 gmq.getMessageQueue().add(new Message(sender,message));
             }
         }
+    }
+
+    public VectorClock getVectorClock() {
+        return vectorClock;
     }
 
     // NY MODUL REDO FÖR BUS
