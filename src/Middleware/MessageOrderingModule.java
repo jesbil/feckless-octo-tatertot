@@ -27,11 +27,11 @@ public class MessageOrderingModule{
     public void triggerSelfEvent(boolean toAllMembers){
 
         if(toAllMembers){
-            System.out.println("EVENT TRIGGERED, CURRENT CLOCK:\n"+allMemberVectorClock.getClock().toString());
+            System.out.println("EVENT TRIGGERED, ALLMEMBERSCLOCK CLOCK:\n"+allMemberVectorClock.getClock().toString());
             allMemberVectorClock.triggerSelfEvent();
         }
         else{
-            System.out.println("EVENT TRIGGERED, CURRENT CLOCK:\n"+groupVectorClock.getClock().toString());
+            System.out.println("EVENT TRIGGERED, GROUPCLOCK CLOCK:\n"+groupVectorClock.getClock().toString());
 
             groupVectorClock.triggerSelfEvent();
         }
