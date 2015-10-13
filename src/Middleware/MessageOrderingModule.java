@@ -27,13 +27,12 @@ public class MessageOrderingModule{
     public void triggerSelfEvent(boolean toAllMembers){
 
         if(toAllMembers){
-            System.out.println("EVENT TRIGGERED, ALLMEMBERSCLOCK CLOCK:\n"+allMemberVectorClock.getClock().toString());
             allMemberVectorClock.triggerSelfEvent();
+            System.out.println("EVENT TRIGGERED, ALLMEMBERS CLOCK:\n" + allMemberVectorClock.getClock().toString());
         }
         else{
-            System.out.println("EVENT TRIGGERED, GROUPCLOCK CLOCK:\n"+groupVectorClock.getClock().toString());
-
             groupVectorClock.triggerSelfEvent();
+            System.out.println("EVENT TRIGGERED, GROUP CLOCK:\n" + groupVectorClock.getClock().toString());
         }
     }
 
@@ -69,11 +68,19 @@ public class MessageOrderingModule{
         return groupVectorClock;
     }
 
-    public boolean receiveCompare(VectorClock vc, String sender) {
-        if(groupVectorClock.compare(vc,sender)==Constants.CLOCK_TYPE_EQ){
-            return true;
+    public boolean receiveCompare(String groupName,VectorClock vc, String sender) {
+        if(groupName.equals(GCom.getAllMembersGroupName())){
+            if(allMemberVectorClock.compare(vc,sender)==Constants.CLOCK_TYPE_EQ){
+                return true;
+            }
+            return false;
+        }else{
+            if(groupVectorClock.compare(vc,sender)==Constants.CLOCK_TYPE_EQ){
+                return true;
+            }
+            return false;
+
         }
-        return false;
 //        switch (groupVectorClock.compare(vc,sender)){
 //            case Constants.CLOCK_TYPE_EQ:
 //                return true;

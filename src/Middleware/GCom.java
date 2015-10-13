@@ -25,6 +25,7 @@ public class GCom extends Observable {
     private static NameServerCommunicator nameServerCommunicator;
     private static boolean unordered;
     private static boolean toAllMembers = true;
+    private static boolean toGroup = false;
 
     public static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
@@ -54,12 +55,11 @@ public class GCom extends Observable {
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
         GCom.unordered = unordered;
-
     }
 
     public static void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
         GCom.nameServiceAddress = nameService;
-        ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
+        ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress);
         groupManagement.setAllMembers(allMembers);
         if(!unordered){
             messageOrdering.triggerSelfEvent(toAllMembers);
@@ -92,7 +92,7 @@ public class GCom extends Observable {
 
     public static void sendMessage(String text, String groupName) throws  NotBoundException, UnknownHostException {
         if(!unordered){
-            messageOrdering.triggerSelfEvent(!toAllMembers);
+            messageOrdering.triggerSelfEvent(toGroup);
         }
         try {
             communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text, messageOrdering.getGroupVectorClock());
@@ -103,7 +103,7 @@ public class GCom extends Observable {
 
     public static void joinGroup(String groupName) throws UnknownHostException,  NotBoundException, GroupException {
         if(!unordered){
-            messageOrdering.triggerSelfEvent(!toAllMembers);
+            messageOrdering.triggerSelfEvent(toGroup);
         }
         groupManagement.joinGroup(groupName);
         try {
@@ -115,7 +115,7 @@ public class GCom extends Observable {
 
     public static void leaveGroup(String groupName) throws IOException, NotBoundException {
         if(!unordered){
-            messageOrdering.triggerSelfEvent(!toAllMembers);
+            messageOrdering.triggerSelfEvent(toGroup);
         }
         if(groupName.equals(groupManagement.getAllMembers().getName())){
             nameServerCommunicator.leave(nameServiceAddress);
@@ -153,7 +153,7 @@ public class GCom extends Observable {
                 newGroup.addMemberToGroup(new Member(sender));
                 groupManagement.groupCreated(newGroup);
                 messageOrdering.addGroup(groupName);
-                messageOrdering.triggerSelfEvent(!toAllMembers);
+                messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
             }
         }
@@ -171,7 +171,7 @@ public class GCom extends Observable {
                 System.out.println("msg vektor ok");
                 messageOrdering.orderMessage(message,sender,groupName);
                 System.out.println("Message Received:\nMessage: " + message + "\nSent from: " + sender + "\nTo group: " + groupName + "\nReceived at: " + getLocalMember().getIP() + "\n");
-                messageOrdering.triggerSelfEvent(!toAllMembers);
+                messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
             }
         }
@@ -183,7 +183,7 @@ public class GCom extends Observable {
         }else{
             if(messageOrdering.receiveCompare(vc, sender)){
                 groupManagement.addMemberToGroup(sender, groupName);
-                messageOrdering.triggerSelfEvent(!toAllMembers);
+                messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
             }
         }
@@ -202,7 +202,7 @@ public class GCom extends Observable {
                     messageOrdering.getAllMemberVectorClock().getClock().remove(sender);
 
                 }else{
-                    messageOrdering.triggerSelfEvent(!toAllMembers);
+                    messageOrdering.triggerSelfEvent(toGroup);
                     groupManagement.removeMemberFromGroup(groupName, sender);
                     messageOrdering.getGroupVectorClock().mergeWith(vc);
                 }
@@ -216,7 +216,7 @@ public class GCom extends Observable {
         }else{
             if(messageOrdering.receiveCompare(vc, sender)){
                 groupManagement.removeGroup(groupName);
-                messageOrdering.triggerSelfEvent(!toAllMembers);
+                messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
             }
         }
