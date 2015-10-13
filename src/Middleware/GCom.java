@@ -62,8 +62,8 @@ public class GCom extends Observable {
         ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress);
         groupManagement.setAllMembers(allMembers);
         if(!unordered){
-            messageOrdering.triggerSelfEvent(toAllMembers);
             messageOrdering.addToAllMembersClock(allMembers);
+            messageOrdering.triggerSelfEvent(toAllMembers);
         }
         joinGroup(groupManagement.getAllMembers().getName());
     }
