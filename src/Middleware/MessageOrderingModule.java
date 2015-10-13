@@ -9,22 +9,23 @@ import java.util.ArrayList;
  */
 public class MessageOrderingModule{
     private ArrayList<GroupMessageQueue> groupMessageQueues;
-    private VectorClock vectorClock;
+    private VectorClock groupVectorClock;
+
+    public VectorClock getAllMemberVectorClock() {
+        return allMemberVectorClock;
+    }
+
+    private VectorClock allMemberVectorClock;
+
 
 
     public MessageOrderingModule() {
         groupMessageQueues = new ArrayList<GroupMessageQueue>();
-        vectorClock = new VectorClock();
+        groupVectorClock = new VectorClock();
     }
-
-    public void order(String message) {
-
-
-    }
-
 
     public void triggerSelfEvent(){
-        vectorClock.triggerSelfEvent();
+        groupVectorClock.triggerSelfEvent();
     }
 
     /**
@@ -56,16 +57,16 @@ public class MessageOrderingModule{
         }
     }
 
-    public VectorClock getVectorClock() {
-        return vectorClock;
+    public VectorClock getGroupVectorClock() {
+        return groupVectorClock;
     }
 
     public boolean receiveCompare(VectorClock vc, String sender) {
-        if(vectorClock.compare(vc,sender)==Constants.CLOCK_TYPE_EQ){
+        if(groupVectorClock.compare(vc,sender)==Constants.CLOCK_TYPE_EQ){
             return true;
         }
         return false;
-//        switch (vectorClock.compare(vc,sender)){
+//        switch (groupVectorClock.compare(vc,sender)){
 //            case Constants.CLOCK_TYPE_EQ:
 //                return true;
 //                break;
@@ -73,6 +74,12 @@ public class MessageOrderingModule{
 //                return false;
 //            break;
 //        }
+    }
+
+    public void addToAllMembersClock(ArrayList<Member> members) {
+        for(Member m: members){
+            allMemberVectorClock.getClock().put(m.getIP(),0);
+        }
     }
 
     // NY MODUL REDO FÖR BUS

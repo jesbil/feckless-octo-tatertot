@@ -51,24 +51,30 @@ public class VectorClock implements Serializable{
 
     public int compare(VectorClock vc, String sender){
         if(this.equals(vc,sender)){
+            System.out.println("equals");
             return CLOCK_TYPE_EQ;
         }
         if(this.lessThen(vc,sender)){
+            System.out.println("lessthen");
             return CLOCK_TYPE_LT;
         }
         if(this.biggerThen(vc,sender)){
+            System.out.println("biggerthen");
             return CLOCK_TYPE_BT;
         }
+        System.out.println("concurrent");
         return CLOCK_TYPE_CONC;
     }
 
     private boolean equals(VectorClock vc, String sender) {
 
         Set<String> vcIds = vc.getClock().keySet();
+        System.out.println("mysize: "+clockValue.size()+"\n recsize: "+vc.getClock().size());
         if (clockValue.size() == vc.getClock().size()) {
             int nr = 0;
             int nrTrue = 0;
             for (String id : vcIds) {
+                System.out.println("Checking for ID: "+id);
                 if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())){
                 }else{
                     nr++;
