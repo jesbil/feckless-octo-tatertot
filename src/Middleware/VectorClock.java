@@ -22,7 +22,7 @@ public class VectorClock implements Serializable{
         int value = clockValue.get(GCom.getLocalMember().getIP());
         value++;
         clockValue.put(GCom.getLocalMember().getIP(),value);
-//        System.out.println("EVENT TRIGGERED, CURRENT CLOCK:\n"+clockValue.toString());
+
 
     }
 
