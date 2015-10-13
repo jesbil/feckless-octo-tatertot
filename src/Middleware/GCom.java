@@ -181,7 +181,7 @@ public class GCom extends Observable {
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.addMemberToGroup(sender, groupName);
-                if(groupName.equals(toAllMembers)){
+                if(groupName.equals(getAllMembersGroupName())){
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     messageOrdering.getAllMemberVectorClock().mergeWith(vc);
                 }else{
@@ -199,7 +199,7 @@ public class GCom extends Observable {
             groupManagement.removeMemberFromGroup(groupName, sender);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                if(groupName.equals(groupManagement.getAllMembers().getName())){
+                if(groupName.equals(getAllMembersGroupName())){
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     groupManagement.removeMemberFromGroup(groupName, sender);
                     messageOrdering.getAllMemberVectorClock().getClock().remove(sender);
