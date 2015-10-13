@@ -19,13 +19,13 @@ public class GroupManagementModule {
     private Member localMember;
 
 
-    public GroupManagementModule() throws UnknownHostException, RemoteException {
+    public GroupManagementModule() throws UnknownHostException{
         groups = new ArrayList<Group>();
         allMembers = new Group("allMembers");
         localMember = new Member(InetAddress.getLocalHost().getHostAddress());
     }
 
-    public boolean createGroup(String name) throws RemoteException, GroupException {
+    public boolean createGroup(String name) throws GroupException {
         if(currentGroup!=null){
             throw new GroupException("You are already in a group");
         }
@@ -41,7 +41,7 @@ public class GroupManagementModule {
         //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
-    public void joinGroup(String name) throws UnknownHostException, GroupException {
+    public void joinGroup(String name) throws GroupException {
         if(currentGroup!=null){
             throw new GroupException("You are already in a group");
         }

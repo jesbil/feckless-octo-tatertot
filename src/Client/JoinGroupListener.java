@@ -22,8 +22,6 @@ public class JoinGroupListener implements ActionListener {
             GCom.joinGroup(groupName);
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (GroupException e) {

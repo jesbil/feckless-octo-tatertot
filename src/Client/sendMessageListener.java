@@ -28,8 +28,6 @@ public class sendMessageListener implements ActionListener {
 //                GCom.sendMessage(writeField.getText()+a.substring(50-i),GCom.getCurrentGroup());
 //            }
             GCom.sendMessage(writeField.getText(),GCom.getCurrentGroup());
-        } catch (RemoteException e) {
-            e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {

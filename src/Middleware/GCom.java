@@ -76,28 +76,40 @@ public class GCom extends Observable {
 
 
 
-    public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException, GroupException {
+    public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
         if(!unordered){
             messageOrdering.triggerSelfEvent();
         }
-        communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getGroupVectorClock());
+        try {
+            communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getGroupVectorClock());
+        } catch (RemoteException e) {
+            groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
+        }
     }
 
-    public static void sendMessage(String text, String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void sendMessage(String text, String groupName) throws  NotBoundException, UnknownHostException {
         if(!unordered){
             messageOrdering.triggerSelfEvent();
         }
-        communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text, messageOrdering.getGroupVectorClock());
+        try {
+            communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text, messageOrdering.getGroupVectorClock());
+        } catch (RemoteException e) {
+            groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
+        }
     }
 
-    public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException, GroupException {
+    public static void joinGroup(String groupName) throws UnknownHostException,  NotBoundException, GroupException {
         if(!unordered){
             messageOrdering.triggerSelfEvent();
         }
         groupManagement.joinGroup(groupName);
-        communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getGroupVectorClock());
+        try {
+            communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getGroupVectorClock());
+        } catch (RemoteException e) {
+            groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
+        }
     }
 
     public static void leaveGroup(String groupName) throws IOException, NotBoundException {
@@ -122,7 +134,7 @@ public class GCom extends Observable {
 
 
 
-    protected static void groupCreated(String groupName, String sender, VectorClock vc) throws RemoteException {
+    protected static void groupCreated(String groupName, String sender, VectorClock vc) {
         if(unordered){
             Group newGroup = new Group(groupName);
             newGroup.addMemberToGroup(new Member(sender));

@@ -1,7 +1,5 @@
 package Middleware;
 
-
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -14,8 +12,7 @@ public class Group {
     private ArrayList<Member> members;
 
 
-    public Group(String name) throws RemoteException {
-        super();
+    public Group(String name) {
         members = new ArrayList<Member>();
         this.name=name;
     }
