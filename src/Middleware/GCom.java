@@ -158,7 +158,7 @@ public class GCom extends Observable {
                 groupManagement.groupCreated(newGroup);
                 messageOrdering.addGroup(groupName);
                 messageOrdering.triggerSelfEvent(toAllMembers);
-                messageOrdering.getGroupVectorClock().mergeWith(vc);
+                messageOrdering.getAllMemberVectorClock().mergeWith(vc);
             }
         }
     }
