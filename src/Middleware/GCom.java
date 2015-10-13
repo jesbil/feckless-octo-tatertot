@@ -105,7 +105,7 @@ public class GCom extends Observable {
         }
         groupManagement.joinGroup(groupName);
         try {
-            if(groupName==getAllMembersGroupName()){
+            if(groupName.equals(getAllMembersGroupName())){
                 communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getAllMemberVectorClock());
 
             }else{
