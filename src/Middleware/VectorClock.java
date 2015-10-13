@@ -46,6 +46,7 @@ public class VectorClock implements Serializable{
     }
 
     private int max(int a, int b){
+        System.out.println("MAX COMPARE IN MERGE:"+a+":"+b);
         if(a>b){
             return a;
         }
