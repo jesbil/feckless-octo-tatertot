@@ -22,8 +22,8 @@ public class VectorClock implements Serializable{
         int value = clockValue.get(GCom.getLocalMember().getIP());
         value++;
         clockValue.put(GCom.getLocalMember().getIP(),value);
-        System.out.println("EVENT TRIGGERED, CURRENT CLOCK:");
-        printClock();
+        System.out.println("EVENT TRIGGERED, CURRENT CLOCK:\n"+clockValue.toString());
+
     }
 
 
@@ -145,12 +145,6 @@ public class VectorClock implements Serializable{
         return false;
     }
 
-    public void printClock(){
-        for (int i = 0; i <clockValue.size(); i++) {
-            System.out.print(clockValue.toString());
-        }
-        System.out.println();
-    }
 
     @Override
     public boolean equals(Object obj){

@@ -81,10 +81,10 @@ public class GCom extends Observable {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
         if(!unordered){
-            messageOrdering.triggerSelfEvent(!toAllMembers);
+            messageOrdering.triggerSelfEvent(toAllMembers);
         }
         try {
-            communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getGroupVectorClock());
+            communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
         } catch (RemoteException e) {
             groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
         }
