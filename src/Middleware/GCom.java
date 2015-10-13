@@ -63,11 +63,9 @@ public class GCom extends Observable {
         groupManagement.setAllMembers(allMembers);
         if(!unordered){
             messageOrdering.triggerSelfEvent(toAllMembers);
+            messageOrdering.addToAllMembersClock(allMembers);
         }
         joinGroup(groupManagement.getAllMembers().getName());
-        if(!unordered){
-            messageOrdering.addToAllMembersClock(groupManagement.getAllMembers().getMembers());
-        }
     }
 
     public static Message getNextMessage(String groupName){
@@ -182,9 +180,13 @@ public class GCom extends Observable {
             groupManagement.addMemberToGroup(sender, groupName);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                groupManagement.addMemberToGroup(sender, groupName);
-                messageOrdering.triggerSelfEvent(toGroup);
-                messageOrdering.getGroupVectorClock().mergeWith(vc);
+                System.out.println("Sender: "+sender +"Receiver; "+getLocalMember().getIP());
+                if(groupName.equals(groupManagement.getAllMembers().getName()) && sender.equals(getLocalMember().getIP())){
+                }else{
+                    groupManagement.addMemberToGroup(sender, groupName);
+                    messageOrdering.triggerSelfEvent(toGroup);
+                    messageOrdering.getGroupVectorClock().mergeWith(vc);
+                }
             }
         }
     }
