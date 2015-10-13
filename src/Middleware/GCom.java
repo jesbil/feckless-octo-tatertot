@@ -183,9 +183,15 @@ public class GCom extends Observable {
                 groupManagement.addMemberToGroup(sender, groupName);
                 if(groupName.equals(getAllMembersGroupName())){
                     messageOrdering.triggerSelfEvent(toAllMembers);
+                    ArrayList<Member> temp = new ArrayList<Member>();
+                    temp.add(new Member(sender));
+                    messageOrdering.addToAllMembersClock(temp);
                     messageOrdering.getAllMemberVectorClock().mergeWith(vc);
                 }else{
                     messageOrdering.triggerSelfEvent(toGroup);
+                    ArrayList<Member> temp = new ArrayList<Member>();
+                    temp.add(new Member(sender));
+                    messageOrdering.addtoGroupClock(temp);
                     messageOrdering.getGroupVectorClock().mergeWith(vc);
                 }
             }
