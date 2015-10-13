@@ -147,7 +147,7 @@ public class GCom extends Observable {
             messageOrdering.addGroup(groupName);
         }else{
             System.out.println("casual kjapp group");
-            if(messageOrdering.receiveCompare(vc, sender)){
+            if(messageOrdering.receiveCompare(groupName,vc, sender)){
                 System.out.println("Grupp skapad, v ok");
                 Group newGroup = new Group(groupName);
                 newGroup.addMemberToGroup(new Member(sender));
@@ -167,7 +167,7 @@ public class GCom extends Observable {
 
         }else{
             System.out.println("casual kjapp msg");
-            if(messageOrdering.receiveCompare(vc, sender)){
+            if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 System.out.println("msg vektor ok");
                 messageOrdering.orderMessage(message,sender,groupName);
                 System.out.println("Message Received:\nMessage: " + message + "\nSent from: " + sender + "\nTo group: " + groupName + "\nReceived at: " + getLocalMember().getIP() + "\n");
@@ -181,7 +181,7 @@ public class GCom extends Observable {
         if(unordered){
             groupManagement.addMemberToGroup(sender, groupName);
         }else{
-            if(messageOrdering.receiveCompare(vc, sender)){
+            if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.addMemberToGroup(sender, groupName);
                 messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
@@ -195,7 +195,7 @@ public class GCom extends Observable {
         if(unordered){
             groupManagement.removeMemberFromGroup(groupName, sender);
         }else{
-            if(messageOrdering.receiveCompare(vc, sender)){
+            if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 if(groupName.equals(groupManagement.getAllMembers().getName())){
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     groupManagement.removeMemberFromGroup(groupName, sender);
@@ -214,7 +214,7 @@ public class GCom extends Observable {
         if(unordered){
             groupManagement.removeGroup(groupName);
         }else{
-            if(messageOrdering.receiveCompare(vc, sender)){
+            if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.removeGroup(groupName);
                 messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
