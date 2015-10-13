@@ -122,14 +122,15 @@ public class GCom extends Observable {
             messageOrdering.triggerSelfEvent(toGroup);
         }
         if(groupName.equals(groupManagement.getAllMembers().getName())){
+            messageOrdering.triggerSelfEvent(toAllMembers);
             nameServerCommunicator.leave(nameServiceAddress);
         }
-
         Group temp = groupManagement.getGroupByName(groupName);
         groupManagement.leaveGroup(groupName);
         if(groupManagement.getGroupByName(groupName).getMembers().size()==0){
+            messageOrdering.triggerSelfEvent(toAllMembers);
             groupManagement.removeGroup(groupName);
-            communication.nonReliableMulticast(TYPE_REMOVE_GROUP,groupManagement.getAllMembers(),groupName, messageOrdering.getGroupVectorClock());
+            communication.nonReliableMulticast(TYPE_REMOVE_GROUP,groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
         }else{
             if(groupName.equals(groupManagement.getAllMembers().getName())) {
                 communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
@@ -137,7 +138,6 @@ public class GCom extends Observable {
                 communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getGroupVectorClock());
             }
         }
-
     }
 
 
@@ -157,7 +157,7 @@ public class GCom extends Observable {
                 newGroup.addMemberToGroup(new Member(sender));
                 groupManagement.groupCreated(newGroup);
                 messageOrdering.addGroup(groupName);
-                messageOrdering.triggerSelfEvent(toGroup);
+                messageOrdering.triggerSelfEvent(toAllMembers);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
             }
         }
