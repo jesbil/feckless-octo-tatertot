@@ -100,7 +100,7 @@ public class GCom extends Observable {
     }
 
     public static void joinGroup(String groupName) throws UnknownHostException,  NotBoundException, GroupException {
-        if(!unordered){
+        if(!unordered && groupName!=getAllMembersGroupName()){
             messageOrdering.triggerSelfEvent(toGroup);
         }
         groupManagement.joinGroup(groupName);
@@ -180,13 +180,10 @@ public class GCom extends Observable {
             groupManagement.addMemberToGroup(sender, groupName);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                System.out.println("Sender: "+sender +"Receiver; "+getLocalMember().getIP());
-                if(groupName.equals(groupManagement.getAllMembers().getName()) && sender.equals(getLocalMember().getIP())){
-                }else{
-                    groupManagement.addMemberToGroup(sender, groupName);
-                    messageOrdering.triggerSelfEvent(toGroup);
-                    messageOrdering.getGroupVectorClock().mergeWith(vc);
-                }
+
+                groupManagement.addMemberToGroup(sender, groupName);
+                messageOrdering.triggerSelfEvent(toGroup);
+                messageOrdering.getGroupVectorClock().mergeWith(vc);
             }
         }
     }

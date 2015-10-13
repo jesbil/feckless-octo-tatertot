@@ -43,7 +43,6 @@ public class NameServerCommunicator {
         clientSocket.receive(receiveIntPacket);
 
         int numberOfMembers= new BigInteger(receiveIntPacket.getData()).intValue();
-        System.out.println(numberOfMembers+" nr.");
 
         for (int i = 0; i < numberOfMembers; i++) {
             byte[] receiveData = new byte[1024];

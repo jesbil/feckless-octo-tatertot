@@ -84,7 +84,6 @@ public class GroupManagementModule {
     public void setAllMembers(ArrayList<Member> mlist){
         for(Member m: mlist){
             allMembers.addMemberToGroup(m);
-
         }
     }
 
