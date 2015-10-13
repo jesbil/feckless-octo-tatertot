@@ -54,7 +54,6 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
             case TYPE_CREATE_GROUP:
                 for(Member m : group.getMembers()){
                     if(!m.getIP().equals(localMember.getIP())){
-
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         remote.createGroup(msg,localMember.getIP(), vectorClock);
@@ -89,21 +88,21 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     // receive
 
     @Override
-    public void createGroup(String groupName, String leader, VectorClock vc) throws RemoteException {
-        System.out.println("Group created:\nGroup name: "+groupName+"\nHost: "+leader+"\n");
-        GCom.groupCreated(groupName,leader, vc);
+    public void createGroup(String groupName, String sender, VectorClock vc) throws RemoteException {
+        System.out.println("Group created:\nGroup name: "+groupName+"\nHost: "+sender+"\n");
+        GCom.groupCreated(groupName,sender, vc);
     }
 
     @Override
-    public void joinGroup(String name, String groupName, VectorClock vc) throws RemoteException {
-        System.out.println("Member joined group:\nGroup name: "+groupName+"\nMember: "+ name+"\n");
-        GCom.groupJoined(name, groupName, vc);
+    public void joinGroup(String sender, String groupName, VectorClock vc) throws RemoteException {
+        System.out.println("Member joined group:\nGroup name: "+groupName+"\nMember: "+ sender+"\n");
+        GCom.groupJoined(sender, groupName, vc);
     }
 
     @Override
-    public void leaveGroup(String name, String groupName, VectorClock vc) throws RemoteException {
-        System.out.println("Member left group:\nGroup name: "+groupName +"\nMember: "+name+"\n");
-        GCom.leftGroup(groupName, name, vc);
+    public void leaveGroup(String sender, String groupName, VectorClock vc) throws RemoteException {
+        System.out.println("Member left group:\nGroup name: "+groupName +"\nMember: "+sender+"\n");
+        GCom.leftGroup(groupName, sender, vc);
     }
 
     @Override
@@ -113,9 +112,9 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     }
 
     @Override
-    public void removeGroup(String groupName, String name, VectorClock vc) throws RemoteException{
-        System.out.println("Group: " + groupName + " was removed from: "+name+"\n");
-                GCom.groupRemoved(groupName, vc);
+    public void removeGroup(String groupName, String sender, VectorClock vc) throws RemoteException{
+        System.out.println("Group: " + groupName + " was removed from: "+sender+"\n");
+                GCom.groupRemoved(groupName, vc, sender);
     }
 
 }

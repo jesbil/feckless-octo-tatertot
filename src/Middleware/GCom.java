@@ -24,6 +24,7 @@ public class GCom extends Observable {
     private static MessageOrderingModule messageOrdering;
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
+    private static boolean unordered;
 
     public static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
@@ -45,13 +46,14 @@ public class GCom extends Observable {
         return  groupNames;
     }
 
-    public static void initiate() throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
+    public static void initiate(boolean unordered) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
         groupManagement = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
         nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
+        GCom.unordered = unordered;
 
     }
 
@@ -59,31 +61,47 @@ public class GCom extends Observable {
         GCom.nameServiceAddress = nameService;
         ArrayList<Member> allMembers=nameServerCommunicator.retrieveMembers(nameServiceAddress);
         groupManagement.setAllMembers(allMembers);
+        if(!unordered){
+            messageOrdering.triggerSelfEvent();
+        }
         joinGroup(groupManagement.getAllMembers().getName());
     }
+
+    public static Message getNextMessage(String groupName){
+        return messageOrdering.getNextMessage(groupName);
+    }
+
+
 
 
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException, GroupException {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
-        messageOrdering.triggerSelfEvent();
+        if(!unordered){
+            messageOrdering.triggerSelfEvent();
+        }
         communication.nonReliableMulticast(TYPE_CREATE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getVectorClock());
     }
 
     public static void sendMessage(String text, String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        messageOrdering.triggerSelfEvent();
+        if(!unordered){
+            messageOrdering.triggerSelfEvent();
+        }
         communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text, messageOrdering.getVectorClock());
     }
 
     public static void joinGroup(String groupName) throws UnknownHostException, RemoteException, NotBoundException, GroupException {
-        messageOrdering.triggerSelfEvent();
+        if(!unordered){
+            messageOrdering.triggerSelfEvent();
+        }
         groupManagement.joinGroup(groupName);
         communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getVectorClock());
     }
 
-
     public static void leaveGroup(String groupName) throws IOException, NotBoundException {
-        messageOrdering.triggerSelfEvent();
+        if(!unordered){
+            messageOrdering.triggerSelfEvent();
+        }
         if(groupName.equals(groupManagement.getAllMembers().getName())){
             nameServerCommunicator.leave(nameServiceAddress);
         }
@@ -102,39 +120,76 @@ public class GCom extends Observable {
 
 
 
-    public static Message getNextMessage(String groupName){
-        return messageOrdering.getNextMessage(groupName);
-    }
-
-    protected static void groupCreated(String groupName, String leader, VectorClock vc) throws RemoteException {
-        Group newGroup = new Group(groupName);
-        newGroup.addMemberToGroup(new Member(leader));
-        groupManagement.groupCreated(newGroup);
-        messageOrdering.addGroup(groupName);
+    protected static void groupCreated(String groupName, String sender, VectorClock vc) throws RemoteException {
+        if(unordered){
+            Group newGroup = new Group(groupName);
+            newGroup.addMemberToGroup(new Member(sender));
+            groupManagement.groupCreated(newGroup);
+            messageOrdering.addGroup(groupName);
+        }else{
+            if(messageOrdering.receiveCompare(vc, sender)){
+                Group newGroup = new Group(groupName);
+                newGroup.addMemberToGroup(new Member(sender));
+                groupManagement.groupCreated(newGroup);
+                messageOrdering.addGroup(groupName);
+                messageOrdering.triggerSelfEvent();
+                messageOrdering.getVectorClock().mergeWith(vc);
+            }
+        }
     }
 
 
     protected static void receiveMessage(String message, String sender, String groupName, VectorClock vc) {
-        messageOrdering.orderMessage(message,sender,groupName);
-        try {
-            System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ InetAddress.getLocalHost().getHostAddress()+"\n");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        if(unordered){
+            messageOrdering.orderMessage(message,sender,groupName);
+                System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ getLocalMember().getIP()+"\n");
+
+        }else{
+            if(messageOrdering.receiveCompare(vc, sender)){
+                messageOrdering.orderMessage(message,sender,groupName);
+                System.out.println("Message Received:\nMessage: " + message + "\nSent from: " + sender + "\nTo group: " + groupName + "\nReceived at: " + getLocalMember().getIP() + "\n");
+                messageOrdering.triggerSelfEvent();
+                messageOrdering.getVectorClock().mergeWith(vc);
+            }
         }
     }
 
-    protected static void groupJoined(String name, String groupName, VectorClock vc){
-        groupManagement.addMemberToGroup(name, groupName);
+    protected static void groupJoined(String sender, String groupName, VectorClock vc){
+        if(unordered){
+            groupManagement.addMemberToGroup(sender, groupName);
+        }else{
+            if(messageOrdering.receiveCompare(vc, sender)){
+                groupManagement.addMemberToGroup(sender, groupName);
+                messageOrdering.triggerSelfEvent();
+                messageOrdering.getVectorClock().mergeWith(vc);
+            }
+        }
     }
 
 
 
-    protected static void leftGroup(String groupName, String name, VectorClock vc){
-        groupManagement.removeMemberFromGroup(groupName, name);
+    protected static void leftGroup(String groupName, String sender, VectorClock vc){
+        if(unordered){
+            groupManagement.removeMemberFromGroup(groupName, sender);
+        }else{
+            if(messageOrdering.receiveCompare(vc, sender)){
+                groupManagement.removeMemberFromGroup(groupName, sender);
+                messageOrdering.triggerSelfEvent();
+                messageOrdering.getVectorClock().mergeWith(vc);
+            }
+        }
     }
 
-    protected static void groupRemoved(String groupName, VectorClock vc) {
-        groupManagement.removeGroup(groupName);
+    protected static void groupRemoved(String groupName, VectorClock vc, String sender) {
+        if(unordered){
+            groupManagement.removeGroup(groupName);
+        }else{
+            if(messageOrdering.receiveCompare(vc, sender)){
+                groupManagement.removeGroup(groupName);
+                messageOrdering.triggerSelfEvent();
+                messageOrdering.getVectorClock().mergeWith(vc);
+            }
+        }
     }
 
 

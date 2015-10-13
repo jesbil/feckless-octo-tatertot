@@ -49,35 +49,60 @@ public class VectorClock implements Serializable{
         else return b;
     }
 
-    public int compare(VectorClock vc){
-        if(this.equals(vc)){
+    public int compare(VectorClock vc, String sender){
+        if(this.equals(vc,sender)){
             return CLOCK_TYPE_EQ;
         }
-        if(this.lessThen(vc)){
+        if(this.lessThen(vc,sender)){
             return CLOCK_TYPE_LT;
         }
-        if(this.biggerThen(vc)){
+        if(this.biggerThen(vc,sender)){
             return CLOCK_TYPE_BT;
         }
         return CLOCK_TYPE_CONC;
     }
 
+    private boolean equals(VectorClock vc, String sender) {
 
-    public boolean lessThen(VectorClock vc){
+        Set<String> vcIds = vc.getClock().keySet();
+        if (clockValue.size() == vc.getClock().size()) {
+            int nr = 0;
+            int nrTrue = 0;
+            for (String id : vcIds) {
+                if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())){
+                }else{
+                    nr++;
+                    if (clockValue.containsKey(id) && clockValue.get(id) == vc.getClock().get(id)) {
+                        nrTrue++;
+                    }
+                }
+            }
+            if (nr == nrTrue) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean lessThen(VectorClock vc, String sender){
         Set<String> vcIds = vc.getClock().keySet();
         int nr=0;
         int nreq=0;
         int nrlt=0;
         for(String id:vcIds){
-            nr++;
-            if(clockValue.containsKey(id)) {
-                if (clockValue.get(id) == vc.getClock().get(id)) {
-                    nreq++;
-                }
-                if (clockValue.get(id) < vc.getClock().get(id)) {
-                    nrlt++;
-                }
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())) {
+            }
+            else{
+                nr++;
+                if (clockValue.containsKey(id)) {
+                    if (clockValue.get(id) == vc.getClock().get(id)) {
+                        nreq++;
+                    }
+                    if (clockValue.get(id) < vc.getClock().get(id)) {
+                        nrlt++;
+                    }
 
+                }
             }
         }
         if(nrlt>0 && nrlt+nreq==nr){
@@ -86,19 +111,23 @@ public class VectorClock implements Serializable{
         return false;
     }
 
-    public boolean biggerThen(VectorClock vc){
+    public boolean biggerThen(VectorClock vc, String sender){
         Set<String> vcIds = vc.getClock().keySet();
         int nr=0;
         int nreq=0;
         int nrbt=0;
         for(String id:vcIds){
-            nr++;
-            if(clockValue.containsKey(id)) {
-                if (clockValue.get(id) == vc.getClock().get(id)) {
-                    nreq++;
-                }
-                if (clockValue.get(id) > vc.getClock().get(id)) {
-                    nrbt++;
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())) {
+            }
+            else{
+                nr++;
+                if(clockValue.containsKey(id)) {
+                    if (clockValue.get(id) == vc.getClock().get(id)) {
+                        nreq++;
+                    }
+                    if (clockValue.get(id) > vc.getClock().get(id)) {
+                        nrbt++;
+                    }
                 }
             }
         }

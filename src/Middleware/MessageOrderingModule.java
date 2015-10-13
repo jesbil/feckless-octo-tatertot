@@ -1,5 +1,7 @@
 package Middleware;
 
+import Interface.Constants;
+
 import java.util.ArrayList;
 
 /**
@@ -56,6 +58,21 @@ public class MessageOrderingModule{
 
     public VectorClock getVectorClock() {
         return vectorClock;
+    }
+
+    public boolean receiveCompare(VectorClock vc, String sender) {
+        if(vectorClock.compare(vc,sender)==Constants.CLOCK_TYPE_EQ){
+            return true;
+        }
+        return false;
+//        switch (vectorClock.compare(vc,sender)){
+//            case Constants.CLOCK_TYPE_EQ:
+//                return true;
+//                break;
+//            case Constants.CLOCK_TYPE_LT:
+//                return false;
+//            break;
+//        }
     }
 
     // NY MODUL REDO FÖR BUS

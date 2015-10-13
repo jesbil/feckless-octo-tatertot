@@ -247,4 +247,11 @@ public class GUI{
 
     }
 
+    public boolean askUnordered() {
+        int answer = JOptionPane.showConfirmDialog (null, "Yes for unordered. No for casual ordering", "Warning",JOptionPane.YES_NO_OPTION);
+        if(answer == JOptionPane.YES_OPTION){
+            return true;
+        }
+        return false;
+    }
 }

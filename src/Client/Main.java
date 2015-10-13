@@ -24,7 +24,7 @@ public class Main {
             if(nameService==null){
                 return;
             }
-            GCom.initiate();
+            GCom.initiate(gui.askUnordered());
             GCom.connectToNameService(nameService);
             gui.buildAndStart("GCom");
 
