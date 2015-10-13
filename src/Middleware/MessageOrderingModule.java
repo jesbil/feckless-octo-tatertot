@@ -21,6 +21,7 @@ public class MessageOrderingModule{
     public MessageOrderingModule() {
         groupMessageQueues = new ArrayList<GroupMessageQueue>();
         groupVectorClock = new VectorClock();
+        allMemberVectorClock = new VectorClock();
     }
 
     public void triggerSelfEvent(boolean toAllMembers){
