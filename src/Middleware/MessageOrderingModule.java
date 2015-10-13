@@ -10,12 +10,11 @@ import java.util.ArrayList;
 public class MessageOrderingModule{
     private ArrayList<GroupMessageQueue> groupMessageQueues;
     private VectorClock groupVectorClock;
+    private VectorClock allMemberVectorClock;
 
     public VectorClock getAllMemberVectorClock() {
         return allMemberVectorClock;
     }
-
-    private VectorClock allMemberVectorClock;
 
 
 
@@ -24,8 +23,13 @@ public class MessageOrderingModule{
         groupVectorClock = new VectorClock();
     }
 
-    public void triggerSelfEvent(){
-        groupVectorClock.triggerSelfEvent();
+    public void triggerSelfEvent(boolean toAllMembers){
+        if(toAllMembers){
+            allMemberVectorClock.triggerSelfEvent();
+        }
+        else{
+            groupVectorClock.triggerSelfEvent();
+        }
     }
 
     /**
@@ -40,7 +44,6 @@ public class MessageOrderingModule{
                 gmq.getMessageQueue().remove(0);
                 return msg;
             }
-
         }
         return null;
     }
