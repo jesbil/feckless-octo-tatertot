@@ -180,10 +180,14 @@ public class GCom extends Observable {
             groupManagement.addMemberToGroup(sender, groupName);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-
                 groupManagement.addMemberToGroup(sender, groupName);
-                messageOrdering.triggerSelfEvent(toGroup);
-                messageOrdering.getGroupVectorClock().mergeWith(vc);
+                if(groupName.equals(toAllMembers)){
+                    messageOrdering.triggerSelfEvent(toAllMembers);
+                    messageOrdering.getAllMemberVectorClock().mergeWith(vc);
+                }else{
+                    messageOrdering.triggerSelfEvent(toGroup);
+                    messageOrdering.getGroupVectorClock().mergeWith(vc);
+                }
             }
         }
     }
@@ -199,7 +203,6 @@ public class GCom extends Observable {
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     groupManagement.removeMemberFromGroup(groupName, sender);
                     messageOrdering.getAllMemberVectorClock().getClock().remove(sender);
-
                 }else{
                     messageOrdering.triggerSelfEvent(toGroup);
                     groupManagement.removeMemberFromGroup(groupName, sender);
