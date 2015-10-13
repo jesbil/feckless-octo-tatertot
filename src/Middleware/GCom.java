@@ -127,7 +127,9 @@ public class GCom extends Observable {
             groupManagement.groupCreated(newGroup);
             messageOrdering.addGroup(groupName);
         }else{
+            System.out.println("casual kjapp group");
             if(messageOrdering.receiveCompare(vc, sender)){
+                System.out.println("Grupp skapad, v ok");
                 Group newGroup = new Group(groupName);
                 newGroup.addMemberToGroup(new Member(sender));
                 groupManagement.groupCreated(newGroup);
@@ -145,7 +147,9 @@ public class GCom extends Observable {
                 System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ getLocalMember().getIP()+"\n");
 
         }else{
+            System.out.println("casual kjapp msg");
             if(messageOrdering.receiveCompare(vc, sender)){
+                System.out.println("msg vektor ok");
                 messageOrdering.orderMessage(message,sender,groupName);
                 System.out.println("Message Received:\nMessage: " + message + "\nSent from: " + sender + "\nTo group: " + groupName + "\nReceived at: " + getLocalMember().getIP() + "\n");
                 messageOrdering.triggerSelfEvent();
