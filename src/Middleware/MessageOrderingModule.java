@@ -93,6 +93,7 @@ public class MessageOrderingModule{
 
     public void addToAllMembersClock(ArrayList<Member> members) {
         for(Member m: members){
+            System.out.println("Member: "+m.getIP() + " added");
             allMemberVectorClock.getClock().put(m.getIP(),0);
         }
     }

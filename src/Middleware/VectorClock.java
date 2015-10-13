@@ -71,7 +71,7 @@ public class VectorClock implements Serializable{
     private boolean equals(VectorClock vc, String sender) {
 
         Set<String> vcIds = vc.getClock().keySet();
-        System.out.println("mysize: "+clockValue.size()+"\n recsize: "+vc.getClock().size());
+        System.out.println("mysize: "+clockValue.size()+"\nrecsize: "+vc.getClock().size());
         if (clockValue.size() == vc.getClock().size()) {
             int nr = 0;
             int nrTrue = 0;
