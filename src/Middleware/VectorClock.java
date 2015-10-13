@@ -49,7 +49,7 @@ public class VectorClock implements Serializable{
         if(a>b){
             return a;
         }
-        else return b;
+        return b;
     }
 
     public int compare(VectorClock vc, String sender){
@@ -90,7 +90,6 @@ public class VectorClock implements Serializable{
         int nr = 0;
         int nrTrue = 0;
         for (String id : vcIds) {
-            System.out.println("Checking for ID: "+id);
             if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())){
             }else{
                 nr++;
