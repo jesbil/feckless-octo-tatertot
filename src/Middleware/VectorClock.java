@@ -42,6 +42,7 @@ public class VectorClock implements Serializable{
                 clockValue.put(id,vc.getClock().get(id));
             }
         }
+        System.out.println("Clock merged, result:\n"+clockValue.toString());
     }
 
     private int max(int a, int b){
