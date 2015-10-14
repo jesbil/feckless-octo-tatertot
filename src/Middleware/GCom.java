@@ -82,7 +82,7 @@ public class GCom extends Observable {
     public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
-        messageOrdering.triggerSelfEvent(toGroup);
+        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(),0);
         debuggLog.add("Group: "+groupName+" added");
         if(!unordered){
             messageOrdering.triggerSelfEvent(toAllMembers);
