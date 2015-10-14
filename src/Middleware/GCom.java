@@ -111,12 +111,9 @@ public class GCom extends Observable {
         groupManagement.joinGroup(groupName);
         debuggLog.add("Joined group: "+groupName);
         try {
-            if(groupName.equals(getAllMembersGroupName())){
-                communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getAllMemberVectorClock());
 
-            }else{
-                communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),GCom.getAllMembersGroupName(), messageOrdering.getGroupVectorClock());
-            }
+            communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(GCom.getAllMembersGroupName()),groupName, messageOrdering.getAllMemberVectorClock());
+
         } catch (RemoteException e) {
             groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
         }
@@ -130,22 +127,19 @@ public class GCom extends Observable {
             messageOrdering.triggerSelfEvent(toAllMembers);
             nameServerCommunicator.leave(nameServiceAddress);
         }
-        Group temp = groupManagement.getGroupByName(groupName);
+        Group temp = groupManagement.getAllMembers();
         groupManagement.leaveGroup(groupName);
         debuggLog.add("Left group: "+groupName);
         if(groupManagement.getGroupByName(groupName).getMembers().size()==0){
             messageOrdering.triggerSelfEvent(toAllMembers);
             groupManagement.removeGroup(groupName);
             debuggLog.add("Removed group: " + groupName);
-            communication.nonReliableMulticast(TYPE_REMOVE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
+            communication.nonReliableMulticast(TYPE_REMOVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
         }else{
-            if(groupName.equals(groupManagement.getAllMembers().getName())) {
-                communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
-            }else{
-                communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getGroupVectorClock());
-            }
+            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
         }
     }
+
 
 
 
@@ -194,26 +188,26 @@ public class GCom extends Observable {
         }
     }
 
-    protected static void groupJoined(String sender, String groupName, VectorClock vc){
+    protected static void groupJoined(String sender, String groupName, String groupJoined, VectorClock vc){
         if(unordered){
             groupManagement.addMemberToGroup(sender, groupName);
-            debuggLog.add("User: "+sender+" joined group: "+groupName);
+            debuggLog.add("User: "+sender+" joined group: "+groupJoined);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                groupManagement.addMemberToGroup(sender, groupName);
-                if(groupName.equals(getAllMembersGroupName())){
+                groupManagement.addMemberToGroup(sender, groupJoined);
+                if(groupJoined.equals(getAllMembersGroupName())){
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     ArrayList<Member> temp = new ArrayList<Member>();
                     temp.add(new Member(sender));
                     messageOrdering.getAllMemberVectorClock().mergeWith(vc);
-                    debuggLog.add("User: " + sender + " joined group: " + groupName);
+                    debuggLog.add("User: " + sender + " joined group: " + groupJoined);
                     messageOrdering.performNextIfPossible();
                 }else{
-                    messageOrdering.triggerSelfEvent(toGroup);
+                    messageOrdering.triggerSelfEvent(toAllMembers);
                     ArrayList<Member> temp = new ArrayList<Member>();
                     temp.add(new Member(sender));
-                    messageOrdering.getGroupVectorClock().mergeWith(vc);
-                    debuggLog.add("User: " + sender + " joined group: " + groupName);
+                    messageOrdering.getAllMemberVectorClock().mergeWith(vc);
+                    debuggLog.add("User: " + sender + " joined group: " + groupJoined);
                     messageOrdering.performNextIfPossible();
                 }
             }

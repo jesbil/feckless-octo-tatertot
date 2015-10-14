@@ -111,7 +111,7 @@ public class MessageOrderingModule{
                             GCom.groupCreated(msg.getGroupName(), msg.getSender(), new VectorClock(msg.getClockValue()));
                             break;
                         case Constants.TYPE_JOIN_GROUP:
-                            GCom.groupJoined(msg.getSender(),msg.getGroupName(),new VectorClock(msg.getClockValue()));
+                            GCom.groupJoined(msg.getSender(),msg.getGroupName(), groupJoined, new VectorClock(msg.getClockValue()));
                             break;
                         case Constants.TYPE_LEAVE_GROUP:
                             GCom.leftGroup(msg.getGroupName(),msg.getSender(),new VectorClock(msg.getClockValue()));

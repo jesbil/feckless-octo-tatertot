@@ -17,7 +17,7 @@ public interface MyRemote extends Remote{
 
     public void createGroup(String groupName, String leader, VectorClock vc) throws RemoteException;
 
-    public void joinGroup(String name, String groupname, VectorClock vc) throws RemoteException;
+    public void joinGroup(String name, String groupname, String groupJoined, VectorClock vc) throws RemoteException;
 
     public void leaveGroup(String name, String groupname, VectorClock vc) throws RemoteException;
 
