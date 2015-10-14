@@ -245,8 +245,8 @@ public class GCom extends Observable {
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.removeGroup(groupName);
-                messageOrdering.triggerSelfEvent(toGroup);
-                messageOrdering.getGroupVectorClock().mergeWith(vc);
+                messageOrdering.triggerSelfEvent(toAllMembers);
+                messageOrdering.getAllMemberVectorClock().mergeWith(vc);
                 messageOrdering.performNextIfPossible();
             }else{
                 messageOrdering.orderMessage(null, sender, groupName, vc.getClock(),TYPE_REMOVE_GROUP);
