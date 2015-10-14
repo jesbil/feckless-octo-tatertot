@@ -80,7 +80,7 @@ public class VectorClock implements Serializable{
         }
         if(this.biggerThen(vc,sender)){
             System.out.println("biggerthen");
-            return CLOCK_TYPE_BT;
+            return CLOCK_TYPE_EQ;
         }
         System.out.println("concurrent");
         return CLOCK_TYPE_CONC;
