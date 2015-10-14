@@ -283,9 +283,9 @@ public class GCom extends Observable {
     }
 
     public static void sendInInvalidOrder() throws NotBoundException, UnknownHostException {
-        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember())+1);
+        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember().getIP())+1);
         sendMessage("sent first but should be received last", getCurrentGroup());
-        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember()) - 2);
+        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember().getIP()) - 2);
         sendMessage("sent last but should be received first",getCurrentGroup());
 
     }
