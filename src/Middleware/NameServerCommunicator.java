@@ -18,14 +18,6 @@ public class NameServerCommunicator {
 //        System.out.println(myrem.is("is"));
 //        System.out.println(myrem.is("isa"));
 //    }
-    public static void main(String[] args) {
-        NameServerCommunicator asd = new NameServerCommunicator();
-        try {
-            asd.retrieveMembers("Draco");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public NameServerCommunicator(){
         members=new ArrayList<Member>();
@@ -53,7 +45,6 @@ public class NameServerCommunicator {
 
 
         }
-
         clientSocket.close();
         return members;
     }
