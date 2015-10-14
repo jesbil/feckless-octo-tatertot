@@ -45,11 +45,10 @@ public class VectorClock implements Serializable{
                 clockValue.put(id,vc.getClock().get(id));
             }
         }
-        System.out.println("Clock merged, result:\n"+clockValue.toString());
+        GCom.getDebuggLog().add("Clock merged: " + clockValue.toString());
     }
 
     private int max(int a, int b){
-        System.out.println("MAX COMPARE IN MERGE:"+a+":"+b);
         if(a>b){
             return a;
         }
