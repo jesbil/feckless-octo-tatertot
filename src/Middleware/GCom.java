@@ -171,12 +171,12 @@ public class GCom extends Observable {
 
     protected static void receiveMessage(String message, String sender, String groupName, VectorClock vc) {
         if(unordered){
-            messageOrdering.orderMessage(message,sender, groupName, vc.getClock(), TYPE_MESSAGE);
+            messageOrdering.acceptUserMessage(new Message(sender, message, vc.getClock(), groupName, TYPE_MESSAGE));
             debuggLog.add("Message: "+message+" Sent from: "+sender+" To group: "+groupName+" Received");
 
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                messageOrdering.acceptUserMessage(new Message(sender, message, null, groupName, TYPE_MESSAGE));
+                messageOrdering.acceptUserMessage(new Message(sender, message, vc.getClock(), groupName, TYPE_MESSAGE));
                 messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
                 debuggLog.add("Message: "+message+" Sent from: "+sender+" To group: "+groupName+" Received");
@@ -195,25 +195,19 @@ public class GCom extends Observable {
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.addMemberToGroup(sender, groupJoined);
-                if(groupJoined.equals(getAllMembersGroupName())){
-                    messageOrdering.triggerSelfEvent(toAllMembers);
-                    ArrayList<Member> temp = new ArrayList<Member>();
-                    temp.add(new Member(sender));
-                    messageOrdering.getAllMemberVectorClock().mergeWith(vc);
-                    debuggLog.add("User: " + sender + " joined group: " + groupJoined);
-                    messageOrdering.performNextIfPossible();
-                }else{
-                    messageOrdering.triggerSelfEvent(toAllMembers);
-                    ArrayList<Member> temp = new ArrayList<Member>();
-                    temp.add(new Member(sender));
-                    messageOrdering.getAllMemberVectorClock().mergeWith(vc);
-                    debuggLog.add("User: " + sender + " joined group: " + groupJoined);
-                    messageOrdering.performNextIfPossible();
+                messageOrdering.triggerSelfEvent(toAllMembers);
+                ArrayList<Member> temp = new ArrayList<Member>();
+                temp.add(new Member(sender));
+                messageOrdering.getAllMemberVectorClock().mergeWith(vc);
+                if(groupJoined.equals(GCom.getCurrentGroup())){
+                    messageOrdering.getGroupVectorClock().getClock().put(sender,0);
                 }
+                debuggLog.add("User: " + sender + " joined group: " + groupJoined);
+                messageOrdering.performNextIfPossible();
             }
             else{
                 messageOrdering.orderMessage(null, sender, groupName, vc.getClock(), TYPE_JOIN_GROUP);
-                debuggLog.add("User: "+sender+" join group: "+groupName+" Request put in queue");
+                debuggLog.add("User: " + sender + " join group: " + groupName + " Request put in queue");
 
             }
         }
@@ -266,9 +260,13 @@ public class GCom extends Observable {
     }
 
     public static void sendInInvalidOrder() throws NotBoundException, UnknownHostException {
-        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember().getIP())+1);
+        for(String key : messageOrdering.getGroupVectorClock().getClock().keySet()){
+            messageOrdering.getGroupVectorClock().getClock().put(key, messageOrdering.getGroupVectorClock().getClock().get(key)+1);
+        }
         sendMessage("sent first but should be received last", getCurrentGroup());
-        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember().getIP()) - 2);
+//        for(String key : messageOrdering.getGroupVectorClock().getClock().keySet()){
+//            messageOrdering.getGroupVectorClock().getClock().put(key, messageOrdering.getGroupVectorClock().getClock().get(key));
+//        }
         sendMessage("sent last but should be received first",getCurrentGroup());
 
     }
