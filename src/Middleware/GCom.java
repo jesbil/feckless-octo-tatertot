@@ -107,9 +107,7 @@ public class GCom extends Observable {
     }
 
     public static void joinGroup(String groupName) throws UnknownHostException,  NotBoundException, GroupException {
-        if(!unordered && groupName!=getAllMembersGroupName()){
-            messageOrdering.triggerSelfEvent(toGroup);
-        }
+
         groupManagement.joinGroup(groupName);
         debuggLog.add("Joined group: "+groupName);
         try {
