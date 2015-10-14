@@ -83,7 +83,7 @@ public class GCom extends Observable {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
         messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(),0);
-        debuggLog.add("Group: "+groupName+" added");
+        debuggLog.add("Group: " + groupName + " added");
         if(!unordered){
             messageOrdering.triggerSelfEvent(toAllMembers);
         }
@@ -283,11 +283,9 @@ public class GCom extends Observable {
     }
 
     public static void sendInInvalidOrder() throws NotBoundException, UnknownHostException {
-        HashMap<String, Integer> tgvc = new HashMap<String,Integer>(messageOrdering.getGroupVectorClock().getClock());
-        System.out.println(messageOrdering.getGroupVectorClock());
-        tgvc.put(getLocalMember().getIP(),tgvc.get(getLocalMember())+1);
+        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember())+1);
         sendMessage("sent first but should be received last", getCurrentGroup());
-        tgvc.put(getLocalMember().getIP(), tgvc.get(getLocalMember()) - 2);
+        messageOrdering.getGroupVectorClock().getClock().put(getLocalMember().getIP(), messageOrdering.getGroupVectorClock().getClock().get(getLocalMember()) - 2);
         sendMessage("sent last but should be received first",getCurrentGroup());
 
     }
