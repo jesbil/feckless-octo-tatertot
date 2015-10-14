@@ -97,7 +97,7 @@ public class VectorClock implements Serializable{
             }else{
                 System.out.println(id+":s:"+sender+":id:"+GCom.getLocalMember().getIP());
                 nr++;
-                if (clockValue.containsKey(id) && clockValue.get(id) == vc.getClock().get(id)) {
+                if (clockValue.containsKey(id) && (clockValue.get(id) == vc.getClock().get(id))) {
                     nrTrue++;
                 }
             }
