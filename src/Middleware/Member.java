@@ -6,12 +6,17 @@ package Middleware;
 public class Member {
 
     private String ip;
+    private int port;
 
-    public Member(String ip){
+    public Member(String ip,int port){
+        this.port=port;
         this.ip=ip;
     }
 
     public String getIP(){
         return ip;
     }
-}
+
+    public int getPort() {
+        return port;
+    }
