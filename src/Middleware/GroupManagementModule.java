@@ -38,7 +38,6 @@ public class GroupManagementModule {
         groups.get(groups.size()-1).addMemberToGroup(localMember);
         currentGroup=name;
         return true;
-        //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
     public void joinGroup(String name) throws GroupException {
@@ -49,13 +48,11 @@ public class GroupManagementModule {
         if(name!=allMembers.getName()){
             currentGroup=name;
         }
-        //SKICKA VIDARE TILL MESSAGE ORDERING
     }
 
     public void leaveGroup(String name) {
         getGroupByName(name).removeMemberFromGroup(localMember);
         currentGroup=null;
-        //SKICKA VIDARE
     }
 
     public void sendMessage(String msg){
@@ -64,7 +61,6 @@ public class GroupManagementModule {
     public void removeGroup(String name){
         groups.remove(getGroupByName(name));
     }
-
 
     public Group getAllMembers() {
         return allMembers;
@@ -90,7 +86,6 @@ public class GroupManagementModule {
     public Group getGroupByName(String groupName) {
         if(groupName.equals(allMembers.getName())){
             return allMembers;
-
         }
         for(Group group : groups){
             if(group.getName().equals(groupName)){
