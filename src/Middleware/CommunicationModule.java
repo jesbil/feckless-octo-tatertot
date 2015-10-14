@@ -74,10 +74,12 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
             case TYPE_REMOVE_GROUP:
                 for(Member m : group.getMembers()){
-                    Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
-                    MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    System.out.println("removing group");
-                    remote.removeGroup(msg, InetAddress.getLocalHost().getHostAddress(), vectorClock);
+                    if(!m.getIP().equals(localMember.getIP())) {
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
+                        System.out.println("removing group");
+                        remote.removeGroup(msg, InetAddress.getLocalHost().getHostAddress(), vectorClock);
+                    }
                 }
         }
 

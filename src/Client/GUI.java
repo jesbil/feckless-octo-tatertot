@@ -29,19 +29,25 @@ public class GUI{
     private JFrame frame;
     private JTextArea jtaNameList;
 
+    private OpenDebuggerListener debugger;
+
     public JTextArea getChatField() {
         return chatField;
     }
 
     private JTextArea chatField;
+
     private JTextArea writeField;
     private JScrollPane nlsp;
-
-
     /**
      * Creates the GUI and asks the user of its name.
      */
     public GUI() {
+    }
+
+
+    public OpenDebuggerListener getDebugger() {
+        return debugger;
     }
 
     public String nameServerRequest() {
@@ -91,6 +97,7 @@ public class GUI{
         fm.add(createGroupButton());
         fm.add(joinGroupButton());
         fm.add(leaveGroupButton());
+        fm.add(DebugWindowButton());
         mb.add(fm);
 
         return mb;
@@ -122,6 +129,13 @@ public class GUI{
         return item;
     }
 
+    private JMenuItem DebugWindowButton(){
+        JMenuItem item = new JMenuItem("Open Debugger");
+        debugger = new OpenDebuggerListener(frame);
+        item.addActionListener(debugger);
+
+        return item;
+    }
 
     public JTextArea getJtaNameList() {
         return jtaNameList;

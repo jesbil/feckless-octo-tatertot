@@ -15,6 +15,7 @@ import java.util.ArrayList;
  */
 public class Main {
     private static ArrayList<String> groupNames = new ArrayList<String>();
+    private static OpenDebuggerListener debugger;
 
     public static void main(String[] args) {
         try {
@@ -27,20 +28,17 @@ public class Main {
             GCom.initiate(gui.askUnordered());
             GCom.connectToNameService(nameService);
             gui.buildAndStart("GCom");
+            debugger = gui.getDebugger();
 
 
             while(true){
-
                 boolean changed = false;
-
-
                 if(GCom.getGroupNames()!=null){
                     for(String groupName : GCom.getGroupNames()){
                         if(!groupNames.contains(groupName)){
                             changed = true;
                             groupNames.add(groupName);
                         }
-
                     }
                 }
                 for (int i = 0; i < groupNames.size(); i++) {
@@ -64,6 +62,16 @@ public class Main {
                     }
                     gui.update();
                 }
+
+                if(GCom.getCurrentGroup()==null){
+                    gui.getChatField().setText("");
+                }
+
+//                while(GCom.getDebuggLog().size()>0){
+//                    debugger.getLog().append(GCom.getDebuggLog().get(0)+"\n");
+//                    GCom.getDebuggLog().remove(0);
+//                }
+
 
             }
 
