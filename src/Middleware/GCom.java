@@ -66,7 +66,6 @@ public class GCom extends Observable {
         groupManagement.setAllMembers(allMembers);
         if(!unordered){
             messageOrdering.addToAllMembersClock(allMembers);
-            messageOrdering.triggerSelfEvent(toAllMembers);
         }
         joinGroup(groupManagement.getAllMembers().getName());
         debuggLog.add("Connected to Name Service Server @ "+nameService);
