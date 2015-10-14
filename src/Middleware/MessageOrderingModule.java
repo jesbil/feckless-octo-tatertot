@@ -56,10 +56,10 @@ public class MessageOrderingModule{
         groupMessageQueues.add(new GroupMessageQueue(groupName));
     }
 
-    public void orderMessage(String message, String sender, String groupName, HashMap<String,Integer> clockValue) {
+    public void orderMessage(String message, String sender, String groupName, HashMap<String,Integer> clockValue, int type) {
         for(GroupMessageQueue gmq : groupMessageQueues){
             if(gmq.getGroupName().equals(groupName)){
-                gmq.getMessageQueue().add(new Message(sender,message,clockValue,groupName));
+                gmq.getMessageQueue().add(new Message(sender,message,clockValue,groupName,type));
             }
         }
     }
@@ -100,9 +100,7 @@ public class MessageOrderingModule{
         }
     }
 
-    public Message findNextMessage(String groupName, VectorClock vc, String sender) {
-        return null;
-    }
+
 
     public void acceptUserMessage(Message message) {
         for(GroupMessageQueue gmq : groupMessageQueues){
@@ -113,5 +111,32 @@ public class MessageOrderingModule{
         }
     }
 
-    // NY MODUL REDO FÖR BUS
+    public void performNextIfPossible() {
+        for(GroupMessageQueue gmq : groupMessageQueues){
+            for (int i = 0; i < gmq.getMessageQueue().size(); i++) {
+                Message msg = gmq.getMessageQueue().get(i);
+                if(receiveCompare(msg.getGroupName(), new VectorClock(msg.getClockValue()), msg.getSender())){
+                    switch (msg.getType()){
+                        case Constants.TYPE_REMOVE_GROUP:
+                            GCom.groupRemoved(msg.getGroupName(),new VectorClock(msg.getClockValue()),msg.getSender());
+                            break;
+                        case Constants.TYPE_CREATE_GROUP:
+                            GCom.groupCreated(msg.getGroupName(), msg.getSender(), new VectorClock(msg.getClockValue()));
+                            break;
+                        case Constants.TYPE_JOIN_GROUP:
+                            GCom.groupJoined(msg.getSender(),msg.getGroupName(),new VectorClock(msg.getClockValue()));
+                            break;
+                        case Constants.TYPE_LEAVE_GROUP:
+                            GCom.leftGroup(msg.getGroupName(),msg.getSender(),new VectorClock(msg.getClockValue()));
+                            break;
+                        case Constants.TYPE_MESSAGE:
+                            GCom.receiveMessage(msg.getMessage(),msg.getSender(),msg.getGroupName(),new VectorClock(msg.getClockValue()));
+
+                    }
+                }
+            }
+        }
+    }
+
+    // NY MODUL REDO FÖR BUS största lögnen någonsinn
 }

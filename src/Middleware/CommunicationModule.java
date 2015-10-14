@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 import static Interface.Constants.*;
 
@@ -28,7 +29,6 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     // send
     public void nonReliableMulticast(int type, Group group, String msg, VectorClock vectorClock) throws RemoteException, NotBoundException, UnknownHostException {
-
         switch (type){
             case TYPE_LEAVE_GROUP:
                 for(Member m : group.getMembers()){

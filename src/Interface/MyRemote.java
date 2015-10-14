@@ -6,6 +6,7 @@ import Middleware.VectorClock;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  * Created by c12jbr on 2015-10-05.
@@ -22,7 +23,8 @@ public interface MyRemote extends Remote{
 
 
 
-    void message(String message, String sender, String groupName, VectorClock vc) throws RemoteException;
+    public void message(String message, String sender, String groupName, VectorClock vc) throws RemoteException;
 
-    void removeGroup(String groupName,String name, VectorClock vc) throws RemoteException;
+    public void removeGroup(String groupName,String name, VectorClock vc) throws RemoteException;
+
 }
