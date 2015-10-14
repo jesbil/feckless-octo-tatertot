@@ -30,7 +30,9 @@ public class GroupMessageQueue {
         if(orderedUserMessages.size()==0){
             return null;
         }
-        return orderedUserMessages.get(0);
+        Message temp=orderedUserMessages.get(0);
+        orderedUserMessages.remove(0);
+        return temp;
     }
 
     public void setNextUserMessage(Message umsg){

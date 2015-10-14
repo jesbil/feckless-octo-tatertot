@@ -185,7 +185,7 @@ public class GCom extends Observable {
             System.out.println("casual kjapp msg");
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 System.out.println("msg vektor ok");
-                messageOrdering.acceptUserMessage(new Message(sender,message,null,null));
+                messageOrdering.acceptUserMessage(new Message(sender,message,null,groupName));
                 System.out.println("Message Received:\nMessage: " + message + "\nSent from: " + sender + "\nTo group: " + groupName + "\nReceived at: " + getLocalMember().getIP() + "\n");
                 messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);

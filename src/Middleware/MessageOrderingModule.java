@@ -106,6 +106,7 @@ public class MessageOrderingModule{
 
     public void acceptUserMessage(Message message) {
         for(GroupMessageQueue gmq : groupMessageQueues){
+            System.out.println("gmq namn: "+gmq.getGroupName()+" msg namn: "+message.getGroupName());
             if(gmq.getGroupName().equals(message.getGroupName())){
                 gmq.setNextUserMessage(message);
             }
