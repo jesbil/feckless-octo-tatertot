@@ -52,7 +52,7 @@ public class Main {
                 }
 
                 Message message;
-                if((message=GCom.getNextMessage(GCom.getCurrentGroup()))!=null){
+                if((message=GCom.getNextUserMessage(GCom.getCurrentGroup()))!=null){
                     gui.getChatField().append(message.getSender() + ": " + message.getMessage() + "\n");
                     changed = true;
                 }

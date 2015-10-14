@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class GroupMessageQueue {
     private ArrayList<Message> messageQueue;
     private String groupName;
+    private ArrayList<Message> orderedUserMessages;
 
     public ArrayList<Message> getMessageQueue() {
         return messageQueue;
@@ -22,6 +23,18 @@ public class GroupMessageQueue {
     public GroupMessageQueue(String groupName){
         messageQueue = new ArrayList<Message>();
         this.groupName = groupName;
+        orderedUserMessages = new ArrayList<Message>();
+    }
+
+    public Message getNextUserMessage(){
+        if(orderedUserMessages.size()==0){
+            return null;
+        }
+        return orderedUserMessages.get(0);
+    }
+
+    public void setNextUserMessage(Message umsg){
+        orderedUserMessages.add(umsg);
     }
 
 }

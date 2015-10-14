@@ -3,6 +3,7 @@ package Middleware;
 import Interface.Constants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by oi12pjn on 2015-10-08.
@@ -20,6 +21,7 @@ public class MessageOrderingModule{
 
     public MessageOrderingModule() {
         groupMessageQueues = new ArrayList<GroupMessageQueue>();
+        groupMessageQueues.add(new GroupMessageQueue(GCom.getAllMembersGroupName()));
         groupVectorClock = new VectorClock();
         allMemberVectorClock = new VectorClock();
     }
@@ -41,12 +43,10 @@ public class MessageOrderingModule{
      * @param groupName
      * @return Message
      */
-    public Message getNextMessage(String groupName){
-        for(GroupMessageQueue gmq : groupMessageQueues){
-            if(gmq.getGroupName().equals(groupName) && gmq.getMessageQueue().size()>0){
-                Message msg = gmq.getMessageQueue().get(0);
-                gmq.getMessageQueue().remove(0);
-                return msg;
+    public Message getNextUserMessage(String groupName){
+        for(GroupMessageQueue gmq : groupMessageQueues) {
+            if(gmq.getGroupName().equals(groupName)) {
+                return gmq.getNextUserMessage();
             }
         }
         return null;
@@ -56,10 +56,10 @@ public class MessageOrderingModule{
         groupMessageQueues.add(new GroupMessageQueue(groupName));
     }
 
-    public void orderMessage(String message, String sender, String groupName) {
+    public void orderMessage(String message, String sender, String groupName, HashMap<String,Integer> clockValue) {
         for(GroupMessageQueue gmq : groupMessageQueues){
             if(gmq.getGroupName().equals(groupName)){
-                gmq.getMessageQueue().add(new Message(sender,message));
+                gmq.getMessageQueue().add(new Message(sender,message,clockValue,groupName));
             }
         }
     }
@@ -97,6 +97,18 @@ public class MessageOrderingModule{
             System.out.println("Member: "+m.getIP() + " added to allMembers");
             allMemberVectorClock.getClock().put(m.getIP(),0);
 
+        }
+    }
+
+    public Message findNextMessage(String groupName, VectorClock vc, String sender) {
+        return null;
+    }
+
+    public void acceptUserMessage(Message message) {
+        for(GroupMessageQueue gmq : groupMessageQueues){
+            if(gmq.getGroupName().equals(message.getGroupName())){
+                gmq.setNextUserMessage(message);
+            }
         }
     }
 
