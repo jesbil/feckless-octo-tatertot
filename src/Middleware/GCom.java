@@ -115,7 +115,7 @@ public class GCom extends Observable {
                 communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getAllMemberVectorClock());
 
             }else{
-                communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(GCom.getAllMembersGroupName()),groupName, messageOrdering.getGroupVectorClock());
+                communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),GCom.getAllMembersGroupName(), messageOrdering.getGroupVectorClock());
             }
         } catch (RemoteException e) {
             groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
