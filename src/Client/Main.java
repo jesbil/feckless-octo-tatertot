@@ -67,10 +67,10 @@ public class Main {
                     gui.getChatField().setText("");
                 }
 
-//                while(GCom.getDebuggLog().size()>0){
-//                    debugger.getLog().append(GCom.getDebuggLog().get(0)+"\n");
-//                    GCom.getDebuggLog().remove(0);
-//                }
+                while(GCom.getDebuggLog().size()>0){
+                    debugger.getLog().append(GCom.getDebuggLog().get(0)+"\n");
+                    GCom.getDebuggLog().remove(0);
+                }
 
 
             }

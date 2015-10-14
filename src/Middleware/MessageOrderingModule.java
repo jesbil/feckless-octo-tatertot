@@ -30,11 +30,11 @@ public class MessageOrderingModule{
 
         if(toAllMembers){
             allMemberVectorClock.triggerSelfEvent();
-            System.out.println("EVENT TRIGGERED, ALLMEMBERS CLOCK:\n" + allMemberVectorClock.getClock().toString());
+            GCom.getDebuggLog().add("EVENT TRIGGERED IN ALLMEMBERS CLOCK: " + allMemberVectorClock.getClock().toString());
         }
         else{
             groupVectorClock.triggerSelfEvent();
-            System.out.println("EVENT TRIGGERED, GROUP CLOCK:\n" + groupVectorClock.getClock().toString());
+            GCom.getDebuggLog().add("EVENT TRIGGERED IN GROUP CLOCK: " + groupVectorClock.getClock().toString());
         }
     }
 
@@ -81,30 +81,17 @@ public class MessageOrderingModule{
             return false;
 
         }
-//        switch (groupVectorClock.compare(vc,sender)){
-//            case Constants.CLOCK_TYPE_EQ:
-//                return true;
-//                break;
-//            case Constants.CLOCK_TYPE_LT:
-//                return false;
-//            break;
-//        }
     }
 
     public void addToAllMembersClock(ArrayList<Member> members) {
         for(Member m: members){
-
-            System.out.println("Member: "+m.getIP() + " added to allMembers");
             allMemberVectorClock.getClock().put(m.getIP(),0);
 
         }
     }
 
-
-
     public void acceptUserMessage(Message message) {
         for(GroupMessageQueue gmq : groupMessageQueues){
-            System.out.println("gmq namn: "+gmq.getGroupName()+" msg namn: "+message.getGroupName());
             if(gmq.getGroupName().equals(message.getGroupName())){
                 gmq.setNextUserMessage(message);
             }

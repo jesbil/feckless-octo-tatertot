@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 
 import static Interface.Constants.*;
@@ -26,6 +27,7 @@ public class GCom extends Observable {
     private static boolean unordered;
     private static boolean toAllMembers = true;
     private static boolean toGroup = false;
+    private static ArrayList<String> debuggLog;
 
     public static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
@@ -55,6 +57,7 @@ public class GCom extends Observable {
         Registry register = LocateRegistry.createRegistry(Constants.port);
         register.bind(Constants.RMI_ID, communication);
         GCom.unordered = unordered;
+        debuggLog = new ArrayList<String>();
     }
 
     public static void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
@@ -66,6 +69,7 @@ public class GCom extends Observable {
             messageOrdering.triggerSelfEvent(toAllMembers);
         }
         joinGroup(groupManagement.getAllMembers().getName());
+        debuggLog.add("Connected to Name Service Server @ "+nameService);
     }
 
     public static Message getNextUserMessage(String groupName){
@@ -78,6 +82,7 @@ public class GCom extends Observable {
     public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         groupManagement.createGroup(groupName);
         messageOrdering.addGroup(groupName);
+        debuggLog.add("Group: "+groupName+" added");
         if(!unordered){
             messageOrdering.triggerSelfEvent(toAllMembers);
         }
@@ -86,6 +91,7 @@ public class GCom extends Observable {
         } catch (RemoteException e) {
             groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
         }
+
     }
 
     public static void sendMessage(String text, String groupName) throws  NotBoundException, UnknownHostException {
@@ -93,7 +99,8 @@ public class GCom extends Observable {
             messageOrdering.triggerSelfEvent(toGroup);
         }
         try {
-            communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName),text, messageOrdering.getGroupVectorClock());
+            communication.nonReliableMulticast(TYPE_MESSAGE, groupManagement.getGroupByName(groupName), text, messageOrdering.getGroupVectorClock());
+            debuggLog.add("Message: "+text+" Sent to group: "+ groupName);
         } catch (RemoteException e) {
             groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
         }
@@ -104,9 +111,9 @@ public class GCom extends Observable {
             messageOrdering.triggerSelfEvent(toGroup);
         }
         groupManagement.joinGroup(groupName);
+        debuggLog.add("Joined group: "+groupName);
         try {
             if(groupName.equals(getAllMembersGroupName())){
-                System.out.println(messageOrdering.getAllMemberVectorClock().getClock().toString()+" skickar");
                 communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(groupName),groupName, messageOrdering.getAllMemberVectorClock());
 
             }else{
@@ -127,10 +134,12 @@ public class GCom extends Observable {
         }
         Group temp = groupManagement.getGroupByName(groupName);
         groupManagement.leaveGroup(groupName);
+        debuggLog.add("Left group: "+groupName);
         if(groupManagement.getGroupByName(groupName).getMembers().size()==0){
             messageOrdering.triggerSelfEvent(toAllMembers);
             groupManagement.removeGroup(groupName);
-            communication.nonReliableMulticast(TYPE_REMOVE_GROUP,groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
+            debuggLog.add("Removed group: " + groupName);
+            communication.nonReliableMulticast(TYPE_REMOVE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
         }else{
             if(groupName.equals(groupManagement.getAllMembers().getName())) {
                 communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
@@ -149,19 +158,20 @@ public class GCom extends Observable {
             newGroup.addMemberToGroup(new Member(sender));
             groupManagement.groupCreated(newGroup);
             messageOrdering.addGroup(groupName);
+            debuggLog.add("Group: "+groupName+" created, requested by: "+sender);
         }else{
-            System.out.println("casual kjapp group");
             if(messageOrdering.receiveCompare(groupName,vc, sender)){
-                System.out.println("Grupp skapad, v ok");
                 Group newGroup = new Group(groupName);
                 newGroup.addMemberToGroup(new Member(sender));
                 groupManagement.groupCreated(newGroup);
+                debuggLog.add("Group: " + groupName + " created, requested by: " + sender);
                 messageOrdering.addGroup(groupName);
                 messageOrdering.triggerSelfEvent(toAllMembers);
                 messageOrdering.getAllMemberVectorClock().mergeWith(vc);
                 messageOrdering.performNextIfPossible();
             }else{
                 messageOrdering.orderMessage(null,sender,groupName,vc.getClock(),TYPE_CREATE_GROUP);
+                debuggLog.add("Group: "+groupName+" creation put in queue, requested by "+sender);
             }
         }
     }
@@ -169,20 +179,19 @@ public class GCom extends Observable {
 
     protected static void receiveMessage(String message, String sender, String groupName, VectorClock vc) {
         if(unordered){
-            messageOrdering.orderMessage(message,sender,groupName,vc.getClock(),TYPE_MESSAGE);
-                System.out.println("Message Received:\nMessage: "+message+"\nSent from: "+sender+"\nTo group: "+groupName+"\nReceived at: "+ getLocalMember().getIP()+"\n");
+            messageOrdering.orderMessage(message,sender, groupName, vc.getClock(), TYPE_MESSAGE);
+            debuggLog.add("Message: "+message+" Sent from: "+sender+" To group: "+groupName+" Received");
 
         }else{
-            System.out.println("casual kjapp msg");
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                System.out.println("msg vektor ok");
-                messageOrdering.acceptUserMessage(new Message(sender,message,null,groupName,TYPE_MESSAGE));
-                System.out.println("Message Received:\nMessage: " + message + "\nSent from: " + sender + "\nTo group: " + groupName + "\nReceived at: " + getLocalMember().getIP() + "\n");
+                messageOrdering.acceptUserMessage(new Message(sender, message, null, groupName, TYPE_MESSAGE));
                 messageOrdering.triggerSelfEvent(toGroup);
                 messageOrdering.getGroupVectorClock().mergeWith(vc);
+                debuggLog.add("Message: "+message+" Sent from: "+sender+" To group: "+groupName+" Received");
                 messageOrdering.performNextIfPossible();
             }else{
                 messageOrdering.orderMessage(null, sender, groupName, vc.getClock(),TYPE_MESSAGE);
+                debuggLog.add("Message: "+message+" Sent from: "+sender+" To group: "+groupName+" Put in queue");
             }
         }
     }
@@ -190,26 +199,30 @@ public class GCom extends Observable {
     protected static void groupJoined(String sender, String groupName, VectorClock vc){
         if(unordered){
             groupManagement.addMemberToGroup(sender, groupName);
+            debuggLog.add("User: "+sender+" joined group: "+groupName);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.addMemberToGroup(sender, groupName);
                 if(groupName.equals(getAllMembersGroupName())){
-                    System.out.println(vc.getClock().toString()+" hämtar");
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     ArrayList<Member> temp = new ArrayList<Member>();
                     temp.add(new Member(sender));
                     messageOrdering.getAllMemberVectorClock().mergeWith(vc);
+                    debuggLog.add("User: " + sender + " joined group: " + groupName);
                     messageOrdering.performNextIfPossible();
                 }else{
                     messageOrdering.triggerSelfEvent(toGroup);
                     ArrayList<Member> temp = new ArrayList<Member>();
                     temp.add(new Member(sender));
                     messageOrdering.getGroupVectorClock().mergeWith(vc);
+                    debuggLog.add("User: " + sender + " joined group: " + groupName);
                     messageOrdering.performNextIfPossible();
                 }
             }
             else{
                 messageOrdering.orderMessage(null, sender, groupName, vc.getClock(), TYPE_JOIN_GROUP);
+                debuggLog.add("User: "+sender+" join group: "+groupName+" Request put in queue");
+
             }
         }
     }
@@ -219,21 +232,27 @@ public class GCom extends Observable {
     protected static void leftGroup(String groupName, String sender, VectorClock vc){
         if(unordered){
             groupManagement.removeMemberFromGroup(groupName, sender);
+            debuggLog.add("User: "+sender+" left group: "+groupName);
+
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 if(groupName.equals(getAllMembersGroupName())){
                     messageOrdering.triggerSelfEvent(toAllMembers);
                     groupManagement.removeMemberFromGroup(groupName, sender);
+                    debuggLog.add("User: " + sender + " left group: " + groupName);
                     messageOrdering.getAllMemberVectorClock().getClock().remove(sender);
                 }else{
                     messageOrdering.triggerSelfEvent(toGroup);
                     groupManagement.removeMemberFromGroup(groupName, sender);
                     messageOrdering.getGroupVectorClock().mergeWith(vc);
+                    debuggLog.add("User: " + sender + " left group: " + groupName);
                     messageOrdering.performNextIfPossible();
                 }
 
             }else{
                 messageOrdering.orderMessage(null,sender,groupName,vc.getClock(),TYPE_LEAVE_GROUP);
+                debuggLog.add("User: "+sender+" leaving group: "+groupName+" Request put in queue");
+
             }
 
         }
@@ -242,17 +261,32 @@ public class GCom extends Observable {
     protected static void groupRemoved(String groupName, VectorClock vc, String sender) {
         if(unordered){
             groupManagement.removeGroup(groupName);
+            debuggLog.add("Group: "+groupName+"removed\n");
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
                 groupManagement.removeGroup(groupName);
                 messageOrdering.triggerSelfEvent(toAllMembers);
                 messageOrdering.getAllMemberVectorClock().mergeWith(vc);
+                debuggLog.add("Group: "+groupName+"removed\n");
                 messageOrdering.performNextIfPossible();
             }else{
                 messageOrdering.orderMessage(null, sender, groupName, vc.getClock(),TYPE_REMOVE_GROUP);
+                debuggLog.add("Group: "+groupName+"removal put in queue");
             }
         }
     }
 
 
+    public static ArrayList<String> getDebuggLog() {
+        return debuggLog;
+    }
+
+    public static void sendInInvalidOrder() throws NotBoundException, UnknownHostException {
+        HashMap<String, Integer> tgvc = messageOrdering.getGroupVectorClock().getClock();
+        tgvc.put(getLocalMember().getIP(),tgvc.get(getLocalMember())+1);
+        sendMessage("sent first but should be received last",getCurrentGroup());
+        tgvc.put(getLocalMember().getIP(),tgvc.get(getLocalMember())-2);
+        sendMessage("sent last but should be received first",getCurrentGroup());
+
+    }
 }

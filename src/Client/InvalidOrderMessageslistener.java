@@ -13,6 +13,12 @@ import java.rmi.NotBoundException;
 public class InvalidOrderMessageslistener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-
+        try {
+            GCom.sendInInvalidOrder();
+        } catch (NotBoundException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 }

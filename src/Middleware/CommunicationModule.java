@@ -36,15 +36,13 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         remote.leaveGroup(InetAddress.getLocalHost().getHostAddress(),group.getName(), vectorClock);
-
                     }
                 }
                 break;
             case TYPE_JOIN_GROUP:
-                System.out.println("sending member: "+InetAddress.getLocalHost().getHostAddress()+" to group: "+group.getName()+"\n");
+                System.out.println("sending member: "+InetAddress.getLocalHost().getHostAddress()+" to group: "+group.getName());
                 for(Member m : group.getMembers()){
                     if(!m.getIP().equals(localMember.getIP())) {
-                        System.out.println(m.getIP()+" received join");
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         remote.joinGroup(InetAddress.getLocalHost().getHostAddress(), group.getName(), vectorClock);
@@ -57,7 +55,6 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                         Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
                         remote.createGroup(msg,localMember.getIP(), vectorClock);
-                        System.out.println("fixade biffen");
                     }
                 }
                 break;
