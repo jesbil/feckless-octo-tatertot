@@ -32,6 +32,7 @@ public class Message {
         this.groupName = groupName;
         this.type = type;
 
+
     }
 
     public HashMap<String, Integer> getClockValue() {
