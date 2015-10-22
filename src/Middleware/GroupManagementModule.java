@@ -11,12 +11,13 @@ import java.util.ArrayList;
 public class GroupManagementModule {
     private Group allMembers;
 
+    private ArrayList<Group> groups;
+    private ArrayList<Group> joinedGroups;
+    private Member localMember;
+
     public ArrayList<Group> getGroups() {
         return groups;
     }
-    private String  currentGroup;
-    private ArrayList<Group> groups;
-    private Member localMember;
 
 
     public GroupManagementModule() throws UnknownHostException{
@@ -25,41 +26,24 @@ public class GroupManagementModule {
         localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
     }
 
-    public boolean createGroup(String name) throws GroupException {
-        if(currentGroup!=null){
-            throw new GroupException("You are already in a group");
-        }
-        for(Group g : groups){
-            if(g.getName().equals(name)){
-                return false;
-            }
-        }
-        groups.add(new Group(name));
-        groups.get(groups.size()-1).addMemberToGroup(localMember);
-        currentGroup=name;
-        return true;
-    }
-
-    public void joinGroup(String name) throws GroupException {
-        if(currentGroup!=null){
-            throw new GroupException("You are already in a group");
-        }
-        getGroupByName(name).addMemberToGroup(localMember);
-        if(name!=allMembers.getName()){
-            currentGroup=name;
+    public void addMemberToGroup(Member member, Group group) {
+        if(group.getName().equals(allMembers.getName())){
+            allMembers.addMemberToGroup(member);
+        }else{
+            groups.get(groups.indexOf(group)).addMemberToGroup(member);
         }
     }
 
-    public void leaveGroup(String name) {
-        getGroupByName(name).removeMemberFromGroup(localMember);
-        currentGroup=null;
+    public void removeMemberFromGroup(Member member, Group group) {
+        if(group.getName().equals(allMembers.getName())){
+            allMembers.removeMemberFromGroup(member);
+        }else{
+            groups.get(groups.indexOf(group)).removeMemberFromGroup(member);
+        }
     }
 
-    public void sendMessage(String msg){
-
-    }
-    public void removeGroup(String name){
-        groups.remove(getGroupByName(name));
+    public void removeGroup(String groupName){
+        groups.remove(getGroupByName(groupName));
     }
 
     public Group getAllMembers() {
@@ -70,10 +54,11 @@ public class GroupManagementModule {
         return localMember;
     }
 
-    public void groupCreated(Group group) {
-        groups.add(group);
-        for (int i = 0; i <groups.size() ; i++) {
-            System.out.println(groups.get(i).getName());
+    public void groupCreated(String message, Member sender) {
+        Group group = new Group(message);
+        group.addMemberToGroup(sender);
+        if(sender.equals(localMember)){
+            joinedGroups.add(group);
         }
     }
 
@@ -93,30 +78,6 @@ public class GroupManagementModule {
             }
         }
         return null;
-    }
-
-    private Member findMember(String name, Group g){
-        ArrayList<Member> temp = g.getMembers();
-        for(Member m: temp){
-            String name1 = m.getIP()+","+m.getPort();
-            if(name1.equals(name)){
-                return m;
-            }
-        }
-        return null;
-    }
-
-    public void addMemberToGroup(String name, String groupName, int port) {
-        getGroupByName(groupName).addMemberToGroup(new Member(name.substring(0,name.indexOf(",")),port));
-    }
-
-    public void removeMemberFromGroup(String groupName, String name) {
-        getGroupByName(groupName).removeMemberFromGroup(findMember(name,getGroupByName(groupName)));
-
-    }
-
-    public String getCurrentGroup() {
-        return currentGroup;
     }
 
 }

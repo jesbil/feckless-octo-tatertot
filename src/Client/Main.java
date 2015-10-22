@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by c12jbr on 2015-10-10.
@@ -19,61 +21,17 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            GCom gcom = new GCom();
             GUI gui = new GUI();
 
             String nameService = gui.nameServerRequest();
             if(nameService==null){
                 return;
             }
-            GCom.initiate(gui.askUnordered());
-            GCom.connectToNameService(nameService);
+            gcom.initiate(gui.askUnordered(), gui);
             gui.buildAndStart("GCom");
-            debugger = gui.getDebugger();
+            gcom.connectToNameService(nameService);
 
-
-            while(true){
-                boolean changed = false;
-                if(GCom.getGroupNames()!=null){
-                    for(String groupName : GCom.getGroupNames()){
-                        if(!groupNames.contains(groupName)){
-                            changed = true;
-                            groupNames.add(groupName);
-                        }
-                    }
-                }
-                for (int i = 0; i < groupNames.size(); i++) {
-                    if(!GCom.getGroupNames().contains(groupNames.get(i))){
-                        groupNames.remove(i);
-                        i--;
-                        changed = true;
-                    }
-                }
-
-                Message message;
-                if((message=GCom.getNextUserMessage(GCom.getCurrentGroup()))!=null){
-                    gui.getChatField().append(message.getSender() + ": " + message.getMessage() + "\n");
-                    changed = true;
-                }
-
-                if(changed){
-                    gui.getJtaNameList().setText("");
-                    for(String groupName : groupNames){
-                        gui.getJtaNameList().append(groupName+"\n");
-                    }
-                    gui.update();
-                }
-
-                if(GCom.getCurrentGroup()==null){
-                    gui.getChatField().setText("");
-                }
-
-                while(GCom.getDebuggLog().size()>0){
-                    debugger.getLog().append(GCom.getDebuggLog().get(0)+"\n");
-                    GCom.getDebuggLog().remove(0);
-                }
-
-
-            }
 
         } catch (UnknownHostException e) {
             //GCOM initiate
@@ -92,5 +50,4 @@ public class Main {
         }
 
     }
-
 }

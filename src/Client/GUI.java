@@ -4,6 +4,7 @@ package Client;
  * Created by c12jbr on 2015-10-08.
  */
 import Middleware.GCom;
+import Middleware.Message;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,9 +16,14 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.Observable;
+import java.util.Observer;
 
 
 import javax.swing.*;
+
+import static Interface.Constants.*;
+import static Interface.Constants.TYPE_MESSAGE;
 
 /**
  * The graphical user interface of the program
@@ -25,19 +31,16 @@ import javax.swing.*;
  * @author c12jbr
  *
  */
-public class GUI{
+public class GUI implements Observer{
     private JFrame frame;
     private JTextArea jtaNameList;
 
     private OpenDebuggerListener debugger;
 
-    public JTextArea getChatField() {
-        return chatField;
-    }
-
     private JTextArea chatField;
 
     private JTextArea writeField;
+
     private JScrollPane nlsp;
     /**
      * Creates the GUI and asks the user of its name.
@@ -46,14 +49,10 @@ public class GUI{
     }
 
 
-    public OpenDebuggerListener getDebugger() {
-        return debugger;
-    }
-
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "shadowcat.cs.umu.se");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "void.cs.umu.se");
             if(nameService==null){
                 int answer = JOptionPane.showConfirmDialog (null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
@@ -227,20 +226,20 @@ public class GUI{
             // disconnect possible connection before shutting down
             @Override
             public void windowClosing(WindowEvent e) {
-                try {
-                    if(GCom.getCurrentGroup()!=null){
+
+                if(GCom.getCurrentGroup()!=null){
+                    try {
                         GCom.leaveGroup(GCom.getCurrentGroup());
+                        GCom.leaveGroup(GCom.getAllMembersGroupName());
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
+                    } catch (NotBoundException e1) {
+                        e1.printStackTrace();
+                    } catch (UnknownHostException e1) {
+                        e1.printStackTrace();
                     }
-                    GCom.leaveGroup(GCom.getAllMembersGroupName());
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
-                } catch (NotBoundException e1) {
-                    e1.printStackTrace();
-                } catch (UnknownHostException e1) {
-                    e1.printStackTrace();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
+
 
                 //TODO Gcom.getAllMembers
 
@@ -255,7 +254,6 @@ public class GUI{
      * for example update the user list or show a received message in the chat
      */
     public void update() {
-
         frame.repaint();
 
 
@@ -267,5 +265,23 @@ public class GUI{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        Message message = (Message) o;
+
+        switch (message.getType()) {
+            case TYPE_CREATE_GROUP:
+                jtaNameList.append(message.getMessage());
+                break;
+            case TYPE_REMOVE_GROUP:
+                jtaNameList.replaceSelection(message.getMessage());
+                break;
+            case TYPE_MESSAGE:
+                chatField.append(message.getSender()+": "+message.getMessage());
+                break;
+        }
+        update();
     }
 }

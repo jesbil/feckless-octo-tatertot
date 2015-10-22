@@ -13,18 +13,6 @@ import java.util.ArrayList;
  */
 public interface MyRemote extends Remote{
 
-
-
-    public void createGroup(String groupName, String leader, VectorClock vc) throws RemoteException;
-
-    public void joinGroup(String name, String groupname, String groupJoined, VectorClock vc) throws RemoteException;
-
-    public void leaveGroup(String name, String groupname, VectorClock vc) throws RemoteException;
-
-
-
-    public void message(String message, String sender, String groupName, VectorClock vc) throws RemoteException;
-
-    public void removeGroup(String groupName,String name, VectorClock vc) throws RemoteException;
+    public void receiveMulticast(Message message) throws RemoteException;
 
 }

@@ -32,6 +32,8 @@ public class sendMessageListener implements ActionListener {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 

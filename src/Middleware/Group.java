@@ -1,15 +1,23 @@
 package Middleware;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by oi12pjn on 2015-10-07.
  */
-public class Group {
+public class Group implements Serializable{
 
     private String name;
-
     private ArrayList<Member> members;
+
+    public ArrayList<Member> getMembers(){
+        return members;
+    }
+
+    public String getName(){
+        return name;
+    }
 
 
     public Group(String name) {
@@ -24,11 +32,19 @@ public class Group {
         members.remove(m);
     }
 
-    public ArrayList<Member> getMembers(){
-        return members;
+    @Override
+    public boolean equals(Object obj){
+        if(obj instanceof Group){
+            if(((Group) obj).getName().equals(name)){
+                return true;
+            }
+        }
+        return false;
     }
 
-    public String getName(){
-        return name;
+    @Override
+    public int hashCode(){
+        return this.hashCode();
     }
+
 }

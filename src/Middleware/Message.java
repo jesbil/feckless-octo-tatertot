@@ -1,20 +1,22 @@
 package Middleware;
 
-import java.util.HashMap;
+import java.io.Serializable;
 
 /**
  * Created by c12jbr on 2015-10-08.
  */
-public class Message {
-    private String groupName;
-    private String sender;
+public class Message implements Serializable{
+    private Group group;
+    private Member sender;
     private String message;
     private int type;
-    private HashMap<String,Integer> clockValue;
+    private VectorClock vectorClock;
 
+    public int getType() {
+        return type;
+    }
 
-
-    public String getSender() {
+    public Member getSender() {
         return sender;
     }
 
@@ -22,24 +24,32 @@ public class Message {
         return message;
     }
 
-    public String getGroupName() {
-        return groupName;
+    public Group getGroup() {
+        return group;
     }
 
-    public Message(String name, String message, HashMap<String,Integer> clockValue, String groupName, int type){
-        this.sender = name;
+    public VectorClock getVectorClock() {
+        return vectorClock;
+    }
+
+    public Message(Member sender, String message, VectorClock vectorClock, Group group, int type){
+        this.sender = sender;
         this.message = message;
-        this.clockValue = clockValue;
-        this.groupName = groupName;
+        this.vectorClock = vectorClock;
+        this.group = group;
         this.type = type;
-
     }
 
-    public HashMap<String, Integer> getClockValue() {
-        return clockValue;
+    @Override
+    public boolean equals(Object obj){
+        //TODO
+        return false;
     }
 
-    public int getType() {
-        return type;
+    @Override
+    public int hashCode(){
+        return this.hashCode();
     }
+
+
 }

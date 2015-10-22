@@ -4,7 +4,6 @@ package Middleware;
 import Interface.Constants;
 import Interface.MyRemote;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -13,6 +12,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
 import static Interface.Constants.*;
+
 
 /**
  * Created by c12jbr on 2015-10-08.
@@ -27,83 +27,31 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     }
 
     // send
-    public void nonReliableMulticast(int type, Group group, String msg, VectorClock vectorClock) throws RemoteException, NotBoundException, UnknownHostException {
-        switch (type){
-            case TYPE_LEAVE_GROUP:
-                for(Member m : group.getMembers()){
-                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
-                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.leaveGroup(localMember.getIP()+","+localMember.getPort(),msg, vectorClock);
-                    }
-                }
-                break;
-            case TYPE_JOIN_GROUP:
-                for(Member m : group.getMembers()){
-                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
-                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.joinGroup(localMember.getIP()+","+localMember.getPort(), group.getName(), msg, vectorClock);
-                    }
-                }
-                break;
-            case TYPE_CREATE_GROUP:
-                for(Member m : group.getMembers()){
-                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
-                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.createGroup(msg,localMember.getIP()+","+localMember.getPort(), vectorClock);
-                    }
-                }
-                break;
+    public void nonReliableMulticast(Message message) throws RemoteException, NotBoundException, UnknownHostException {
+        System.out.println("multicasting to group: "+message.getGroup().getName());
+        for (int i = 0; i < message.getGroup().getMembers().size(); i++) {
+            Member member = message.getGroup().getMembers().get(i);
+            if(!member.equals(localMember)){
+                Registry registry = LocateRegistry.getRegistry(member.getIP(),member.getPort());
+                MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
+                remote.receiveMulticast(message);
+            }else{
+                if(message.getGroup().getName().equals(GCom.getAllMembersGroupName()) && message.getType()== TYPE_JOIN_GROUP){
 
-
-            case TYPE_MESSAGE:
-                for(Member m : group.getMembers()){
-                    Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
-                    MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.message(msg, localMember.getIP()+","+localMember.getPort(), group.getName(), vectorClock);
+                }else{
+                    GCom.receiveMessage(message);
                 }
-                break;
-
-            case TYPE_REMOVE_GROUP:
-                for(Member m : group.getMembers()){
-                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
-                        MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.removeGroup(msg, localMember.getIP()+","+localMember.getPort(), vectorClock);
-                    }
-                }
+            }
         }
-    }
 
-
-    // receive
-
-    @Override
-    public void createGroup(String groupName, String sender, VectorClock vc) throws RemoteException {
-        GCom.groupCreated(groupName,sender, vc);
-    }
-
-    @Override
-    public void joinGroup(String sender, String groupName, String groupJoined, VectorClock vc) throws RemoteException {
-        GCom.groupJoined(sender, groupName, groupJoined, vc);
-    }
-
-    @Override
-    public void leaveGroup(String sender, String groupName, VectorClock vc) throws RemoteException {
-        GCom.leftGroup(groupName, sender, vc);
-    }
-
-    @Override
-    public void message(String message, String sender, String groupName, VectorClock vc) throws RemoteException {
-        GCom.receiveMessage(message,sender,groupName, vc);
 
     }
 
     @Override
-    public void removeGroup(String groupName, String sender, VectorClock vc) throws RemoteException{
-        GCom.groupRemoved(groupName, vc, sender);
+    public void receiveMulticast(Message message)  throws RemoteException{
+        System.out.println("received multicast from: "+message.getSender());
+        GCom.receiveMessage(message);
     }
+
 
 }
