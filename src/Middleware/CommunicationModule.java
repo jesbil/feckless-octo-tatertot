@@ -31,28 +31,28 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
         switch (type){
             case TYPE_LEAVE_GROUP:
                 for(Member m : group.getMembers()){
-                    if(!m.getIP().equals(localMember.getIP())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.leaveGroup(InetAddress.getLocalHost().getHostAddress(),group.getName(), vectorClock);
+                        remote.leaveGroup(localMember.getIP()+","+localMember.getPort(),msg, vectorClock);
                     }
                 }
                 break;
             case TYPE_JOIN_GROUP:
                 for(Member m : group.getMembers()){
-                    if(!m.getIP().equals(localMember.getIP())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.joinGroup(InetAddress.getLocalHost().getHostAddress(), group.getName(), msg, vectorClock);
+                        remote.joinGroup(localMember.getIP()+","+localMember.getPort(), group.getName(), msg, vectorClock);
                     }
                 }
                 break;
             case TYPE_CREATE_GROUP:
                 for(Member m : group.getMembers()){
-                    if(!m.getIP().equals(localMember.getIP())){
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.createGroup(msg,localMember.getIP(), vectorClock);
+                        remote.createGroup(msg,localMember.getIP()+","+localMember.getPort(), vectorClock);
                     }
                 }
                 break;
@@ -60,23 +60,21 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
             case TYPE_MESSAGE:
                 for(Member m : group.getMembers()){
-                    Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                    Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
                     MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                    remote.message(msg, InetAddress.getLocalHost().getHostAddress(), group.getName(), vectorClock);
+                    remote.message(msg, localMember.getIP()+","+localMember.getPort(), group.getName(), vectorClock);
                 }
                 break;
 
             case TYPE_REMOVE_GROUP:
                 for(Member m : group.getMembers()){
-                    if(!m.getIP().equals(localMember.getIP())) {
-                        Registry registry = LocateRegistry.getRegistry(m.getIP(), Constants.port);
+                    if( !m.getIP().equals(localMember.getIP()) || (m.getPort() !=localMember.getPort())) {
+                        Registry registry = LocateRegistry.getRegistry(m.getIP(), m.getPort());
                         MyRemote remote = (MyRemote) registry.lookup(Constants.RMI_ID);
-                        remote.removeGroup(msg, InetAddress.getLocalHost().getHostAddress(), vectorClock);
+                        remote.removeGroup(msg, localMember.getIP()+","+localMember.getPort(), vectorClock);
                     }
                 }
         }
-
-
     }
 
 

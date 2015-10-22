@@ -10,7 +10,6 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observable;
 
 import static Interface.Constants.*;
@@ -28,6 +27,12 @@ public class GCom extends Observable {
     private static boolean toAllMembers = true;
     private static boolean toGroup = false;
     private static ArrayList<String> debuggLog;
+
+    private static String port;
+
+    public static String getPort() {
+        return port;
+    }
 
     public static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
@@ -50,11 +55,14 @@ public class GCom extends Observable {
     }
 
     public static void initiate(boolean unordered) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
+        nameServerCommunicator = new NameServerCommunicator();
+        Registry register = LocateRegistry.createRegistry(0);
+        port = register.toString().substring(register.toString().indexOf(":") + 1, register.toString().indexOf("("));
+        port = port.substring(port.indexOf(":") + 1, port.indexOf("]"));
+        port = port.substring(port.indexOf(":")+1);
         groupManagement = new GroupManagementModule();
         messageOrdering = new MessageOrderingModule();
         communication = new CommunicationModule(groupManagement.getLocalMember());
-        nameServerCommunicator = new NameServerCommunicator();
-        Registry register = LocateRegistry.createRegistry(0);
         register.bind(Constants.RMI_ID, communication);
         GCom.unordered = unordered;
         debuggLog = new ArrayList<String>();
@@ -62,7 +70,7 @@ public class GCom extends Observable {
 
     public static void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
         GCom.nameServiceAddress = nameService;
-        ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress);
+        ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress,port);
         groupManagement.setAllMembers(allMembers);
         if(!unordered){
             messageOrdering.addToAllMembersClock(allMembers);
@@ -112,6 +120,7 @@ public class GCom extends Observable {
         try {
             communication.nonReliableMulticast(TYPE_JOIN_GROUP, groupManagement.getGroupByName(GCom.getAllMembersGroupName()),groupName, messageOrdering.getAllMemberVectorClock());
         } catch (RemoteException e) {
+            System.out.println("CRASH: "+e.getMessage());
             groupManagement.removeMemberFromGroup(groupManagement.getAllMembers().getName(), e.getMessage().substring(28, e.getMessage().indexOf(";")));
         }
     }
@@ -124,16 +133,15 @@ public class GCom extends Observable {
             messageOrdering.triggerSelfEvent(toAllMembers);
             nameServerCommunicator.leave(nameServiceAddress);
         }
-        Group temp = groupManagement.getAllMembers();
         groupManagement.leaveGroup(groupName);
         debuggLog.add("Left group: "+groupName);
         if(groupManagement.getGroupByName(groupName).getMembers().size()==0){
             messageOrdering.triggerSelfEvent(toAllMembers);
             groupManagement.removeGroup(groupName);
             debuggLog.add("Removed group: " + groupName);
-            communication.nonReliableMulticast(TYPE_REMOVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
+            communication.nonReliableMulticast(TYPE_REMOVE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
         }else{
-            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, temp, groupName, messageOrdering.getAllMemberVectorClock());
+            communication.nonReliableMulticast(TYPE_LEAVE_GROUP, groupManagement.getAllMembers(), groupName, messageOrdering.getAllMemberVectorClock());
         }
     }
 
@@ -144,14 +152,14 @@ public class GCom extends Observable {
     protected static void groupCreated(String groupName, String sender, VectorClock vc) {
         if(unordered){
             Group newGroup = new Group(groupName);
-            newGroup.addMemberToGroup(new Member(sender));
+            newGroup.addMemberToGroup(new Member(sender.substring(0,sender.indexOf(",")),Integer.parseInt(sender.substring(sender.indexOf(",")+1))));
             groupManagement.groupCreated(newGroup);
             messageOrdering.addGroup(groupName);
             debuggLog.add("Group: "+groupName+" created, requested by: "+sender);
         }else{
             if(messageOrdering.receiveCompare(groupName,vc, sender)){
                 Group newGroup = new Group(groupName);
-                newGroup.addMemberToGroup(new Member(sender));
+                newGroup.addMemberToGroup(new Member(sender.substring(0,sender.indexOf(",")),Integer.parseInt(sender.substring(sender.indexOf(",")+1))));
                 groupManagement.groupCreated(newGroup);
                 debuggLog.add("Group: " + groupName + " created, requested by: " + sender);
                 messageOrdering.addGroup(groupName);
@@ -187,11 +195,12 @@ public class GCom extends Observable {
 
     protected static void groupJoined(String sender, String groupName, String groupJoined, VectorClock vc){
         if(unordered){
-            groupManagement.addMemberToGroup(sender, groupJoined);
+            System.out.println(sender);
+            groupManagement.addMemberToGroup(sender, groupJoined,Integer.parseInt(sender.substring(sender.indexOf(",")+1)));
             debuggLog.add("User: "+sender+" joined group: "+groupJoined);
         }else{
             if(messageOrdering.receiveCompare(groupName, vc, sender)){
-                groupManagement.addMemberToGroup(sender, groupJoined);
+                groupManagement.addMemberToGroup(sender, groupJoined,Integer.parseInt(sender.substring(sender.indexOf(",")+1)));
                 messageOrdering.triggerSelfEvent(toAllMembers);
                 messageOrdering.getAllMemberVectorClock().mergeWith(vc);
                 if(groupJoined.equals(GCom.getCurrentGroup())){

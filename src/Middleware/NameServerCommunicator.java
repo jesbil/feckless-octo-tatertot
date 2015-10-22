@@ -23,11 +23,11 @@ public class NameServerCommunicator {
         members=new ArrayList<Member>();
     }
 
-    public ArrayList<Member> retrieveMembers(String nameServiceAddress) throws IOException {
+    public ArrayList<Member> retrieveMembers(String nameServiceAddress, String port) throws IOException {
 
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
-        byte[] sendData = "hej".getBytes();
+        byte[] sendData = ("hej,"+port).getBytes();
         byte[] nrOfMemz = new byte[4];
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);
         clientSocket.send(sendPacket);
@@ -40,7 +40,9 @@ public class NameServerCommunicator {
             byte[] receiveData = new byte[1024];
             DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
             clientSocket.receive(receivePacket);
-            Member m = new Member(new String(receivePacket.getData()).trim());
+            String str = new String(receivePacket.getData()).trim();
+            Member m = new Member(str.substring(0,str.indexOf(",")),Integer.parseInt(str.substring(str.indexOf(",")+1)));
+            System.out.println(m.getIP()+":"+m.getPort());
             members.add(m);
 
 

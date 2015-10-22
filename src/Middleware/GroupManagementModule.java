@@ -22,7 +22,7 @@ public class GroupManagementModule {
     public GroupManagementModule() throws UnknownHostException{
         groups = new ArrayList<Group>();
         allMembers = new Group("allMembers");
-        localMember = new Member(InetAddress.getLocalHost().getHostAddress());
+        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
     }
 
     public boolean createGroup(String name) throws GroupException {
@@ -98,15 +98,16 @@ public class GroupManagementModule {
     private Member findMember(String name, Group g){
         ArrayList<Member> temp = g.getMembers();
         for(Member m: temp){
-            if(m.getIP().equals(name)){
+            String name1 = m.getIP()+","+m.getPort();
+            if(name1.equals(name)){
                 return m;
             }
         }
         return null;
     }
 
-    public void addMemberToGroup(String name, String groupName) {
-        getGroupByName(groupName).addMemberToGroup(new Member(name));
+    public void addMemberToGroup(String name, String groupName, int port) {
+        getGroupByName(groupName).addMemberToGroup(new Member(name.substring(0,name.indexOf(",")),port));
     }
 
     public void removeMemberFromGroup(String groupName, String name) {
