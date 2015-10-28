@@ -130,11 +130,20 @@ public class GCom extends Observable implements Observer {
 
 
     public static void sendMessage(String text, ArrayList<Group> groups) throws RemoteException, NotBoundException, UnknownHostException {
-        for (Group group : groups){
-            Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
-            messageOrdering.triggerSelfEvent(group.getName());
-            communication.nonReliableMulticast(message);
+        if(groups==null){
+            for (Group group : groupManagement.getJoinedGroups()){
+                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
+                messageOrdering.triggerSelfEvent(group.getName());
+                communication.nonReliableMulticast(message);
+            }
+        }else{
+            for (Group group : groups){
+                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
+                messageOrdering.triggerSelfEvent(group.getName());
+                communication.nonReliableMulticast(message);
+            }
         }
+
     }
 
     private static void groupCreated(Message message) {
