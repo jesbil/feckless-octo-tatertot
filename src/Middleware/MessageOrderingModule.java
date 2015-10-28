@@ -23,6 +23,7 @@ public class MessageOrderingModule extends Observable{
     }
 
     public void receiveMessage(Message message) {
+        System.out.println("Message from "+message.getSender()+" put in holdbackqueue");
         holdBackQueue.add(message);
     }
 

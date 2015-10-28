@@ -41,7 +41,7 @@ public class Member implements Serializable{
 
     @Override
     public int hashCode(){
-        return this.hashCode();
+        return port;
     }
 
 }
