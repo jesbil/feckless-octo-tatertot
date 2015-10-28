@@ -278,7 +278,7 @@ public class GUI implements Observer{
                 jtaNameList.replaceSelection(message.getMessage());
                 break;
             case TYPE_MESSAGE:
-                chatField.append(message.getSender()+": "+message.getMessage());
+                chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
                 break;
         }
         update();
