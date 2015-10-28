@@ -14,7 +14,7 @@ public class VectorClock implements Serializable{
 
     public VectorClock() {
         clockValue = new HashMap<String,Integer>();
-        clockValue.put(GCom.getLocalMember().getIP(),0);
+        clockValue.put(GCom.getLocalMember().getName(),0);
     }
     public VectorClock(HashMap<String,Integer> clockValue){
         this.clockValue= new HashMap<String, Integer>(clockValue);
@@ -24,9 +24,7 @@ public class VectorClock implements Serializable{
     public void triggerSelfEvent() {
         int value = clockValue.get(GCom.getLocalMember().getIP());
         value++;
-        clockValue.put(GCom.getLocalMember().getIP(),value);
-
-
+        clockValue.put(GCom.getLocalMember().getName(),value);
     }
 
 

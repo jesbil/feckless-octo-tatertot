@@ -19,39 +19,37 @@ public class GroupManagementModule {
         return groups;
     }
 
-
-    public GroupManagementModule() throws UnknownHostException{
-        groups = new ArrayList<Group>();
-        allMembers = new Group("allMembers");
-        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
-    }
-
-    public void addMemberToGroup(Member member, Group group) {
-        if(group.getName().equals(allMembers.getName())){
-            allMembers.addMemberToGroup(member);
-        }else{
-            groups.get(groups.indexOf(group)).addMemberToGroup(member);
-        }
-    }
-
-    public void removeMemberFromGroup(Member member, Group group) {
-        if(group.getName().equals(allMembers.getName())){
-            allMembers.removeMemberFromGroup(member);
-        }else{
-            groups.get(groups.indexOf(group)).removeMemberFromGroup(member);
-        }
-    }
-
-    public void removeGroup(String groupName){
-        groups.remove(getGroupByName(groupName));
-    }
-
     public Group getAllMembers() {
         return allMembers;
     }
 
     public Member getLocalMember() {
         return localMember;
+    }
+
+
+    public GroupManagementModule() throws UnknownHostException{
+        groups = new ArrayList<>();
+        allMembers = new Group("allMembers");
+        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
+    }
+
+    public void addMemberToGroup(String groupName, Member sender) {
+        getGroupByName(groupName).addMemberToGroup(sender);
+        if(sender.equals(localMember)){
+            joinedGroups.add(getGroupByName(groupName));
+        }
+    }
+
+    public void removeMemberFromGroup(String groupName, Member sender) {
+        getGroupByName(groupName).addMemberToGroup(sender);
+        if(sender.equals(localMember)){
+            joinedGroups.remove(getGroupByName(groupName));
+        }
+    }
+
+    public void removeGroup(String groupName){
+        groups.remove(getGroupByName(groupName));
     }
 
     public void groupCreated(String message, Member sender) {
@@ -80,4 +78,7 @@ public class GroupManagementModule {
         return null;
     }
 
+    public ArrayList<Group> getJoinedGroups() {
+        return joinedGroups;
+    }
 }

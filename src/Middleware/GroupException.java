@@ -8,7 +8,7 @@ public class GroupException extends Exception {
 
     @Override
     public String getMessage() {
-        return exceptionMessage+" - "+ GCom.getCurrentGroup();
+        return exceptionMessage+" - ";
     }
 
     public GroupException(String s) {

@@ -10,6 +10,7 @@ public class Group implements Serializable{
 
     private String name;
     private ArrayList<Member> members;
+    private VectorClock vectorClock;
 
     public ArrayList<Member> getMembers(){
         return members;
@@ -19,15 +20,20 @@ public class Group implements Serializable{
         return name;
     }
 
+    public VectorClock getVectorClock() {
+        return vectorClock;
+    }
 
     public Group(String name) {
         members = new ArrayList<Member>();
         this.name=name;
     }
 
+
     public void addMemberToGroup(Member m){
         members.add(m);
     }
+
     public void removeMemberFromGroup(Member m){
         members.remove(m);
     }
@@ -41,6 +47,7 @@ public class Group implements Serializable{
         }
         return false;
     }
+
 
     @Override
     public int hashCode(){

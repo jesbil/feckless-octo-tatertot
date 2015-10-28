@@ -4,6 +4,7 @@ package Client;
  * Created by c12jbr on 2015-10-08.
  */
 import Middleware.GCom;
+import Middleware.Group;
 import Middleware.Message;
 
 import java.awt.BorderLayout;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -227,23 +229,18 @@ public class GUI implements Observer{
             @Override
             public void windowClosing(WindowEvent e) {
 
-                if(GCom.getCurrentGroup()!=null){
-                    try {
-                        GCom.leaveGroup(GCom.getCurrentGroup());
-                        GCom.leaveGroup(GCom.getAllMembersGroupName());
-                    } catch (RemoteException e1) {
-                        e1.printStackTrace();
-                    } catch (NotBoundException e1) {
-                        e1.printStackTrace();
-                    } catch (UnknownHostException e1) {
-                        e1.printStackTrace();
-                    }
+
+                try {
+                    GCom.shutdown();
+                } catch (RemoteException e1) {
+                    e1.printStackTrace();
+                } catch (NotBoundException e1) {
+                    e1.printStackTrace();
+                } catch (UnknownHostException e1) {
+                    e1.printStackTrace();
                 }
-
-
-                //TODO Gcom.getAllMembers
-
             }
+
         };
         return exitListener;
     }

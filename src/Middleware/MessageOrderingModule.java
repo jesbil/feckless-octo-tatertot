@@ -2,8 +2,8 @@ package Middleware;
 
 import Interface.Constants;
 
+import javax.crypto.spec.GCMParameterSpec;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -12,56 +12,32 @@ import java.util.Observer;
  */
 public class MessageOrderingModule extends Observable{
     private ArrayList<Message> holdBackQueue;
-    private VectorClock groupVectorClock;
-    private VectorClock allMemberVectorClock;
 
-    public VectorClock getAllMemberVectorClock() {
-        return allMemberVectorClock;
-    }
+
 
     public MessageOrderingModule() {
         holdBackQueue = new ArrayList<Message>();
-        groupVectorClock = new VectorClock();
-        allMemberVectorClock = new VectorClock();
     }
 
-    public void triggerSelfEvent(boolean toAllMembers){
-
-        if(toAllMembers){
-            allMemberVectorClock.triggerSelfEvent();
-            GCom.getDebuggLog().add("EVENT TRIGGERED IN ALLMEMBERS CLOCK: " + allMemberVectorClock.getClock().toString());
-        }
-        else{
-            groupVectorClock.triggerSelfEvent();
-            GCom.getDebuggLog().add("EVENT TRIGGERED IN GROUP CLOCK: " + groupVectorClock.getClock().toString());
-        }
+    public void triggerSelfEvent(String groupName){
+        GCom.getGroupByName(groupName).getVectorClock().triggerSelfEvent();
     }
 
     public void receiveMessage(Message message) {
         holdBackQueue.add(message);
     }
 
-    public VectorClock getGroupVectorClock() {
-        return groupVectorClock;
-    }
-
     public boolean allowedToDeliver(Message message) {
-        if(message.getGroup().getName().equals(GCom.getAllMembersGroupName())){
-            if(allMemberVectorClock.compare(message.getVectorClock(),message.getSender().getName())==Constants.CLOCK_TYPE_EQ){
-                return true;
-            }
-            return false;
-        }else{
-            if(groupVectorClock.compare(message.getVectorClock(),message.getSender().getName())==Constants.CLOCK_TYPE_EQ){
-                return true;
-            }
-            return false;
+
+        if(message.getVectorClock().compare(GCom.getGroupByName(message.getGroup().getName()).getVectorClock(),message.getSender().getName())==Constants.CLOCK_TYPE_EQ){
+            return true;
         }
+        return false;
     }
 
     public void addToAllMembersClock(ArrayList<Member> members) {
         for(Member m: members){
-            allMemberVectorClock.getClock().put(m.getIP(),0);
+            GCom.getGroupByName(GCom.getAllMembersGroupName()).getVectorClock().getClock().put(m.getName(), 0);
         }
     }
 
