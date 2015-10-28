@@ -272,10 +272,10 @@ public class GUI implements Observer{
 
         switch (message.getType()) {
             case TYPE_CREATE_GROUP:
-                jtaNameList.append(message.getMessage());
+                jtaNameList.append(message.getMessage()+"\n");
                 break;
             case TYPE_REMOVE_GROUP:
-                jtaNameList.replaceSelection(message.getMessage());
+                jtaNameList.getText().replace(message.getMessage()+"\n","");
                 break;
             case TYPE_MESSAGE:
                 chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
