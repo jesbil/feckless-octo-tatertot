@@ -28,8 +28,6 @@ public class LeaveGroupListener implements ActionListener {
             e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

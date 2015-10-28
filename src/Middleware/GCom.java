@@ -81,6 +81,7 @@ public class GCom extends Observable implements Observer {
             messageOrdering.addToAllMembersClock(allMembers);
         }
         debuggLog.add("Connected to Name Service Server @ "+nameService);
+        joinGroup(getAllMembersGroupName());
     }
 
 
