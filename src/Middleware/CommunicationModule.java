@@ -62,7 +62,6 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public ArrayList<Group> sendGroups() throws RemoteException {
-        System.out.println("Sending groups");
         return GCom.getGroups();
     }
 

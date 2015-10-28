@@ -30,7 +30,6 @@ public class GCom extends Observable implements Observer {
     private static Member localMember;
 
     private static String port;
-    private static ArrayList<Group> groups;
 
     public static String getPort() {
         return port;
@@ -57,7 +56,7 @@ public class GCom extends Observable implements Observer {
     }
 
     public static ArrayList<Group> getGroups() {
-        return groups;
+        return groupManagement.getGroups();
     }
 
     public void initiate(boolean unordered, Observer observer) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
@@ -85,8 +84,7 @@ public class GCom extends Observable implements Observer {
         messageOrdering.addToAllMembersClock(allMembers);
         debuggLog.add("Connected to Name Service Server @ " + nameService);
         if(communication.fetchGroups(allMembers.get(0))!=null){
-            System.out.println("HÄR");
-            groups = new ArrayList<>(communication.fetchGroups(allMembers.get(0)));
+            groupManagement.setGroups(communication.fetchGroups(allMembers.get(0)));
         }
         joinGroup(getAllMembersGroupName());
     }

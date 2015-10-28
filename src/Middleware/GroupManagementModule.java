@@ -78,4 +78,8 @@ public class GroupManagementModule {
     public ArrayList<Group> getJoinedGroups() {
         return joinedGroups;
     }
+
+    public void setGroups(ArrayList<Group> groups) {
+        this.groups = new ArrayList<>(groups);
+    }
 }
