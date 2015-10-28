@@ -123,7 +123,7 @@ public class GCom extends Observable implements Observer {
     }
 
     public static void leaveGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
+        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
