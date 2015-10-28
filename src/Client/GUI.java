@@ -284,7 +284,16 @@ public class GUI implements Observer{
                     break;
             }
         }
+        if(o instanceof ArrayList){
+            ArrayList<Group> groups = (ArrayList<Group>) o;
+            for (Group group : groups){
+                jtaNameList.append(group.getName()+"\n");
 
-        update();
+            }
+        }
+
+
+            update();
+
     }
 }

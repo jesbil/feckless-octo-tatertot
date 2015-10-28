@@ -38,7 +38,7 @@ public class GroupManagementModule {
     }
 
     public void removeMemberFromGroup(String groupName, Member sender) {
-        getGroupByName(groupName).addMemberToGroup(sender);
+        getGroupByName(groupName).removeMemberFromGroup(sender);
         if(sender.equals(localMember)){
             joinedGroups.remove(getGroupByName(groupName));
         }
