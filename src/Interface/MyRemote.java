@@ -4,6 +4,7 @@ import Middleware.Group;
 import Middleware.Message;
 import Middleware.VectorClock;
 
+import java.lang.reflect.Array;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -14,5 +15,7 @@ import java.util.ArrayList;
 public interface MyRemote extends Remote{
 
     public void receiveMulticast(Message message) throws RemoteException;
+
+    public ArrayList<Group> fetchGroups() throws RemoteException;
 
 }
