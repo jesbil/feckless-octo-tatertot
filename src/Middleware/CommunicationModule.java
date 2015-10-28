@@ -1,7 +1,6 @@
 package Middleware;
 
 
-import Interface.Constants;
 import Interface.MyRemote;
 
 import java.net.UnknownHostException;
@@ -54,10 +53,15 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
         GCom.receiveMessage(message);
     }
 
-    @Override
-    public ArrayList<Group> fetchGroups() throws RemoteException {
-        return GCom.getGroups();
+    public ArrayList<Group> fetchGroups(Member member) throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry(member.getIP(),member.getPort());
+        MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
+        return remote.sendGroups();
     }
 
+    @Override
+    public ArrayList<Group> sendGroups() throws RemoteException {
+        return GCom.getGroups();
+    }
 
 }
