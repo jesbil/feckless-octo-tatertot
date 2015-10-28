@@ -23,7 +23,7 @@ public class VectorClock implements Serializable{
 
 
     public void triggerSelfEvent() {
-        int value = clockValue.get(GCom.getLocalMember().getIP());
+        int value = clockValue.get(GCom.getLocalMember().getName());
         value++;
         clockValue.put(GCom.getLocalMember().getName(),value);
     }

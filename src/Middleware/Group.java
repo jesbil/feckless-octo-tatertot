@@ -28,6 +28,7 @@ public class Group implements Serializable{
         members = new ArrayList<Member>();
         this.name=name;
         vectorClock = new VectorClock();
+
     }
 
 

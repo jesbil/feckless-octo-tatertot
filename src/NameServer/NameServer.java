@@ -1,5 +1,6 @@
 package NameServer;
 
+import javax.sound.sampled.Port;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.DatagramPacket;
@@ -86,7 +87,7 @@ public class NameServer {
         for(String member : members){
             if(member.equals(currentMember)){
             }else{
-                System.out.println("sent member: "+ member +" to: "+ IPAddress);
+                System.out.println("sent member: "+ member +" to: "+ IPAddress+","+port);
                 serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
             }
         }

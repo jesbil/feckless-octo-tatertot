@@ -23,15 +23,11 @@ public class GroupManagementModule {
         return allMembers;
     }
 
-    public Member getLocalMember() {
-        return localMember;
-    }
-
-
-    public GroupManagementModule() throws UnknownHostException{
+    public GroupManagementModule(Member localMember) throws UnknownHostException{
         groups = new ArrayList<>();
+        joinedGroups = new ArrayList<>();
+        this.localMember = localMember;
         allMembers = new Group("allMembers");
-        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
     }
 
     public void addMemberToGroup(String groupName, Member sender) {

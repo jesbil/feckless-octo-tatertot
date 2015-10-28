@@ -238,6 +238,8 @@ public class GUI implements Observer{
                     e1.printStackTrace();
                 } catch (UnknownHostException e1) {
                     e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
 

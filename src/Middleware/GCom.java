@@ -3,6 +3,7 @@ package Middleware;
 import Interface.Constants;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -25,9 +26,8 @@ public class GCom extends Observable implements Observer {
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
     private static boolean unordered;
-    private static boolean toAllMembers = true;
-    private static boolean toGroup = false;
     private static ArrayList<String> debuggLog;
+    private static Member localMember;
 
     private static String port;
 
@@ -40,19 +40,11 @@ public class GCom extends Observable implements Observer {
     }
 
     public static Member getLocalMember(){
-        return groupManagement.getLocalMember();
+        return localMember;
     }
 
     public static ArrayList<Group> getJoinedGroups(){
         return groupManagement.getJoinedGroups();
-    }
-
-    public static ArrayList<String> getGroupNames(){
-        ArrayList<String> groupNames = new ArrayList<>();
-        for (int i = 0; i < groupManagement.getGroups().size(); i++) {
-            groupNames.add(groupManagement.getGroups().get(i).getName());
-        }
-        return  groupNames;
     }
 
     public static ArrayList<String> getDebuggLog() {
@@ -69,11 +61,11 @@ public class GCom extends Observable implements Observer {
         port = register.toString().substring(register.toString().indexOf(":") + 1, register.toString().indexOf("("));
         port = port.substring(port.indexOf(":") + 1, port.indexOf("]"));
         port = port.substring(port.indexOf(":")+1);
-
-        groupManagement = new GroupManagementModule();
+        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
+        groupManagement = new GroupManagementModule(localMember);
         messageOrdering = new MessageOrderingModule();
         messageOrdering.addObserver(this);
-        communication = new CommunicationModule(groupManagement.getLocalMember());
+        communication = new CommunicationModule(localMember);
 
         register.bind(Constants.RMI_ID, communication);
         GCom.unordered = unordered;
@@ -119,20 +111,20 @@ public class GCom extends Observable implements Observer {
 
 
     public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        Message message = new Message(groupManagement.getLocalMember(),groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
+        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
 
     public static void joinGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        Message message = new Message(groupManagement.getLocalMember(),groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
+        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
     public static void leaveGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
-        Message message = new Message(groupManagement.getLocalMember(),groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
+        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
@@ -140,13 +132,11 @@ public class GCom extends Observable implements Observer {
 
     public static void sendMessage(String text, ArrayList<Group> groups) throws RemoteException, NotBoundException, UnknownHostException {
         for (Group group : groups){
-            Message message = new Message(groupManagement.getLocalMember(),text,group.getVectorClock(),group,TYPE_MESSAGE);
+            Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
             messageOrdering.triggerSelfEvent(group.getName());
             communication.nonReliableMulticast(message);
         }
     }
-
-
 
     private static void groupCreated(Message message) {
         groupManagement.groupCreated(message.getMessage(),message.getSender());
@@ -174,11 +164,12 @@ public class GCom extends Observable implements Observer {
         notifyObservers(o);
     }
 
-    public static void shutdown() throws RemoteException, NotBoundException, UnknownHostException {
+    public static void shutdown() throws IOException, NotBoundException {
         ArrayList<Group> groups = new ArrayList<>(getJoinedGroups());
         for(Group group : groups){
             leaveGroup(group.getName());
         }
+        nameServerCommunicator.leave(nameServiceAddress);
 
     }
 }
