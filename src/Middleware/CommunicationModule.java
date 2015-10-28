@@ -49,7 +49,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public void receiveMulticast(Message message)  throws RemoteException{
-        System.out.println("received multicast from: "+message.getSender());
+        System.out.println("received multicast from: "+message.getSender().getName());
         GCom.receiveMessage(message);
     }
 

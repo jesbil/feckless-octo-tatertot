@@ -92,10 +92,10 @@ public class VectorClock implements Serializable{
         int nr = 0;
         int nrTrue = 0;
         for (String id : vcIds) {
-            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP()) || sender.equals(GCom.getLocalMember().getIP())){
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getName()) || sender.equals(GCom.getLocalMember().getName())){
                 System.out.println("skipped: "+id);
             }else{
-                System.out.println("Comparing"+id+": on s:"+sender+": & r:"+GCom.getLocalMember().getIP());
+                System.out.println("Comparing"+id+": on s:"+sender+": & r:"+GCom.getLocalMember().getName());
                 nr++;
                 System.out.println(clockValue.get(id)+":"+vc.getClock().get(id));
                 if (clockValue.get(id).equals(vc.getClock().get(id))) {
@@ -116,7 +116,7 @@ public class VectorClock implements Serializable{
         int nreq=0;
         int nrlt=0;
         for(String id:vcIds){
-            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())) {
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getName())) {
             }
             else{
                 nr++;
@@ -143,7 +143,7 @@ public class VectorClock implements Serializable{
         int nreq=0;
         int nrbt=0;
         for(String id:vcIds){
-            if(id.equals(sender) || id.equals(GCom.getLocalMember().getIP())) {
+            if(id.equals(sender) || id.equals(GCom.getLocalMember().getName())) {
             }
             else{
                 nr++;
@@ -193,6 +193,6 @@ public class VectorClock implements Serializable{
 
     @Override
     public int hashCode() {
-        return this.hashCode();
+        return 123;
     }
 }
