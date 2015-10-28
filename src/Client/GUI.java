@@ -54,7 +54,7 @@ public class GUI implements Observer{
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "void.cs.umu.se");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "dobby.cs.umu.se");
             if(nameService==null){
                 int answer = JOptionPane.showConfirmDialog (null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
