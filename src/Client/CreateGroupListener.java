@@ -17,14 +17,16 @@ public class CreateGroupListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String groupName = JOptionPane.showInputDialog(null, "Name your group", "groupName");
-        try {
-            GCom.createGroup(groupName);
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if(groupName!=null){
+            try {
+                GCom.createGroup(groupName);
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

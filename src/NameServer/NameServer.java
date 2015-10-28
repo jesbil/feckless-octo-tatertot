@@ -87,7 +87,7 @@ public class NameServer {
         for(String member : members){
             if(member.equals(currentMember)){
             }else{
-                System.out.println("sent member: "+ member +" to: "+ IPAddress+","+port);
+                System.out.println("sent member: "+ member +" to: "+ IPAddress);
                 serverSocket.send(new DatagramPacket(member.getBytes(), member.length(), IPAddress, port));
             }
         }

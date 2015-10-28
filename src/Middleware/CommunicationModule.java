@@ -36,7 +36,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                 MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
                 remote.receiveMulticast(message);
             }else{
-                if(message.getGroup().getName().equals(GCom.getAllMembersGroupName()) && message.getType()== TYPE_JOIN_GROUP){
+                if(message.getMessage().equals(GCom.getAllMembersGroupName()) && message.getType()== TYPE_JOIN_GROUP){
 
                 }else{
                     GCom.receiveMessage(message);
