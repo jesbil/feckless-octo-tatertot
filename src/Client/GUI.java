@@ -268,19 +268,23 @@ public class GUI implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
-        Message message = (Message) o;
 
-        switch (message.getType()) {
-            case TYPE_CREATE_GROUP:
-                jtaNameList.append(message.getMessage()+"\n");
-                break;
-            case TYPE_REMOVE_GROUP:
-                jtaNameList.getText().replace(message.getMessage()+"\n","");
-                break;
-            case TYPE_MESSAGE:
-                chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
-                break;
+        if(o instanceof Message){
+            Message message = (Message) o;
+
+            switch (message.getType()) {
+                case TYPE_CREATE_GROUP:
+                    jtaNameList.append(message.getMessage()+"\n");
+                    break;
+                case TYPE_REMOVE_GROUP:
+                    jtaNameList.getText().replace(message.getMessage()+"\n","");
+                    break;
+                case TYPE_MESSAGE:
+                    chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
+                    break;
+            }
         }
+
         update();
     }
 }

@@ -83,14 +83,17 @@ public class GCom extends Observable implements Observer {
         groupManagement.setAllMembers(allMembers);
         messageOrdering.addToAllMembersClock(allMembers);
         debuggLog.add("Connected to Name Service Server @ " + nameService);
-        if(communication.fetchGroups(allMembers.get(0))!=null){
-            groupManagement.setGroups(communication.fetchGroups(allMembers.get(0)));
+        ArrayList<Group> temp;
+        if((temp = communication.fetchGroups(allMembers.get(0)))!=null){
+            groupManagement.setGroups(temp);
+            setChanged();
+            notifyObservers();
         }
         joinGroup(getAllMembersGroupName());
     }
 
 
-    protected static void receiveMessage(Message message) {
+  protected static void receiveMessage(Message message) {
         messageOrdering.receiveMessage(message);
         messageOrdering.performNextIfPossible();
     }

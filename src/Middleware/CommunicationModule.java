@@ -57,11 +57,11 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
         System.out.println("Fetching groups from: "+member.getIP());
         Registry registry = LocateRegistry.getRegistry(member.getIP(),member.getPort());
         MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
-        return remote.sendGroups();
+        return remote.retrieveGroups();
     }
 
     @Override
-    public ArrayList<Group> sendGroups() throws RemoteException {
+    public ArrayList<Group> retrieveGroups() throws RemoteException {
         return GCom.getGroups();
     }
 

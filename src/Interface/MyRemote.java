@@ -18,5 +18,5 @@ public interface MyRemote extends Remote{
 
     public void receiveMulticast(Message message) throws RemoteException;
 
-    public ArrayList<Group> sendGroups() throws RemoteException;
+    public ArrayList<Group> retrieveGroups() throws RemoteException;
 }
