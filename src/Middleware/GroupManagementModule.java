@@ -51,6 +51,7 @@ public class GroupManagementModule {
     public void groupCreated(String message, Member sender) {
         Group group = new Group(message);
         group.addMemberToGroup(sender);
+        groups.add(group);
         if(sender.equals(localMember)){
             joinedGroups.add(group);
         }
