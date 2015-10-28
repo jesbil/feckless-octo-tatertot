@@ -229,7 +229,6 @@ public class GUI implements Observer{
             @Override
             public void windowClosing(WindowEvent e) {
 
-
                 try {
                     GCom.shutdown();
                 } catch (RemoteException e1) {

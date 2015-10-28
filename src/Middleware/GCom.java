@@ -192,6 +192,7 @@ public class GCom extends Observable implements Observer {
         for(Group group : groups){
             leaveGroup(group.getName());
         }
+        leaveGroup(getAllMembersGroupName());
         nameServerCommunicator.leave(nameServiceAddress);
 
     }
