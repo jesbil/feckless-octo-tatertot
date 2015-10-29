@@ -1,6 +1,7 @@
 package Client;
 
 import Middleware.GCom;
+import Middleware.GroupException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -22,12 +23,12 @@ public class LeaveGroupListener implements ActionListener {
         if(groupName!=null){
             try {
                 GCom.leaveGroup(groupName);
-            } catch (RemoteException e) {
-                e.printStackTrace();
             } catch (NotBoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (GroupException e) {
+                System.out.println(e.getMessage());
             }
         }
 

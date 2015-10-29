@@ -27,25 +27,31 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     }
 
     // send
-    public void nonReliableMulticast(Message message) throws RemoteException, NotBoundException, UnknownHostException {
-        System.out.println("multicasting to group: "+message.getGroup().getName());
+    public void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException, GroupException {
+
+        System.out.println("multicasting to group: " + message.getGroup().getName());
         for (int i = 0; i < message.getGroup().getMembers().size(); i++) {
             Member member = message.getGroup().getMembers().get(i);
-            if(!member.equals(localMember)){
-                Registry registry = LocateRegistry.getRegistry(member.getIP(),member.getPort());
-                MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
-                remote.receiveMulticast(message);
-            }else{
-                if(message.getMessage().equals(GCom.getAllMembersGroupName()) && message.getType()== TYPE_JOIN_GROUP){
+            if (!member.equals(localMember)) {
+                try {
+                    Registry registry = LocateRegistry.getRegistry(member.getIP(), member.getPort());
+                    MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
+                    remote.receiveMulticast(message);
+                }catch(RemoteException e) {
+                    throw new GroupException("Member "+member.getName()+" disconnected!",member);
+                }
+            } else {
+                if (message.getMessage().equals(GCom.getAllMembersGroupName()) && message.getType() == TYPE_JOIN_GROUP) {
 
-                }else{
+                } else {
                     GCom.receiveMessage(message);
                 }
             }
         }
-
-
     }
+
+
+
 
     @Override
     public void receiveMulticast(Message message)  throws RemoteException{

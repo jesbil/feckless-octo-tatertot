@@ -5,6 +5,7 @@ package Client;
  */
 import Middleware.GCom;
 import Middleware.Group;
+import Middleware.GroupException;
 import Middleware.Message;
 
 import java.awt.BorderLayout;
@@ -56,7 +57,7 @@ public class GUI implements Observer{
         while(nameService==null){
             nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "continue.cs.umu.se");
             if(nameService==null){
-                int answer = JOptionPane.showConfirmDialog (null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
+                int answer = JOptionPane.showConfirmDialog(null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
                     return null;
                 }
@@ -239,6 +240,8 @@ public class GUI implements Observer{
                     e1.printStackTrace();
                 } catch (IOException e1) {
                     e1.printStackTrace();
+                } catch (GroupException e1) {
+                    System.out.println(e1.getMessage());
                 }
             }
 
@@ -280,6 +283,7 @@ public class GUI implements Observer{
                     break;
                 case TYPE_MESSAGE:
                     chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
+                    chatField.setCaretPosition(chatField.getDocument().getLength());
                     break;
             }
         }

@@ -24,8 +24,8 @@ public class CreateGroupListener implements ActionListener {
                 e.printStackTrace();
             } catch (UnknownHostException e) {
                 e.printStackTrace();
-            } catch (RemoteException e) {
-                e.printStackTrace();
+            } catch (GroupException e) {
+                System.out.println(e.getMessage());
             }
         }
     }

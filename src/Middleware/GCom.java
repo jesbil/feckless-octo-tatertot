@@ -122,43 +122,48 @@ public class GCom extends Observable implements Observer {
         messageOrdering.performNextIfPossible();
     }
 
-
-
-    public static void createGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
-
-    public static void joinGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
-    public static void leaveGroup(String groupName) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
         messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
 
-    public static void sendMessage(String text, ArrayList<Group> groups) throws RemoteException, NotBoundException, UnknownHostException {
+    public static void sendMessage(String text, ArrayList<Group> groups) throws NotBoundException, UnknownHostException, GroupException {
         if(groups==null){
             for (Group group : groupManagement.getJoinedGroups()){
                 Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
                 messageOrdering.triggerSelfEvent(group.getName());
-                communication.nonReliableMulticast(message);
+                try {
+                    communication.nonReliableMulticast(message);
+                } catch (GroupException e) {
+                    groupManagement.removeMemberFromAllGroups(e.getMember());
+                    throw e;
+                }
             }
         }else{
             for (Group group : groups){
                 Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
                 messageOrdering.triggerSelfEvent(group.getName());
-                communication.nonReliableMulticast(message);
+                try {
+                    communication.nonReliableMulticast(message);
+                } catch (GroupException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
     }
 
     private static void groupCreated(Message message) {
@@ -177,9 +182,6 @@ public class GCom extends Observable implements Observer {
         groupManagement.removeGroup(message.getMessage());
     }
 
-
-
-
     @Override
     public void update(Observable observable, Object o) {
         deliverMessage((Message) o);
@@ -187,19 +189,18 @@ public class GCom extends Observable implements Observer {
         notifyObservers(o);
     }
 
-    public static void shutdown() throws IOException, NotBoundException {
+    public static void shutdown() throws IOException, NotBoundException, GroupException {
         ArrayList<Group> groups = new ArrayList<>(getJoinedGroups());
         for(Group group : groups){
             leaveGroup(group.getName());
         }
         leaveGroup(getAllMembersGroupName());
         nameServerCommunicator.leave(nameServiceAddress);
-
     }
 }
 
-//TODO abstrahera bort middlewareklasser från clienten
-//TODO vectorklockorna (?)
-//TODO unordered (if-satseR)
 //TODO groupException catcher iställer för connection refused! connectExcpetion
+//TODO unordered (if-satseR)
 //TODO ta bort RÄTT member från namnservern
+//TODO vectorklockorna (?)
+//TODO abstrahera bort middlewareklasser från clienten
