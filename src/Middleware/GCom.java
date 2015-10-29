@@ -197,3 +197,9 @@ public class GCom extends Observable implements Observer {
 
     }
 }
+
+//TODO abstrahera bort middlewareklasser från clienten
+//TODO vectorklockorna (?)
+//TODO unordered (if-satseR)
+//TODO groupException catcher iställer för connection refused! connectExcpetion
+//TODO ta bort RÄTT member från namnservern

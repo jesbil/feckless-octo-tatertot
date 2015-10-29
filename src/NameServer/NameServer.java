@@ -18,7 +18,7 @@ public class NameServer {
 
     private static final int port = 4444;
     private static DatagramSocket serverSocket;
-    private static ArrayList<String> members = new ArrayList<String>();
+    private static ArrayList<String> members = new ArrayList<>();
 
     public static void main(String[] args) {
         NameServer nameServer = new NameServer();
