@@ -29,7 +29,7 @@ public class MessageOrderingModule extends Observable{
 
     public boolean allowedToDeliver(Message message) {
 
-        if(message.getVectorClock().compare(GCom.getGroupByName(message.getGroup().getName()).getVectorClock(),message.getSender().getName())==Constants.CLOCK_TYPE_EQ){
+        if(message.getVectorClock().compare(GCom.getGroupByName(message.getGroup().getName()).getVectorClock(),message.getSender().getName())){
             GCom.getGroupByName(message.getGroup().getName()).getVectorClock().mergeWith(message.getVectorClock());
             return true;
         }
