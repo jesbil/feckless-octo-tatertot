@@ -1,7 +1,5 @@
 package Client;
 
-import sun.org.mozilla.javascript.tools.shell.JSConsole;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -51,7 +49,10 @@ public class OpenDebuggerListener implements ActionListener {
         frame = new JFrame("DEBUGGER");
         frame.setSize(new Dimension(1000, 500));
         frame.setLocationRelativeTo(mainFrame);
-        frame.add(SendMessagesInInvalidOrder(), BorderLayout.NORTH);
+        JPanel panel = new JPanel();
+        panel.add(pauseStartHoldbackqueue(), BorderLayout.EAST);
+        panel.add(shuffleHoldBackqueue(),BorderLayout.WEST);
+        frame.add(panel, BorderLayout.NORTH);
         frame.add(logPane,BorderLayout.WEST);
         frame.add(waitingQueuePane,BorderLayout.EAST);
         frame.add(border,BorderLayout.CENTER);
@@ -59,9 +60,15 @@ public class OpenDebuggerListener implements ActionListener {
         frame.setVisible(true);
     }
 
-    private JButton SendMessagesInInvalidOrder() {
-        JButton button = new JButton("Send Messages in invalid Order");
-        button.addActionListener(new InvalidOrderMessageslistener());
+    private JButton pauseStartHoldbackqueue() {
+        JButton button = new JButton("Pause/Start Holdbackqueue");
+        button.addActionListener(new PauseStartHoldbackqueue());
+        return button;
+    }
+
+    private JButton shuffleHoldBackqueue() {
+        JButton button = new JButton("Shuffle Holdbackqueue");
+        button.addActionListener(new shuffleHoldbackqueueListener());
         return button;
     }
 

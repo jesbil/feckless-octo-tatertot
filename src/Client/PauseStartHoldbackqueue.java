@@ -11,9 +11,17 @@ import java.rmi.RemoteException;
 /**
  * Created by c12jbr on 2015-10-14.
  */
-public class InvalidOrderMessageslistener implements ActionListener {
+public class PauseStartHoldbackqueue implements ActionListener {
+    boolean paused;
+
+    public PauseStartHoldbackqueue(){
+        paused=false;
+    }
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
+        paused = !paused;
+        GCom.pauseStartHbq(paused);
 
     }
 }

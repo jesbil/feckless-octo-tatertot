@@ -59,7 +59,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
         GCom.receiveMessage(message);
     }
 
-    public ArrayList<Group> fetchGroups(Member member) throws RemoteException, NotBoundException {
+    public ArrayList<Group> fetchGroups(Member member) throws NotBoundException, RemoteException {
         System.out.println("Fetching groups from: "+member.getIP());
         Registry registry = LocateRegistry.getRegistry(member.getIP(),member.getPort());
         MyRemote remote = (MyRemote) registry.lookup(RMI_ID);

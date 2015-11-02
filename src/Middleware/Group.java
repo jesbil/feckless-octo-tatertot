@@ -37,6 +37,9 @@ public class Group implements Serializable{
     public void addMemberToGroup(Member m) {
         members.add(m);
         if(members.size()==size){
+            for(Member member :members){
+                vectorClock.getClock().put(member.getName(),0);
+            }
             started=true;
         }
     }
@@ -64,5 +67,9 @@ public class Group implements Serializable{
 
     public boolean isStarted() {
         return started;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

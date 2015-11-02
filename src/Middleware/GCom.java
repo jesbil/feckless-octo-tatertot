@@ -86,7 +86,7 @@ public class GCom extends Observable implements Observer {
         ArrayList<Group> temp;
         if((temp = communication.fetchGroups(allMembers.get(0)))!=null){
             for(Group group : temp){
-                groupManagement.groupCreated(group.getName(),group.getMembers().get(0));
+                groupManagement.groupCreated(group.getName()+"#"+group.getSize(),group.getMembers().get(0));
                 for (int i = 1; i < group.getMembers().size(); i++) {
                     groupManagement.addMemberToGroup(group.getName(),group.getMembers().get(i));
                 }
@@ -104,7 +104,7 @@ public class GCom extends Observable implements Observer {
     }
 
     private void deliverMessage(Message message) {
-        System.out.println("delivering message of type: "+message.getType());
+        System.out.println("delivering message: "+message.getMessage());
         switch (message.getType()){
             case TYPE_CREATE_GROUP:
                 groupCreated(message);
@@ -119,7 +119,6 @@ public class GCom extends Observable implements Observer {
                 groupRemoved(message);
                 break;
         }
-        messageOrdering.performNextIfPossible();
     }
 
     public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
@@ -191,6 +190,7 @@ public class GCom extends Observable implements Observer {
         deliverMessage((Message) o);
         setChanged();
         notifyObservers(o);
+        messageOrdering.performNextIfPossible();
     }
 
     public static void shutdown() throws IOException, NotBoundException, GroupException {
@@ -200,6 +200,18 @@ public class GCom extends Observable implements Observer {
         }
         leaveGroup(getAllMembersGroupName());
         nameServerCommunicator.leave(nameServiceAddress);
+    }
+
+    public static void pauseStartHbq(boolean paused) {
+        if(paused){
+            messageOrdering.pauseQueue();
+        }else{
+            messageOrdering.startQueue();
+        }
+    }
+
+    public static void shuffleHbq() {
+        messageOrdering.shuffleQueue();
     }
 }
 

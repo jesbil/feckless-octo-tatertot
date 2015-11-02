@@ -2,6 +2,7 @@ package Middleware;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -10,11 +11,12 @@ import java.util.Observer;
  */
 public class MessageOrderingModule extends Observable{
     private ArrayList<Message> holdBackQueue;
-
+    private boolean paused;
 
 
     public MessageOrderingModule() {
-        holdBackQueue = new ArrayList<Message>();
+        paused = false;
+        holdBackQueue = new ArrayList<>();
     }
 
     public void triggerSelfEvent(String groupName){
@@ -27,7 +29,10 @@ public class MessageOrderingModule extends Observable{
     }
 
     public boolean allowedToDeliver(Message message) {
-        if(GCom.getGroupByName(message.getGroup().getName()).equals(GCom.getAllMembersGroupName())){
+        if(paused){
+            return false;
+        }
+        if(message.getGroup().getName().equals(GCom.getAllMembersGroupName())){
             return true;
         }
         if(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().compare(message.getVectorClock(), message.getSender().getName())){
@@ -60,6 +65,18 @@ public class MessageOrderingModule extends Observable{
 
     public void addObserver(Observer observer) {
         super.addObserver(observer);
+    }
+
+    public void pauseQueue() {
+        paused = true;
+    }
+
+    public void startQueue() {
+        paused = false;
+    }
+
+    public void shuffleQueue() {
+        Collections.shuffle(holdBackQueue);
     }
 
     // NY MODUL REDO FÖR BUS största lögnen någonsinn
