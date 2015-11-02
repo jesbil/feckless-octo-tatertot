@@ -13,14 +13,9 @@ public class VectorClock implements Serializable{
     private HashMap<String,Integer> clockValue;
 
     public VectorClock() {
-        clockValue = new HashMap<String,Integer>();
+        clockValue = new HashMap<>();
         clockValue.put(GCom.getLocalMember().getName(),0);
     }
-
-    public VectorClock(HashMap<String,Integer> clockValue){
-        this.clockValue= new HashMap<String, Integer>(clockValue);
-    }
-
 
     public void triggerSelfEvent() {
         int value = clockValue.get(GCom.getLocalMember().getName());
@@ -87,28 +82,30 @@ public class VectorClock implements Serializable{
 
     private boolean equals(VectorClock vc, String sender) {
 
+        boolean earlier = false;
+        boolean later = false;
+        if(clockValue.get(sender)+1 != vc.getClock().get(sender)){
+            return false;
+        }
+
         Set<String> vcIds = vc.getClock().keySet();
         System.out.println("mysize: "+clockValue.size()+"\nrecsize: "+vc.getClock().size());
-        int nr = 0;
-        int nrTrue = 0;
         for (String id : vcIds) {
-            if(id.equals(sender) || id.equals(GCom.getLocalMember().getName()) || sender.equals(GCom.getLocalMember().getName())){
-                System.out.println("skipped: "+id);
-            }else{
-                System.out.println("Comparing"+id+": on s:"+sender+": & r:"+GCom.getLocalMember().getName());
-                nr++;
-                System.out.println(clockValue.get(id)+":"+vc.getClock().get(id));
-                if (clockValue.get(id).equals(vc.getClock().get(id))) {
-                    nrTrue++;
+            System.out.println("Comparing"+id+": on s:"+sender+": & r:"+GCom.getLocalMember().getName());
+            System.out.println(clockValue.get(id)+":"+vc.getClock().get(id));
+            if (vc.getClock().get(id)!=null && !clockValue.get(id).equals(vc.getClock().get(id))) {
+                if(clockValue.get(id).compareTo(vc.getClock().get(id))==-1) {
+                    earlier = true;
+                }else if(clockValue.get(id).compareTo(vc.getClock().get(id))==1) {
+                    later = true;
                 }
             }
         }
-        System.out.println("nr: "+nr +" nrtrue:"+nrTrue);
-        if (nr == nrTrue) {
-            return true;
-        }
+    if(earlier && !later){
         return false;
     }
+    return true;
+}
 
     public boolean lessThen(VectorClock vc, String sender){
         Set<String> vcIds = vc.getClock().keySet();
