@@ -1,9 +1,10 @@
 package Client;
 
+import Middleware.GCom;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 /**
  * Created by c12jbr on 2015-10-14.
@@ -58,6 +59,9 @@ public class OpenDebuggerListener implements ActionListener {
         frame.add(border,BorderLayout.CENTER);
         frame.setEnabled(true);
         frame.setVisible(true);
+        createCloseOperation();
+        new GCom().startDebugger();
+
     }
 
     private JButton pauseStartHoldbackqueue() {
@@ -72,6 +76,20 @@ public class OpenDebuggerListener implements ActionListener {
         return button;
     }
 
+
+    private WindowListener createCloseOperation() {
+        WindowListener exitListener = new WindowAdapter() {
+
+            // disconnect possible connection before shutting down
+            @Override
+            public void windowClosing(WindowEvent e) {
+                GCom.stopDebugger();
+
+            }
+
+        };
+        return exitListener;
+    }
 
 
 }

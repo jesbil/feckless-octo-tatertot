@@ -3,10 +3,7 @@ package Client;
 /**
  * Created by c12jbr on 2015-10-08.
  */
-import Middleware.GCom;
-import Middleware.Group;
-import Middleware.GroupException;
-import Middleware.Message;
+import Middleware.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -270,6 +267,7 @@ public class GUI implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
+
         if(o instanceof GroupException){
             JOptionPane.showMessageDialog(null, ((GroupException) o).getMessage().toString(), "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -300,10 +298,22 @@ public class GUI implements Observer{
             for (Group group : groups){
                 jtaNameList.append(group.getName()+"\n");
             }
+
         }
 
+        if(o instanceof HoldbackQueueMessages){
+            debugger.getWaitingQueue().setText("");
+            for (int i = 0; i < ((HoldbackQueueMessages) o).getSize(); i++) {
+                debugger.getWaitingQueue().append(((HoldbackQueueMessages) o).getMessage(i));
+            }
+        }
 
-            update();
+        if(o instanceof DebuggMessage){
+            debugger.getLog().append(((DebuggMessage) o).getMessage()+"\n");
+        }
+
+        update();
 
     }
+
 }

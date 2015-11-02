@@ -26,10 +26,12 @@ public class GCom extends Observable implements Observer {
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
     private static boolean unordered;
-    private static ArrayList<String> debuggLog;
+    private static ArrayList<DebuggMessage> debuggLog;
     private static Member localMember;
 
     private static String port;
+    private Thread debuggThread;
+    private static boolean debugging;
 
     public static String getPort() {
         return port;
@@ -47,16 +49,16 @@ public class GCom extends Observable implements Observer {
         return groupManagement.getJoinedGroups();
     }
 
-    public static ArrayList<String> getDebuggLog() {
-        return debuggLog;
-    }
-
     public static Group getGroupByName(String groupName) {
         return groupManagement.getGroupByName(groupName);
     }
 
     public static ArrayList<Group> getGroups() {
         return groupManagement.getGroups();
+    }
+
+    public static ArrayList<DebuggMessage> getDebuggLog() {
+        return debuggLog;
     }
 
     public void initiate(boolean unordered, Observer observer) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
@@ -71,9 +73,10 @@ public class GCom extends Observable implements Observer {
         messageOrdering.addObserver(this);
         communication = new CommunicationModule(localMember);
 
+        debuggLog = new ArrayList<>();
+
         register.bind(Constants.RMI_ID, communication);
         GCom.unordered = unordered;
-        debuggLog = new ArrayList<>();
         addObserver(observer);
     }
 
@@ -82,7 +85,7 @@ public class GCom extends Observable implements Observer {
         ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress,port);
         groupManagement.setAllMembers(allMembers);
         messageOrdering.addToAllMembersClock(allMembers);
-        debuggLog.add("Connected to Name Service Server @ " + nameService);
+        debuggLog.add( new DebuggMessage("Connected to Name Service Server @ " + nameService));
         ArrayList<Group> temp;
         if((temp = communication.fetchGroups(allMembers.get(0)))!=null){
             for(Group group : temp){
@@ -104,7 +107,7 @@ public class GCom extends Observable implements Observer {
     }
 
     private void deliverMessage(Message message) {
-        System.out.println("delivering message: "+message.getMessage());
+        System.out.println("delivering message: " + message.getMessage());
         switch (message.getType()){
             case TYPE_CREATE_GROUP:
                 groupCreated(message);
@@ -213,9 +216,42 @@ public class GCom extends Observable implements Observer {
     public static void shuffleHbq() {
         messageOrdering.shuffleQueue();
     }
+
+    public void log(DebuggMessage dmsg) {
+
+    }
+
+
+    public void startDebugger() {
+        if(!debugging){
+            debugging=true;
+            new Thread(new debugg()).start();
+        }
+    }
+
+    public static void stopDebugger() {
+        debugging=false;
+    }
+
+    private class debugg implements Runnable {
+
+        public void run() {
+            while(debugging){
+                for (int i = 0; i < debuggLog.size(); i++) {
+                    setChanged();
+                    notifyObservers(debuggLog.get(i));
+                }
+
+                setChanged();
+                notifyObservers(new HoldbackQueueMessages(messageOrdering.getHoldBackQueue()));
+
+            }
+        }
+
+    }
 }
 
 //TODO unordered (if-satseR)
 //TODO ta bort RÄTT member från namnservern
-//TODO vectorklockorna (?)
-//TODO abstrahera bort middlewareklasser från clienten
+//TODO abstrahera bort middlewareklasser från clienten (?)
+//TODO tråduppdateringen av debugger;

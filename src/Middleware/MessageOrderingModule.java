@@ -73,10 +73,15 @@ public class MessageOrderingModule extends Observable{
 
     public void startQueue() {
         paused = false;
+        performNextIfPossible();
     }
 
     public void shuffleQueue() {
         Collections.shuffle(holdBackQueue);
+    }
+
+    public ArrayList<Message> getHoldBackQueue() {
+        return holdBackQueue;
     }
 
     // NY MODUL REDO FÖR BUS största lögnen någonsinn

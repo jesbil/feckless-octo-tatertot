@@ -4,6 +4,7 @@ import Middleware.GCom;
 import Middleware.GroupException;
 import Middleware.Message;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.AlreadyBoundException;
@@ -16,9 +17,6 @@ import java.util.Observer;
  * Created by c12jbr on 2015-10-10.
  */
 public class Main {
-    private static ArrayList<String> groupNames = new ArrayList<String>();
-    private static OpenDebuggerListener debugger;
-
     public static void main(String[] args) {
         try {
             GCom gcom = new GCom();
