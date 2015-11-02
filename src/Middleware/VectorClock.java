@@ -74,7 +74,7 @@ public class VectorClock implements Serializable{
             return false;
         }
 
-        Set<String> vcIds = vc.getClock().keySet();
+        Set<String> vcIds = clockValue.keySet();
         System.out.println("mysize: "+clockValue.size()+"\nrecsize: "+vc.getClock().size());
         for (String id : vcIds) {
             System.out.println("Comparing"+id+": on s:"+sender+": & r:"+GCom.getLocalMember().getName());
