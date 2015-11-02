@@ -48,7 +48,7 @@ public class VectorClock implements Serializable{
     }
 
     public boolean compare(VectorClock vc, String sender){
-        if(this.compare2(vc, sender)) {
+        if(compare2(vc, sender)) {
             return true;
         }
         return false;
@@ -61,7 +61,8 @@ public class VectorClock implements Serializable{
         if(clockValue.get(sender)==null){
             clockValue.put(sender,0);
         }
-        if(clockValue.get(sender)+1 != vc.getClock().get(sender)){
+        System.out.println("mysender: "+clockValue.get(sender) +" vs "+" msgsender: "+vc.getClock().get(sender));
+        if(clockValue.get(sender)+1 != vc.getClock().get(sender) && !GCom.getLocalMember().getName().equals(sender)){
             return false;
         }
 
@@ -69,7 +70,7 @@ public class VectorClock implements Serializable{
         for (String id : vcIds) {
             System.out.println("Comparing"+id+": on s:"+sender+": & r:"+GCom.getLocalMember().getName());
             System.out.println(clockValue.get(id)+":"+vc.getClock().get(id));
-            if (vc.getClock().get(id)!=null && !clockValue.get(id).equals(vc.getClock().get(id))) {
+            if (vc.getClock().get(id)!=null && !id.equals(sender)) {
                 if(clockValue.get(id).compareTo(vc.getClock().get(id))==-1) {
                     earlier = true;
                 }else if(clockValue.get(id).compareTo(vc.getClock().get(id))==1) {

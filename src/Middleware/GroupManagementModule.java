@@ -1,8 +1,6 @@
 package Middleware;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
@@ -27,10 +25,10 @@ public class GroupManagementModule {
         groups = new ArrayList<>();
         joinedGroups = new ArrayList<>();
         this.localMember = localMember;
-        allMembers = new Group("allMembers");
+        allMembers = new Group("allMembers",Integer.MAX_VALUE);
     }
 
-    public void addMemberToGroup(String groupName, Member sender) {
+    public void addMemberToGroup(String groupName, Member sender){
         getGroupByName(groupName).addMemberToGroup(sender);
         if(sender.equals(localMember)){
             joinedGroups.add(getGroupByName(groupName));
@@ -49,7 +47,8 @@ public class GroupManagementModule {
     }
 
     public void groupCreated(String message, Member sender) {
-        Group group = new Group(message);
+        String[] splitted = message.split("#");
+        Group group = new Group(splitted[0],Integer.parseInt(splitted[1]));
         group.addMemberToGroup(sender);
         groups.add(group);
         if(sender.equals(localMember)){
@@ -57,7 +56,7 @@ public class GroupManagementModule {
         }
     }
 
-    public void setAllMembers(ArrayList<Member> mlist){
+    public void setAllMembers(ArrayList<Member> mlist) throws GroupException {
         for(Member m: mlist){
             allMembers.addMemberToGroup(m);
         }

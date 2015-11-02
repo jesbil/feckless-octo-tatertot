@@ -1,6 +1,5 @@
 package Middleware;
 
-import Interface.Constants;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -29,7 +28,7 @@ public class MessageOrderingModule extends Observable{
 
     public boolean allowedToDeliver(Message message) {
 
-        if(message.getVectorClock().compare(GCom.getGroupByName(message.getGroup().getName()).getVectorClock(),message.getSender().getName())){
+        if(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().compare(message.getVectorClock(),message.getSender().getName())){
             GCom.getGroupByName(message.getGroup().getName()).getVectorClock().mergeWith(message.getVectorClock());
             return true;
         }

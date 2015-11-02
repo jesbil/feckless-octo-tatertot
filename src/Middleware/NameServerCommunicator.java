@@ -12,13 +12,6 @@ import java.util.ArrayList;
 public class NameServerCommunicator {
     private ArrayList<Member> members;
 
-    //    public static void main(String[] args) throws RemoteException, NotBoundException {
-//        Registry reg = LocateRegistry.getRegistry("localhost", Constants.port);
-//        MyRemote myrem = (MyRemote) reg.lookup(Constants.RMI_ID);
-//        System.out.println(myrem.is("is"));
-//        System.out.println(myrem.is("isa"));
-//    }
-
     public NameServerCommunicator(){
         members=new ArrayList<Member>();
     }
@@ -44,8 +37,6 @@ public class NameServerCommunicator {
             Member m = new Member(str.substring(0,str.indexOf(",")),Integer.parseInt(str.substring(str.indexOf(",")+1)));
             System.out.println(m.getIP()+":"+m.getPort());
             members.add(m);
-
-
         }
         clientSocket.close();
         return members;

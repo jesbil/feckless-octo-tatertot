@@ -65,7 +65,7 @@ public class GCom extends Observable implements Observer {
         port = register.toString().substring(register.toString().indexOf(":") + 1, register.toString().indexOf("("));
         port = port.substring(port.indexOf(":") + 1, port.indexOf("]"));
         port = port.substring(port.indexOf(":")+1);
-        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(GCom.getPort()));
+        localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(port));
         groupManagement = new GroupManagementModule(localMember);
         messageOrdering = new MessageOrderingModule();
         messageOrdering.addObserver(this);
@@ -78,7 +78,7 @@ public class GCom extends Observable implements Observer {
     }
 
     public void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
-        GCom.nameServiceAddress = nameService;
+        nameServiceAddress = nameService;
         ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress,port);
         groupManagement.setAllMembers(allMembers);
         messageOrdering.addToAllMembersClock(allMembers);
@@ -98,7 +98,7 @@ public class GCom extends Observable implements Observer {
     }
 
 
-  protected static void receiveMessage(Message message) {
+    protected static void receiveMessage(Message message) {
         messageOrdering.receiveMessage(message);
         messageOrdering.performNextIfPossible();
     }
@@ -123,20 +123,22 @@ public class GCom extends Observable implements Observer {
     }
 
     public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
+//        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
-        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
     public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
-        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
-        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
-        communication.nonReliableMulticast(message);
+        if(!getGroupByName(groupName).isStarted()){
+//            messageOrdering.triggerSelfEvent(getAllMembersGroupName());
+            Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
+            communication.nonReliableMulticast(message);
+        }
     }
 
     public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
+//        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
-        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         communication.nonReliableMulticast(message);
     }
 
@@ -144,10 +146,12 @@ public class GCom extends Observable implements Observer {
     public static void sendMessage(String text, ArrayList<Group> groups) throws NotBoundException, UnknownHostException, GroupException {
         if(groups==null){
             for (Group group : groupManagement.getJoinedGroups()){
-                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
                 messageOrdering.triggerSelfEvent(group.getName());
+                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
                 try {
-                    communication.nonReliableMulticast(message);
+                    if(group.isStarted()){
+                        communication.nonReliableMulticast(message);
+                    }
                 } catch (GroupException e) {
                     groupManagement.removeMemberFromAllGroups(e.getMember());
                     throw e;
@@ -155,8 +159,8 @@ public class GCom extends Observable implements Observer {
             }
         }else{
             for (Group group : groups){
-                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
                 messageOrdering.triggerSelfEvent(group.getName());
+                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
                 try {
                     communication.nonReliableMulticast(message);
                 } catch (GroupException e) {
@@ -166,7 +170,7 @@ public class GCom extends Observable implements Observer {
         }
     }
 
-    private static void groupCreated(Message message) {
+    private static void groupCreated(Message message){
         groupManagement.groupCreated(message.getMessage(),message.getSender());
     }
 
@@ -199,7 +203,6 @@ public class GCom extends Observable implements Observer {
     }
 }
 
-//TODO groupException catcher iställer för connection refused! connectExcpetion
 //TODO unordered (if-satseR)
 //TODO ta bort RÄTT member från namnservern
 //TODO vectorklockorna (?)

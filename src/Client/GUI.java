@@ -270,6 +270,10 @@ public class GUI implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
+        if(o instanceof GroupException){
+            JOptionPane.showMessageDialog(null, ((GroupException) o).getMessage().toString(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }
 
         if(o instanceof Message){
             Message message = (Message) o;
@@ -280,7 +284,10 @@ public class GUI implements Observer{
                     break;
                 case TYPE_REMOVE_GROUP:
                     jtaNameList.getText().replace(message.getMessage()+"\n","");
+                    jtaNameList.getText().replace("* "+message.getMessage()+"\n","");
                     break;
+                case TYPE_JOIN_GROUP:
+                    jtaNameList.getText().replace(message.getMessage()+"\n","* "+message.getMessage()+"\n");
                 case TYPE_MESSAGE:
                     chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
                     chatField.setCaretPosition(chatField.getDocument().getLength());
