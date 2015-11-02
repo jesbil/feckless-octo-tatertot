@@ -50,20 +50,6 @@ public class VectorClock implements Serializable{
     }
 
     public int compare(VectorClock vc, String sender){
-        if (clockValue.size()!=vc.getClock().size()){
-            Set<String> keys = clockValue.keySet();
-            for(String key : keys){
-                if(!vc.getClock().containsKey(key)){
-                    vc.getClock().put(key,0);
-                }
-            }
-            keys = vc.getClock().keySet();
-            for(String key : keys){
-                if(!clockValue.containsKey(key)){
-                    clockValue.put(key,0);
-                }
-            }
-        }
         if(this.equals(vc,sender)){
             System.out.println("equals");
             return CLOCK_TYPE_EQ;
