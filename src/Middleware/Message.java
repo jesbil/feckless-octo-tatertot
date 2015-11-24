@@ -48,7 +48,7 @@ public class Message implements Serializable{
 
     @Override
     public int hashCode(){
-        return this.hashCode();
+        return (type*2)+7;
     }
 
 

@@ -30,12 +30,8 @@ public class GCom extends Observable implements Observer {
     private static Member localMember;
 
     private static String port;
-    private Thread debuggThread;
     private static boolean debugging;
-
-    public static String getPort() {
-        return port;
-    }
+    private static Observer observer;
 
     public static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
@@ -62,17 +58,18 @@ public class GCom extends Observable implements Observer {
     }
 
     public void initiate(boolean unordered, Observer observer) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
+        debugging = false;
         nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(0);
         port = register.toString().substring(register.toString().indexOf(":") + 1, register.toString().indexOf("("));
         port = port.substring(port.indexOf(":") + 1, port.indexOf("]"));
-        port = port.substring(port.indexOf(":")+1);
+        port = port.substring(port.indexOf(":") + 1);
         localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(port));
         groupManagement = new GroupManagementModule(localMember);
         messageOrdering = new MessageOrderingModule();
         messageOrdering.addObserver(this);
         communication = new CommunicationModule(localMember);
-
+        this.observer = observer;
         debuggLog = new ArrayList<>();
 
         register.bind(Constants.RMI_ID, communication);
@@ -217,10 +214,6 @@ public class GCom extends Observable implements Observer {
         messageOrdering.shuffleQueue();
     }
 
-    public void log(DebuggMessage dmsg) {
-
-    }
-
 
     public void startDebugger() {
         if(!debugging){
@@ -236,16 +229,22 @@ public class GCom extends Observable implements Observer {
     private class debugg implements Runnable {
 
         public void run() {
+            addObserver(observer);
             while(debugging){
-                for (int i = 0; i < debuggLog.size(); i++) {
+                System.out.println("HEJ");
+                while(debuggLog.size()>0){
+                    System.out.println("DEBUGGARMELDDENADLERNSKICAT: "+debuggLog.get(0).getMessage());
                     setChanged();
-                    notifyObservers(debuggLog.get(i));
+                    notifyObservers(debuggLog.get(0));
+                    debuggLog.remove(0);
                 }
 
-                setChanged();
-                notifyObservers(new HoldbackQueueMessages(messageOrdering.getHoldBackQueue()));
-
+                if(messageOrdering.getHoldBackQueue().size()>0){
+                    setChanged();
+                    notifyObservers(new HoldbackQueueMessages(messageOrdering.getHoldBackQueue()));
+                }
             }
+            deleteObserver(observer);
         }
 
     }

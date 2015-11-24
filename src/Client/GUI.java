@@ -52,7 +52,7 @@ public class GUI implements Observer{
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "volatile.cs.umu.se");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "nightcrawler.cs.umu.se");
             if(nameService==null){
                 int answer = JOptionPane.showConfirmDialog(null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
@@ -251,11 +251,6 @@ public class GUI implements Observer{
      * Gets a byte[] and parse it to make changes in the gui
      * for example update the user list or show a received message in the chat
      */
-    public void update() {
-        frame.repaint();
-
-
-    }
 
     public boolean askUnordered() {
         int answer = JOptionPane.showConfirmDialog (null, "Yes for unordered. No for casual ordering", "Warning",JOptionPane.YES_NO_OPTION);
@@ -267,6 +262,7 @@ public class GUI implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
+
 
         if(o instanceof GroupException){
             JOptionPane.showMessageDialog(null, ((GroupException) o).getMessage().toString(), "Error",
@@ -309,10 +305,12 @@ public class GUI implements Observer{
         }
 
         if(o instanceof DebuggMessage){
-            debugger.getLog().append(((DebuggMessage) o).getMessage()+"\n");
+            System.out.println("RECEIVED DEBUGG");
+            debugger.getLog().append(((DebuggMessage) o).getMessage() + "\n");
         }
 
-        update();
+        debugger.update();
+        frame.repaint();
 
     }
 

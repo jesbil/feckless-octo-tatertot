@@ -92,4 +92,9 @@ public class OpenDebuggerListener implements ActionListener {
     }
 
 
+    public void update() {
+        if(frame!=null){
+            frame.repaint();
+        }
+    }
 }
