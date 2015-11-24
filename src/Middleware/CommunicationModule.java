@@ -30,6 +30,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     public void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException, GroupException {
 
         GCom.getDebuggLog().add(new DebuggMessage("multicasting to group: " + message.getGroup().getName()));
+        System.out.println(GCom.getDebuggLog().get(GCom.getDebuggLog().size()-1).getMessage()+" ;;; Added to debuggloggg");
         for (int i = 0; i < message.getGroup().getMembers().size(); i++) {
             Member member = message.getGroup().getMembers().get(i);
             if (!member.equals(localMember)) {
@@ -55,12 +56,11 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
 
     @Override
     public void receiveMulticast(Message message)  throws RemoteException{
-        System.out.println("received multicast from: "+message.getSender().getName());
+        GCom.getDebuggLog().add(new DebuggMessage("received multicast from: "+message.getSender().getName()));
         GCom.receiveMessage(message);
     }
 
     public ArrayList<Group> fetchGroups(Member member) throws NotBoundException, RemoteException {
-        System.out.println("Fetching groups from: "+member.getIP());
         Registry registry = LocateRegistry.getRegistry(member.getIP(),member.getPort());
         MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
         return remote.retrieveGroups();

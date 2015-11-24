@@ -53,7 +53,7 @@ public class NameServer {
                 }
             }else if(pw.startsWith("baj")) {
                 InetAddress iPAddress = receivePacket.getAddress();
-                members.remove(iPAddress.toString().substring(1)+","+pw.substring(pw.indexOf(",")));
+                members.remove(iPAddress.toString().substring(1)+","+pw.substring(pw.indexOf(",")+1));
                 System.out.println("Removed Member: "+iPAddress.toString().substring(1)+pw.substring(pw.indexOf(",")));
             }
         }

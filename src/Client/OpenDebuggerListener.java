@@ -1,6 +1,6 @@
 package Client;
 
-import Middleware.GCom;
+import Middleware.Debugg;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,17 +17,12 @@ public class OpenDebuggerListener implements ActionListener {
     private JTextArea log;
     private JTextArea waitingQueue;
     private JPanel border;
+    private Debugg debugg;
 
-    public JTextArea getLog() {
-        return log;
-    }
-
-    public JTextArea getWaitingQueue() {
-        return waitingQueue;
-    }
-
-    public OpenDebuggerListener(JFrame mainFrame){
+    public OpenDebuggerListener(JFrame mainFrame, GUI gui) {
         this.mainFrame = mainFrame;
+        debugg = new Debugg();
+        debugg.addObserver(gui);
 
         log = new JTextArea();
         log.setEditable(false);
@@ -42,8 +37,16 @@ public class OpenDebuggerListener implements ActionListener {
 
         border = new JPanel();
         border.setBackground(Color.black);
-
     }
+
+    public JTextArea getLog() {
+        return log;
+    }
+
+    public JTextArea getWaitingQueue() {
+        return waitingQueue;
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
@@ -60,7 +63,8 @@ public class OpenDebuggerListener implements ActionListener {
         frame.setEnabled(true);
         frame.setVisible(true);
         createCloseOperation();
-        new GCom().startDebugger();
+
+        new Thread(debugg).start();
 
     }
 
@@ -83,7 +87,7 @@ public class OpenDebuggerListener implements ActionListener {
             // disconnect possible connection before shutting down
             @Override
             public void windowClosing(WindowEvent e) {
-                GCom.stopDebugger();
+                debugg.stopDebugging();
 
             }
 

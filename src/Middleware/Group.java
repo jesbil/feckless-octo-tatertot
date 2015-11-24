@@ -61,7 +61,7 @@ public class Group implements Serializable{
 
     @Override
     public int hashCode(){
-        return this.hashCode();
+        return size+1;
     }
 
 

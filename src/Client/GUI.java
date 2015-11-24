@@ -130,14 +130,10 @@ public class GUI implements Observer{
 
     private JMenuItem DebugWindowButton(){
         JMenuItem item = new JMenuItem("Open Debugger");
-        debugger = new OpenDebuggerListener(frame);
+        debugger = new OpenDebuggerListener(frame,this);
         item.addActionListener(debugger);
 
         return item;
-    }
-
-    public JTextArea getJtaNameList() {
-        return jtaNameList;
     }
 
     /**
@@ -300,7 +296,7 @@ public class GUI implements Observer{
         if(o instanceof HoldbackQueueMessages){
             debugger.getWaitingQueue().setText("");
             for (int i = 0; i < ((HoldbackQueueMessages) o).getSize(); i++) {
-                debugger.getWaitingQueue().append(((HoldbackQueueMessages) o).getMessage(i));
+                debugger.getWaitingQueue().append(((HoldbackQueueMessages) o).getMessage(i)+"\n");
             }
         }
 

@@ -10,9 +10,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import static Interface.Constants.*;
 
@@ -26,12 +24,10 @@ public class GCom extends Observable implements Observer {
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
     private static boolean unordered;
-    private static ArrayList<DebuggMessage> debuggLog;
+    private static List<DebuggMessage> debuggLog;
     private static Member localMember;
 
     private static String port;
-    private static boolean debugging;
-    private static Observer observer;
 
     public static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
@@ -53,12 +49,15 @@ public class GCom extends Observable implements Observer {
         return groupManagement.getGroups();
     }
 
-    public static ArrayList<DebuggMessage> getDebuggLog() {
+    public static List<DebuggMessage> getDebuggLog() {
         return debuggLog;
     }
 
+    public static ArrayList<Message> getHoldBackQueue() {
+        return messageOrdering.getHoldBackQueue();
+    }
+
     public void initiate(boolean unordered, Observer observer) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
-        debugging = false;
         nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(0);
         port = register.toString().substring(register.toString().indexOf(":") + 1, register.toString().indexOf("("));
@@ -69,8 +68,7 @@ public class GCom extends Observable implements Observer {
         messageOrdering = new MessageOrderingModule();
         messageOrdering.addObserver(this);
         communication = new CommunicationModule(localMember);
-        this.observer = observer;
-        debuggLog = new ArrayList<>();
+        debuggLog = Collections.synchronizedList(new ArrayList<DebuggMessage>());
 
         register.bind(Constants.RMI_ID, communication);
         GCom.unordered = unordered;
@@ -122,21 +120,18 @@ public class GCom extends Observable implements Observer {
     }
 
     public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
-//        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
         communication.nonReliableMulticast(message);
     }
 
     public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         if(!getGroupByName(groupName).isStarted()){
-//            messageOrdering.triggerSelfEvent(getAllMembersGroupName());
             Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
             communication.nonReliableMulticast(message);
         }
     }
 
     public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
-//        messageOrdering.triggerSelfEvent(getAllMembersGroupName());
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
         communication.nonReliableMulticast(message);
     }
@@ -214,43 +209,7 @@ public class GCom extends Observable implements Observer {
         messageOrdering.shuffleQueue();
     }
 
-
-    public void startDebugger() {
-        if(!debugging){
-            debugging=true;
-            new Thread(new debugg()).start();
-        }
-    }
-
-    public static void stopDebugger() {
-        debugging=false;
-    }
-
-    private class debugg implements Runnable {
-
-        public void run() {
-            addObserver(observer);
-            while(debugging){
-                System.out.println("HEJ");
-                while(debuggLog.size()>0){
-                    System.out.println("DEBUGGARMELDDENADLERNSKICAT: "+debuggLog.get(0).getMessage());
-                    setChanged();
-                    notifyObservers(debuggLog.get(0));
-                    debuggLog.remove(0);
-                }
-
-                if(messageOrdering.getHoldBackQueue().size()>0){
-                    setChanged();
-                    notifyObservers(new HoldbackQueueMessages(messageOrdering.getHoldBackQueue()));
-                }
-            }
-            deleteObserver(observer);
-        }
-
-    }
 }
 
 //TODO unordered (if-satseR)
-//TODO ta bort RÄTT member från namnservern
-//TODO abstrahera bort middlewareklasser från clienten (?)
-//TODO tråduppdateringen av debugger;
+//TODO snygga till gruppstorlek # ruta
