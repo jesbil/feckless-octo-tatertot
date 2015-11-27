@@ -23,7 +23,6 @@ public class GCom extends Observable implements Observer {
     private static MessageOrderingModule messageOrdering;
     private static CommunicationModule communication;
     private static NameServerCommunicator nameServerCommunicator;
-    private static boolean unordered;
     private static List<DebuggMessage> debuggLog;
     private static Member localMember;
 
@@ -65,13 +64,12 @@ public class GCom extends Observable implements Observer {
         port = port.substring(port.indexOf(":") + 1);
         localMember = new Member(InetAddress.getLocalHost().getHostAddress(),Integer.parseInt(port));
         groupManagement = new GroupManagementModule(localMember);
-        messageOrdering = new MessageOrderingModule();
+        messageOrdering = new MessageOrderingModule(unordered);
         messageOrdering.addObserver(this);
         communication = new CommunicationModule(localMember);
         debuggLog = Collections.synchronizedList(new ArrayList<DebuggMessage>());
 
         register.bind(Constants.RMI_ID, communication);
-        GCom.unordered = unordered;
         addObserver(observer);
     }
 

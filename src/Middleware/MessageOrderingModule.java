@@ -10,13 +10,15 @@ import java.util.Observer;
  * Created by oi12pjn on 2015-10-08.
  */
 public class MessageOrderingModule extends Observable{
+    private final boolean unordered;
     private ArrayList<Message> holdBackQueue;
     private boolean paused;
 
 
-    public MessageOrderingModule() {
+    public MessageOrderingModule(boolean unordered) {
         paused = false;
         holdBackQueue = new ArrayList<>();
+        this.unordered = unordered;
     }
 
     public void triggerSelfEvent(String groupName){
@@ -24,8 +26,13 @@ public class MessageOrderingModule extends Observable{
     }
 
     public void receiveMessage(Message message) {
-        System.out.println("Message from "+message.getSender().getName()+" put in holdbackqueue");
-        holdBackQueue.add(message);
+        GCom.getDebuggLog().add(new DebuggMessage("Message from " + message.getSender().getName() + " put in holdbackqueue"));
+        if(unordered){
+            setChanged();
+            notifyObservers(message);
+        }else{
+            holdBackQueue.add(message);
+        }
     }
 
     public boolean allowedToDeliver(Message message) {
