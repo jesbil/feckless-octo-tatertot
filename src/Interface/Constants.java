@@ -12,10 +12,6 @@ public interface Constants {
     public static final int TYPE_REMOVE_GROUP=3;
     public static final int TYPE_MESSAGE=4;
 
-    public static final int CLOCK_TYPE_EQ=10;
-    public static final int CLOCK_TYPE_LT=11;
-    public static final int CLOCK_TYPE_BT=12;
-    public static final int CLOCK_TYPE_CONC=13;
 
 
 

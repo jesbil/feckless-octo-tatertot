@@ -80,7 +80,9 @@ public class GroupManagementModule {
     
     public void removeMemberFromAllGroups(Member member) {
         for(Group g: groups){
+            System.out.println(g.getName());
             removeMemberFromGroup(g.getName(),member);
         }
+        allMembers.removeMemberFromGroup(member);
     }
 }

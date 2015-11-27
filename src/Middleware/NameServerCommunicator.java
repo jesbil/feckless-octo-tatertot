@@ -35,7 +35,6 @@ public class NameServerCommunicator {
             clientSocket.receive(receivePacket);
             String str = new String(receivePacket.getData()).trim();
             Member m = new Member(str.substring(0,str.indexOf(",")),Integer.parseInt(str.substring(str.indexOf(",")+1)));
-            System.out.println(m.getIP()+":"+m.getPort());
             members.add(m);
         }
         clientSocket.close();
@@ -43,10 +42,10 @@ public class NameServerCommunicator {
     }
 
 
-    public void leave(String nameServiceAddress) throws IOException {
+    public void leave(String nameServiceAddress, String port) throws IOException {
         DatagramSocket clientSocket = new DatagramSocket();
         InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
-        byte[] sendData = "baj".getBytes();
+        byte[] sendData = ("baj,"+port).getBytes();
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);
         clientSocket.send(sendPacket);
     }

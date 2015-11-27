@@ -224,7 +224,9 @@ public class GUI implements Observer{
             public void windowClosing(WindowEvent e) {
 
                 try {
+                    System.out.println("starting shutdown");
                     GCom.shutdown();
+                    System.out.println("shutdown finished");
                 } catch (RemoteException e1) {
                     e1.printStackTrace();
                 } catch (NotBoundException e1) {
@@ -234,7 +236,7 @@ public class GUI implements Observer{
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } catch (GroupException e1) {
-                    System.out.println(e1.getMessage());
+                    System.out.println("ERROR: "+e1.getMessage());
                 }
             }
 

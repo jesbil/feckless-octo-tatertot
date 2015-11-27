@@ -78,6 +78,9 @@ public class GCom extends Observable implements Observer {
     public void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
         nameServiceAddress = nameService;
         ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress,port);
+        for(Member m:allMembers){
+            System.out.println(m.getName());
+        }
         groupManagement.setAllMembers(allMembers);
         messageOrdering.addToAllMembersClock(allMembers);
         debuggLog.add( new DebuggMessage("Connected to Name Service Server @ " + nameService));
@@ -102,7 +105,7 @@ public class GCom extends Observable implements Observer {
     }
 
     private void deliverMessage(Message message) {
-        System.out.println("delivering message: " + message.getMessage());
+        debuggLog.add(new DebuggMessage("delivering message: " + message.getMessage()));
         switch (message.getType()){
             case TYPE_CREATE_GROUP:
                 groupCreated(message);
@@ -189,12 +192,15 @@ public class GCom extends Observable implements Observer {
     }
 
     public static void shutdown() throws IOException, NotBoundException, GroupException {
+        for(Member m: getGroupByName(getAllMembersGroupName()).getMembers()){
+            System.out.println(m.getName());
+        }
         ArrayList<Group> groups = new ArrayList<>(getJoinedGroups());
         for(Group group : groups){
             leaveGroup(group.getName());
         }
         leaveGroup(getAllMembersGroupName());
-        nameServerCommunicator.leave(nameServiceAddress);
+        nameServerCommunicator.leave(nameServiceAddress,port);
     }
 
     public static void pauseStartHbq(boolean paused) {

@@ -30,8 +30,8 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     public void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException, GroupException {
 
         GCom.getDebuggLog().add(new DebuggMessage("multicasting to group: " + message.getGroup().getName()));
-        System.out.println(GCom.getDebuggLog().get(GCom.getDebuggLog().size()-1).getMessage()+" ;;; Added to debuggloggg");
-        for (int i = 0; i < message.getGroup().getMembers().size(); i++) {
+        int nrOfRecievers = message.getGroup().getMembers().size();
+        for (int i = 0; i < nrOfRecievers; i++) {
             Member member = message.getGroup().getMembers().get(i);
             if (!member.equals(localMember)) {
                 try {
