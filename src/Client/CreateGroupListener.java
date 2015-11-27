@@ -17,6 +17,8 @@ public class CreateGroupListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         String groupName = JOptionPane.showInputDialog(null, "Name your group", "groupName");
+        String size = "#" + JOptionPane.showInputDialog(null, "Size of group", "2");
+        groupName += size;
         if(groupName!=null){
             try {
                 GCom.createGroup(groupName);

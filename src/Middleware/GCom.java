@@ -212,4 +212,3 @@ public class GCom extends Observable implements Observer {
 }
 
 //TODO unordered (if-satseR)
-//TODO snygga till gruppstorlek # ruta
