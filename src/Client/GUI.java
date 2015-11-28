@@ -233,8 +233,6 @@ public class GUI implements Observer{
                     e1.printStackTrace();
                 } catch (IOException e1) {
                     e1.printStackTrace();
-                } catch (GroupException e1) {
-                    System.out.println("ERROR: "+e1.getMessage());
                 }
             }
 
@@ -249,7 +247,7 @@ public class GUI implements Observer{
      */
 
     public boolean askUnordered() {
-        int answer = JOptionPane.showConfirmDialog (null, "Yes for unordered. No for casual ordering", "Warning",JOptionPane.YES_NO_OPTION);
+        int answer = JOptionPane.showConfirmDialog (null, "Yes for unordered. No for causal ordering", "Warning",JOptionPane.YES_NO_OPTION);
         if(answer == JOptionPane.YES_OPTION){
             return true;
         }
@@ -273,7 +271,6 @@ public class GUI implements Observer{
                     jtaNameList.append(message.getMessage()+"\n");
                     break;
                 case TYPE_REMOVE_GROUP:
-                    System.out.println("Gruppnamn:"+message.getMessage());
                     jtaNameList.setText(jtaNameList.getText().replace(message.getMessage() + "\n", ""));
                    // jtaNameList.getText().replace("* "+message.getMessage()+"\n","");
                     break;
@@ -302,7 +299,6 @@ public class GUI implements Observer{
         }
 
         if(o instanceof DebuggMessage){
-            System.out.println("RECEIVED DEBUGG");
             debugger.getLog().append(((DebuggMessage) o).getMessage() + "\n");
         }
 

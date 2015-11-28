@@ -27,13 +27,13 @@ public class OpenDebuggerListener implements ActionListener {
         log = new JTextArea();
         log.setEditable(false);
         logPane = new JScrollPane(log);
-        logPane.setPreferredSize(new Dimension(700,400));
+        logPane.setPreferredSize(new Dimension(600,400));
 
 
         waitingQueue = new JTextArea();
         waitingQueue.setEditable(false);
         waitingQueuePane = new JScrollPane(waitingQueue);
-        waitingQueuePane.setPreferredSize(new Dimension(295,400));
+        waitingQueuePane.setPreferredSize(new Dimension(700,400));
 
         border = new JPanel();
         border.setBackground(Color.black);
@@ -51,7 +51,7 @@ public class OpenDebuggerListener implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         frame = new JFrame("DEBUGGER");
-        frame.setSize(new Dimension(1000, 500));
+        frame.setSize(new Dimension(1305, 500));
         frame.setLocationRelativeTo(mainFrame);
         JPanel panel = new JPanel();
         panel.add(pauseStartHoldbackqueue(), BorderLayout.EAST);

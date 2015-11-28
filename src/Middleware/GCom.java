@@ -73,12 +73,9 @@ public class GCom extends Observable implements Observer {
         addObserver(observer);
     }
 
-    public void connectToNameService(String nameService) throws IOException, NotBoundException, GroupException {
+    public void connectToNameService(String nameService) throws IOException, NotBoundException{
         nameServiceAddress = nameService;
         ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress,port);
-        for(Member m:allMembers){
-            System.out.println(m.getName());
-        }
         groupManagement.setAllMembers(allMembers);
         messageOrdering.addToAllMembersClock(allMembers);
         debuggLog.add( new DebuggMessage("Connected to Name Service Server @ " + nameService));
@@ -95,6 +92,7 @@ public class GCom extends Observable implements Observer {
         }
         joinGroup(getAllMembersGroupName());
     }
+
 
 
     protected static void receiveMessage(Message message) {
@@ -120,52 +118,46 @@ public class GCom extends Observable implements Observer {
         }
     }
 
-    public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
+    public static void createGroup(String groupName) throws NotBoundException, UnknownHostException{
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
         communication.nonReliableMulticast(message);
     }
 
-    public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
+    public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException{
         if(!getGroupByName(groupName).isStarted()){
             Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
             communication.nonReliableMulticast(message);
         }
     }
 
-    public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
+    public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException{
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
         communication.nonReliableMulticast(message);
         if(getGroupByName(groupName).getMembers().size()==0&&groupName!=getAllMembersGroupName()){
-            System.out.println("OJDÅ NU VAR GRUPPEN TOM");
             message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_REMOVE_GROUP);
             communication.nonReliableMulticast(message);
         }
     }
 
 
-    public static void sendMessage(String text, ArrayList<Group> groups) throws NotBoundException, UnknownHostException, GroupException {
+    public static void sendMessage(String text, ArrayList<Group> groups) throws NotBoundException, UnknownHostException{
         if(groups==null){
             for (Group group : groupManagement.getJoinedGroups()){
                 messageOrdering.triggerSelfEvent(group.getName());
                 Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
-                try {
+
                     if(group.isStarted()){
                         communication.nonReliableMulticast(message);
                     }
-                } catch (GroupException e) {
-                    groupManagement.removeMemberFromAllGroups(e.getMember());
-                    throw e;
-                }
+
             }
         }else{
             for (Group group : groups){
                 messageOrdering.triggerSelfEvent(group.getName());
                 Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
-                try {
+
                     communication.nonReliableMulticast(message);
-                } catch (GroupException e) {
-                    e.printStackTrace();
-                }
+
             }
         }
     }
@@ -207,10 +199,7 @@ public class GCom extends Observable implements Observer {
         messageOrdering.performNextIfPossible();
     }
 
-    public static void shutdown() throws IOException, NotBoundException, GroupException {
-        for(Member m: getGroupByName(getAllMembersGroupName()).getMembers()){
-            System.out.println(m.getName());
-        }
+    public static void shutdown() throws IOException, NotBoundException {
         ArrayList<Group> groups = new ArrayList<>(getJoinedGroups());
         for(Group group : groups){
             leaveGroup(group.getName());
@@ -231,6 +220,9 @@ public class GCom extends Observable implements Observer {
         messageOrdering.shuffleQueue();
     }
 
+    public static void removeMemberFromAllGroups(Member member) {
+        groupManagement.removeMemberFromAllGroups(member);
+    }
 }
 
 //TODO unordered (if-satseR)

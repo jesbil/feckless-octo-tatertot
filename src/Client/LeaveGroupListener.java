@@ -1,5 +1,6 @@
 package Client;
 
+import Middleware.DebuggMessage;
 import Middleware.GCom;
 import Middleware.GroupException;
 
@@ -27,8 +28,6 @@ public class LeaveGroupListener implements ActionListener {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (GroupException e) {
-                System.out.println(e.getMessage());
             }
         }
 

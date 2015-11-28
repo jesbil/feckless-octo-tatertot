@@ -27,7 +27,7 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     }
 
     // send
-    public void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException, GroupException {
+    public void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException{
 
         GCom.getDebuggLog().add(new DebuggMessage("multicasting to group: " + message.getGroup().getName()));
         int nrOfRecievers = message.getGroup().getMembers().size();
@@ -39,7 +39,10 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                     MyRemote remote = (MyRemote) registry.lookup(RMI_ID);
                     remote.receiveMulticast(message);
                 }catch(RemoteException e) {
-                    throw new GroupException("Member "+member.getName()+" disconnected!",member);
+                    GCom.getDebuggLog().add(new DebuggMessage(("Member " + member.getName() + " disconnected!")));
+                    GCom.removeMemberFromAllGroups(member);
+                    nrOfRecievers--;
+                    i--;
                 }
             } else {
                 if (message.getMessage().equals(GCom.getAllMembersGroupName()) && message.getType() == TYPE_JOIN_GROUP) {

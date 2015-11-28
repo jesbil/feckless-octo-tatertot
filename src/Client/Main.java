@@ -43,9 +43,6 @@ public class Main {
         } catch (NotBoundException e) {
             // GCOM join i initiate
             e.printStackTrace();
-        } catch (GroupException e) {
-            System.err.println(e.toString());
         }
-
     }
 }

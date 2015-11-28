@@ -56,7 +56,7 @@ public class GroupManagementModule {
         }
     }
 
-    public void setAllMembers(ArrayList<Member> mlist) throws GroupException {
+    public void setAllMembers(ArrayList<Member> mlist) {
         for(Member m: mlist){
             allMembers.addMemberToGroup(m);
         }
@@ -80,7 +80,6 @@ public class GroupManagementModule {
     
     public void removeMemberFromAllGroups(Member member) {
         for(Group g: groups){
-            System.out.println(g.getName());
             removeMemberFromGroup(g.getName(),member);
         }
         allMembers.removeMemberFromGroup(member);

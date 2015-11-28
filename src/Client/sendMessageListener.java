@@ -1,5 +1,6 @@
 package Client;
 
+import Middleware.DebuggMessage;
 import Middleware.GCom;
 import Middleware.GroupException;
 
@@ -32,8 +33,6 @@ public class sendMessageListener implements ActionListener {
         } catch (NotBoundException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (GroupException e) {
             e.printStackTrace();
         }
     }
