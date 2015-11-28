@@ -135,6 +135,11 @@ public class GCom extends Observable implements Observer {
     public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException, GroupException {
         Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
         communication.nonReliableMulticast(message);
+        if(getGroupByName(groupName).getMembers().size()==0&&groupName!=getAllMembersGroupName()){
+            System.out.println("OJDÅ NU VAR GRUPPEN TOM");
+            message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_REMOVE_GROUP);
+            communication.nonReliableMulticast(message);
+        }
     }
 
 
@@ -179,13 +184,26 @@ public class GCom extends Observable implements Observer {
 
     private static void groupRemoved(Message message) {
         groupManagement.removeGroup(message.getMessage());
+
     }
 
     @Override
     public void update(Observable observable, Object o) {
+        int size=0;
+        if(((Message) o).getType()==TYPE_REMOVE_GROUP) {
+            size = getGroupByName(((Message) o).getMessage()).getSize();
+        }
         deliverMessage((Message) o);
-        setChanged();
-        notifyObservers(o);
+        if(((Message) o).getType()==TYPE_REMOVE_GROUP){
+            Message temp=(Message)o;
+            Message msg = new Message(temp.getSender(),temp.getMessage()+"#"+size,temp.getVectorClock(),temp.getGroup(),temp.getType());
+            setChanged();
+            notifyObservers(msg);
+        }else{
+            setChanged();
+            notifyObservers(o);
+        }
+
         messageOrdering.performNextIfPossible();
     }
 

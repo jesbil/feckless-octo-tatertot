@@ -48,6 +48,10 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
                     GCom.receiveMessage(message);
                 }
             }
+            if(message.getType()==TYPE_LEAVE_GROUP&&message.getMessage().equals(GCom.getAllMembersGroupName())){
+                nrOfRecievers--;
+                i--;
+            }
         }
     }
 

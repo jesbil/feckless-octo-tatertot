@@ -52,7 +52,7 @@ public class GUI implements Observer{
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "dobby.cs.umu.se");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "quicksilver.cs.umu.se");
             if(nameService==null){
                 int answer = JOptionPane.showConfirmDialog(null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
@@ -224,9 +224,7 @@ public class GUI implements Observer{
             public void windowClosing(WindowEvent e) {
 
                 try {
-                    System.out.println("starting shutdown");
                     GCom.shutdown();
-                    System.out.println("shutdown finished");
                 } catch (RemoteException e1) {
                     e1.printStackTrace();
                 } catch (NotBoundException e1) {
@@ -275,8 +273,9 @@ public class GUI implements Observer{
                     jtaNameList.append(message.getMessage()+"\n");
                     break;
                 case TYPE_REMOVE_GROUP:
-                    jtaNameList.getText().replace(message.getMessage()+"\n","");
-                    jtaNameList.getText().replace("* "+message.getMessage()+"\n","");
+                    System.out.println("Gruppnamn:"+message.getMessage());
+                    jtaNameList.setText(jtaNameList.getText().replace(message.getMessage() + "\n", ""));
+                   // jtaNameList.getText().replace("* "+message.getMessage()+"\n","");
                     break;
                 case TYPE_JOIN_GROUP:
                     jtaNameList.getText().replace(message.getMessage()+"\n","* "+message.getMessage()+"\n");
