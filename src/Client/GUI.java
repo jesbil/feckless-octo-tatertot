@@ -52,7 +52,7 @@ public class GUI implements Observer{
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "quicksilver.cs.umu.se");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "");
             if(nameService==null){
                 int answer = JOptionPane.showConfirmDialog(null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
@@ -256,12 +256,6 @@ public class GUI implements Observer{
 
     @Override
     public void update(Observable observable, Object o) {
-
-
-        if(o instanceof GroupException){
-            JOptionPane.showMessageDialog(null, ((GroupException) o).getMessage().toString(), "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
 
         if(o instanceof Message){
             Message message = (Message) o;
