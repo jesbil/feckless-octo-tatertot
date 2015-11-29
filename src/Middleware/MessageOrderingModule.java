@@ -15,17 +15,17 @@ public class MessageOrderingModule extends Observable{
     private boolean paused;
 
 
-    public MessageOrderingModule(boolean unordered) {
+    protected MessageOrderingModule(boolean unordered) {
         paused = false;
         holdBackQueue = new ArrayList<>();
         this.unordered = unordered;
     }
 
-    public void triggerSelfEvent(String groupName){
+    protected void triggerSelfEvent(String groupName){
         GCom.getGroupByName(groupName).getVectorClock().triggerSelfEvent();
     }
 
-    public void receiveMessage(Message message) {
+    protected void receiveMessage(Message message) {
         GCom.getDebuggLog().add(new DebuggMessage("Message from " + message.getSender().getName() + " put in holdbackqueue"));
         if(unordered){
             setChanged();
@@ -35,7 +35,7 @@ public class MessageOrderingModule extends Observable{
         }
     }
 
-    public boolean allowedToDeliver(Message message) {
+    protected boolean allowedToDeliver(Message message) {
         if(paused){
             return false;
         }
@@ -49,14 +49,14 @@ public class MessageOrderingModule extends Observable{
         return false;
     }
 
-    public void addToAllMembersClock(ArrayList<Member> members) {
+    protected void addToAllMembersClock(ArrayList<Member> members) {
         for(Member m: members){
             GCom.getGroupByName(GCom.getAllMembersGroupName()).getVectorClock().getClock().put(m.getName(), 0);
         }
     }
 
 
-    public void performNextIfPossible() {
+    protected void performNextIfPossible() {
 
         for (int i = 0; i < holdBackQueue.size(); i++) {
             Message message = holdBackQueue.get(i);
@@ -74,20 +74,20 @@ public class MessageOrderingModule extends Observable{
         super.addObserver(observer);
     }
 
-    public void pauseQueue() {
+    protected void pauseQueue() {
         paused = true;
     }
 
-    public void startQueue() {
+    protected void startQueue() {
         paused = false;
         performNextIfPossible();
     }
 
-    public void shuffleQueue() {
+    protected void shuffleQueue() {
         Collections.shuffle(holdBackQueue);
     }
 
-    public ArrayList<Message> getHoldBackQueue() {
+    protected ArrayList<Message> getHoldBackQueue() {
         return holdBackQueue;
     }
 

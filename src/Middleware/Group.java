@@ -18,15 +18,15 @@ public class Group implements Serializable{
         return members;
     }
 
-    public String getName(){
+    public  String getName(){
         return name;
     }
 
-    public VectorClock getVectorClock() {
+    public  VectorClock getVectorClock() {
         return vectorClock;
     }
 
-    public Group(String name, int size) {
+    public  Group(String name, int size) {
         started = false;
         members = new ArrayList<>();
         this.name=name;
@@ -34,7 +34,7 @@ public class Group implements Serializable{
         vectorClock = new VectorClock();
     }
 
-    public void addMemberToGroup(Member m) {
+    public  void addMemberToGroup(Member m) {
         members.add(m);
         if(members.size()==size){
             for(Member member :members){
@@ -44,7 +44,7 @@ public class Group implements Serializable{
         }
     }
 
-    public void removeMemberFromGroup(Member m){
+    public  void removeMemberFromGroup(Member m){
         members.remove(m);
     }
 
@@ -65,11 +65,11 @@ public class Group implements Serializable{
     }
 
 
-    public boolean isStarted() {
+    public  boolean isStarted() {
         return started;
     }
 
-    public int getSize() {
+    public  int getSize() {
         return size;
     }
 }

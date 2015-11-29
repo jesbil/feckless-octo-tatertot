@@ -10,20 +10,20 @@ public class Member implements Serializable{
     private String ip;
     private int port;
 
-    public Member(String ip, int port) {
+    public  Member(String ip, int port) {
         this.port = port;
         this.ip = ip;
     }
 
-    public String getIP() {
+    public  String getIP() {
         return ip;
     }
 
-    public int getPort() {
+    public  int getPort() {
         return port;
     }
 
-    public String getName() {
+    public  String getName() {
         return ip+","+port;
     }
 

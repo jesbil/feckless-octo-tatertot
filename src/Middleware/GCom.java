@@ -28,31 +28,31 @@ public class GCom extends Observable implements Observer {
 
     private static String port;
 
-    public static String getAllMembersGroupName(){
+    protected static String getAllMembersGroupName(){
         return groupManagement.getAllMembers().getName();
     }
 
-    public static Member getLocalMember(){
+    protected static Member getLocalMember(){
         return localMember;
     }
 
-    public static ArrayList<Group> getJoinedGroups(){
+    protected static ArrayList<Group> getJoinedGroups(){
         return groupManagement.getJoinedGroups();
     }
 
-    public static Group getGroupByName(String groupName) {
+    protected static Group getGroupByName(String groupName) {
         return groupManagement.getGroupByName(groupName);
     }
 
-    public static ArrayList<Group> getGroups() {
+    protected static ArrayList<Group> getGroups() {
         return groupManagement.getGroups();
     }
 
-    public static List<DebuggMessage> getDebuggLog() {
+    protected static List<DebuggMessage> getDebuggLog() {
         return debuggLog;
     }
 
-    public static ArrayList<Message> getHoldBackQueue() {
+    protected static ArrayList<Message> getHoldBackQueue() {
         return messageOrdering.getHoldBackQueue();
     }
 
@@ -124,7 +124,7 @@ public class GCom extends Observable implements Observer {
     }
 
     public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException{
-        if(!getGroupByName(groupName).isStarted()){
+        if((getGroupByName(groupName)!=null)&&(!getGroupByName(groupName).isStarted())){
             Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
             communication.nonReliableMulticast(message);
         }
@@ -216,11 +216,11 @@ public class GCom extends Observable implements Observer {
         }
     }
 
-    public static void shuffleHbq() {
+    public  static void shuffleHbq() {
         messageOrdering.shuffleQueue();
     }
 
-    public static void removeMemberFromAllGroups(Member member) {
+    protected static void removeMemberFromAllGroups(Member member) {
         groupManagement.removeMemberFromAllGroups(member);
     }
 }

@@ -13,40 +13,40 @@ public class GroupManagementModule {
     private ArrayList<Group> joinedGroups;
     private Member localMember;
 
-    public ArrayList<Group> getGroups() {
+    protected ArrayList<Group> getGroups() {
         return groups;
     }
 
-    public Group getAllMembers() {
+    protected Group getAllMembers() {
         return allMembers;
     }
 
-    public GroupManagementModule(Member localMember) throws UnknownHostException{
+    protected GroupManagementModule(Member localMember) throws UnknownHostException{
         groups = new ArrayList<>();
         joinedGroups = new ArrayList<>();
         this.localMember = localMember;
         allMembers = new Group("allMembers",Integer.MAX_VALUE);
     }
 
-    public void addMemberToGroup(String groupName, Member sender){
+    protected void addMemberToGroup(String groupName, Member sender){
         getGroupByName(groupName).addMemberToGroup(sender);
         if(sender.equals(localMember)){
             joinedGroups.add(getGroupByName(groupName));
         }
     }
 
-    public void removeMemberFromGroup(String groupName, Member sender) {
+    protected void removeMemberFromGroup(String groupName, Member sender) {
         getGroupByName(groupName).removeMemberFromGroup(sender);
         if(sender.equals(localMember)){
             joinedGroups.remove(getGroupByName(groupName));
         }
     }
 
-    public void removeGroup(String groupName){
+    protected void removeGroup(String groupName){
         groups.remove(getGroupByName(groupName));
     }
 
-    public void groupCreated(String message, Member sender) {
+    protected void groupCreated(String message, Member sender) {
         String[] splitted = message.split("#");
         Group group = new Group(splitted[0],Integer.parseInt(splitted[1]));
         group.addMemberToGroup(sender);
@@ -56,13 +56,13 @@ public class GroupManagementModule {
         }
     }
 
-    public void setAllMembers(ArrayList<Member> mlist) {
+    protected void setAllMembers(ArrayList<Member> mlist) {
         for(Member m: mlist){
             allMembers.addMemberToGroup(m);
         }
     }
 
-    public Group getGroupByName(String groupName) {
+    protected Group getGroupByName(String groupName) {
         if(groupName.equals(allMembers.getName())){
             return allMembers;
         }
@@ -74,11 +74,11 @@ public class GroupManagementModule {
         return null;
     }
 
-    public ArrayList<Group> getJoinedGroups() {
+    protected ArrayList<Group> getJoinedGroups() {
         return joinedGroups;
     }
-    
-    public void removeMemberFromAllGroups(Member member) {
+
+    protected void removeMemberFromAllGroups(Member member) {
         for(Group g: groups){
             removeMemberFromGroup(g.getName(),member);
         }

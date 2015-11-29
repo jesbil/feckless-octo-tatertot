@@ -21,13 +21,13 @@ public class CommunicationModule extends UnicastRemoteObject implements  MyRemot
     private static Member localMember;
 
 
-    public CommunicationModule(Member localMember) throws RemoteException {
+    protected CommunicationModule(Member localMember) throws RemoteException {
         super();
         this.localMember = localMember;
     }
 
     // send
-    public void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException{
+    protected void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException{
 
         GCom.getDebuggLog().add(new DebuggMessage("multicasting to group: " + message.getGroup().getName()));
         int nrOfRecievers = message.getGroup().getMembers().size();

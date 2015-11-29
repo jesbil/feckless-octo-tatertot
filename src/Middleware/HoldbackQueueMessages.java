@@ -8,15 +8,15 @@ import java.util.ArrayList;
 public class HoldbackQueueMessages {
     private ArrayList<Message> messages;
 
-    public HoldbackQueueMessages(ArrayList<Message> messages) {
+    public  HoldbackQueueMessages(ArrayList<Message> messages) {
         this.messages = new ArrayList<>(messages);
     }
 
-    public String getMessage(int pos){
+    public  String getMessage(int pos){
         return messages.get(pos).getSender().getName()+"@"+ messages.get(pos).getGroup().getName()+": "+ messages.get(pos).getMessage() + "VC: "+messages.get(pos).getVectorClock().getClock();
     }
 
-    public int getSize(){
+    public  int getSize(){
         return messages.size();
     }
 
