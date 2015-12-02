@@ -39,22 +39,13 @@ public class MessageOrderingModule extends Observable{
         if(paused){
             return false;
         }
-        if(message.getGroup().getName().equals(GCom.getAllMembersGroupName())){
-            return true;
-        }
+
         if(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().compare(message.getVectorClock(), message.getSender().getName())){
             GCom.getGroupByName(message.getGroup().getName()).getVectorClock().mergeWith(message.getVectorClock());
             return true;
         }
         return false;
     }
-
-    protected void addToAllMembersClock(ArrayList<Member> members) {
-        for(Member m: members){
-            GCom.getGroupByName(GCom.getAllMembersGroupName()).getVectorClock().getClock().put(m.getName(), 0);
-        }
-    }
-
 
     protected void performNextIfPossible() {
 

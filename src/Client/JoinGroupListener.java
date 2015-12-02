@@ -25,6 +25,8 @@ public class JoinGroupListener implements ActionListener {
                 e.printStackTrace();
             } catch (NotBoundException e) {
                 e.printStackTrace();
+            } catch (RemoteException e) {
+                e.printStackTrace();
             }
         }
     }

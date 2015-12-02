@@ -18,19 +18,14 @@ import static Interface.Constants.*;
  * Created by oi12pjn on 2015-10-08.
  */
 public class GCom extends Observable implements Observer {
-    private static String nameServiceAddress;
     private static GroupManagementModule groupManagement;
     private static MessageOrderingModule messageOrdering;
     private static CommunicationModule communication;
-    private static NameServerCommunicator nameServerCommunicator;
     private static List<DebuggMessage> debuggLog;
     private static Member localMember;
 
     private static String port;
 
-    protected static String getAllMembersGroupName(){
-        return groupManagement.getAllMembers().getName();
-    }
 
     protected static Member getLocalMember(){
         return localMember;
@@ -44,9 +39,6 @@ public class GCom extends Observable implements Observer {
         return groupManagement.getGroupByName(groupName);
     }
 
-    protected static ArrayList<Group> getGroups() {
-        return groupManagement.getGroups();
-    }
 
     protected static List<DebuggMessage> getDebuggLog() {
         return debuggLog;
@@ -57,7 +49,6 @@ public class GCom extends Observable implements Observer {
     }
 
     public void initiate(boolean unordered, Observer observer) throws UnknownHostException, RemoteException, AlreadyBoundException, NotBoundException {
-        nameServerCommunicator = new NameServerCommunicator();
         Registry register = LocateRegistry.createRegistry(0);
         port = register.toString().substring(register.toString().indexOf(":") + 1, register.toString().indexOf("("));
         port = port.substring(port.indexOf(":") + 1, port.indexOf("]"));
@@ -73,27 +64,6 @@ public class GCom extends Observable implements Observer {
         addObserver(observer);
     }
 
-    public void connectToNameService(String nameService) throws IOException, NotBoundException{
-        nameServiceAddress = nameService;
-        ArrayList<Member> allMembers = nameServerCommunicator.retrieveMembers(nameServiceAddress,port);
-        groupManagement.setAllMembers(allMembers);
-        messageOrdering.addToAllMembersClock(allMembers);
-        debuggLog.add( new DebuggMessage("Connected to Name Service Server @ " + nameService));
-        ArrayList<Group> temp;
-        if((temp = communication.fetchGroups(allMembers.get(0)))!=null){
-            for(Group group : temp){
-                groupManagement.groupCreated(group.getName()+"#"+group.getSize(),group.getMembers().get(0));
-                for (int i = 1; i < group.getMembers().size(); i++) {
-                    groupManagement.addMemberToGroup(group.getName(),group.getMembers().get(i));
-                }
-            }
-            setChanged();
-            notifyObservers(groupManagement.getGroups());
-        }
-        joinGroup(getAllMembersGroupName());
-    }
-
-
 
     protected static void receiveMessage(Message message) {
         messageOrdering.receiveMessage(message);
@@ -103,9 +73,6 @@ public class GCom extends Observable implements Observer {
     private void deliverMessage(Message message) {
         debuggLog.add(new DebuggMessage("delivering message: " + message.getMessage()));
         switch (message.getType()){
-            case TYPE_CREATE_GROUP:
-                groupCreated(message);
-                break;
             case TYPE_JOIN_GROUP:
                 groupJoined(message);
                 break;
@@ -118,25 +85,36 @@ public class GCom extends Observable implements Observer {
         }
     }
 
-    public static void createGroup(String groupName) throws NotBoundException, UnknownHostException{
-        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_CREATE_GROUP);
-        communication.nonReliableMulticast(message);
+    public static void createGroup(String groupName) throws NotBoundException, UnknownHostException, RemoteException {
+        //TODO: SKICKA INFO OM GRUPPNAMN OCH LEDARE TILL NAMNSERVERN
+        if(NameServerCommunicator.getLeader(groupName)==null){
+            NameServerCommunicator.setLeader(localMember,groupName);
+            Group g = new Group(groupName);
+            g.addMemberToGroup(localMember);
+            groupManagement.addGroup(g);
+            System.out.println("Grupp skapad: "+ groupName);
+        }else{
+            System.out.println("Grupp kunde inte skapas");
+        }
     }
 
-    public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException{
-        if((getGroupByName(groupName)!=null)&&(!getGroupByName(groupName).isStarted())){
-            Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(), groupManagement.getAllMembers(),TYPE_JOIN_GROUP);
+    public static void joinGroup(String groupName) throws NotBoundException, UnknownHostException, RemoteException {
+        //TODO: PRATA MED NAME SERVICE
+        Member leader = NameServerCommunicator.getLeader(groupName);
+        if(leader!=null){
+            Group g=communication.fetchGroup(leader,groupName);
+            groupManagement.addGroup(g);
+            g.addMemberToGroup(localMember);
+            System.out.println(g.getMembers().size());
+            Message message = new Message(localMember,groupName,g.getVectorClock(),g,TYPE_JOIN_GROUP);
             communication.nonReliableMulticast(message);
         }
     }
 
     public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException{
-        Message message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_LEAVE_GROUP);
+        Message message = new Message(localMember,groupName,getGroupByName(groupName).getVectorClock(),getGroupByName(groupName),TYPE_LEAVE_GROUP);
         communication.nonReliableMulticast(message);
-        if(getGroupByName(groupName).getMembers().size()==0&&groupName!=getAllMembersGroupName()){
-            message = new Message(localMember,groupName,groupManagement.getAllMembers().getVectorClock(),groupManagement.getAllMembers(),TYPE_REMOVE_GROUP);
-            communication.nonReliableMulticast(message);
-        }
+
     }
 
 
@@ -145,26 +123,19 @@ public class GCom extends Observable implements Observer {
             for (Group group : groupManagement.getJoinedGroups()){
                 messageOrdering.triggerSelfEvent(group.getName());
                 Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
-
-                    if(group.isStarted()){
-                        communication.nonReliableMulticast(message);
-                    }
-
+                System.out.println("hejehejtjotjo");
+                communication.nonReliableMulticast(message);
             }
         }else{
             for (Group group : groups){
                 messageOrdering.triggerSelfEvent(group.getName());
                 Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
-
-                    communication.nonReliableMulticast(message);
+                communication.nonReliableMulticast(message);
 
             }
         }
     }
 
-    private static void groupCreated(Message message){
-        groupManagement.groupCreated(message.getMessage(),message.getSender());
-    }
 
     private static void groupJoined(Message message){
         groupManagement.addMemberToGroup(message.getMessage(), message.getSender());
@@ -181,20 +152,11 @@ public class GCom extends Observable implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        int size=0;
-        if(((Message) o).getType()==TYPE_REMOVE_GROUP) {
-            size = getGroupByName(((Message) o).getMessage()).getSize();
-        }
+
         deliverMessage((Message) o);
-        if(((Message) o).getType()==TYPE_REMOVE_GROUP){
-            Message temp=(Message)o;
-            Message msg = new Message(temp.getSender(),temp.getMessage()+"#"+size,temp.getVectorClock(),temp.getGroup(),temp.getType());
-            setChanged();
-            notifyObservers(msg);
-        }else{
-            setChanged();
-            notifyObservers(o);
-        }
+
+        setChanged();
+        notifyObservers(o);
 
         messageOrdering.performNextIfPossible();
     }
@@ -204,8 +166,6 @@ public class GCom extends Observable implements Observer {
         for(Group group : groups){
             leaveGroup(group.getName());
         }
-        leaveGroup(getAllMembersGroupName());
-        nameServerCommunicator.leave(nameServiceAddress,port);
     }
 
     public static void pauseStartHbq(boolean paused) {
@@ -222,6 +182,10 @@ public class GCom extends Observable implements Observer {
 
     protected static void removeMemberFromAllGroups(Member member) {
         groupManagement.removeMemberFromAllGroups(member);
+    }
+
+    public static void setNameServiceAddress(String address) {
+        NameServerCommunicator.setAddress(address);
     }
 }
 

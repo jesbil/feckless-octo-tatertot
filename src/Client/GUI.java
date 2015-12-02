@@ -280,7 +280,7 @@ public class GUI implements Observer{
         if(o instanceof ArrayList){
             ArrayList<Group> groups = (ArrayList<Group>) o;
             for (Group group : groups){
-                jtaNameList.append(group.getName()+"#"+group.getSize()+"\n");
+                jtaNameList.append(group.getName()+"\n");
             }
 
         }

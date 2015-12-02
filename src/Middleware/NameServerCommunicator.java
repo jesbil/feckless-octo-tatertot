@@ -1,52 +1,44 @@
 package Middleware;
 
+import Interface.GComRemote;
+import Interface.NameServiceRemote;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
+
+import static Interface.Constants.NAME_SERVICE_ID;
+import static Interface.Constants.NAME_SERVICE_PORT;
+import static Interface.Constants.RMI_ID;
 
 /**
  * Created by c12jbr on 2015-10-05.
  */
 public class NameServerCommunicator {
-    private ArrayList<Member> members;
 
-    public NameServerCommunicator(){
-        members=new ArrayList<Member>();
+
+    private static String address;
+
+    public static void setLeader(Member leader,String groupName) throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry(address,NAME_SERVICE_PORT);
+        NameServiceRemote remote = (NameServiceRemote) registry.lookup(NAME_SERVICE_ID);
+        remote.setLeader(leader,groupName);
     }
 
-    public ArrayList<Member> retrieveMembers(String nameServiceAddress, String port) throws IOException {
-
-        DatagramSocket clientSocket = new DatagramSocket();
-        InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
-        byte[] sendData = ("hej,"+port).getBytes();
-        byte[] nrOfMemz = new byte[4];
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);
-        clientSocket.send(sendPacket);
-        DatagramPacket receiveIntPacket = new DatagramPacket(nrOfMemz, nrOfMemz.length);
-        clientSocket.receive(receiveIntPacket);
-
-        int numberOfMembers= new BigInteger(receiveIntPacket.getData()).intValue();
-
-        for (int i = 0; i < numberOfMembers; i++) {
-            byte[] receiveData = new byte[1024];
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            clientSocket.receive(receivePacket);
-            String str = new String(receivePacket.getData()).trim();
-            Member m = new Member(str.substring(0,str.indexOf(",")),Integer.parseInt(str.substring(str.indexOf(",")+1)));
-            members.add(m);
-        }
-        clientSocket.close();
-        return members;
+    public static Member getLeader(String groupName) throws RemoteException, NotBoundException {
+        Registry registry = LocateRegistry.getRegistry(address,NAME_SERVICE_PORT);
+        NameServiceRemote remote = (NameServiceRemote) registry.lookup(NAME_SERVICE_ID);
+        return remote.getLeader(groupName);
     }
 
-
-    public void leave(String nameServiceAddress, String port) throws IOException {
-        DatagramSocket clientSocket = new DatagramSocket();
-        InetAddress IPAddress = InetAddress.getByName(nameServiceAddress);
-        byte[] sendData = ("baj,"+port).getBytes();
-        DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 4444);
-        clientSocket.send(sendPacket);
+    public static void setAddress(String address) {
+        NameServerCommunicator.address = address;
     }
+
 }

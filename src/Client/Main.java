@@ -28,7 +28,7 @@ public class Main {
             }
             gcom.initiate(gui.askUnordered(), gui);
             gui.buildAndStart("GCom");
-            gcom.connectToNameService(nameService);
+            GCom.setNameServiceAddress(nameService);
 
 
         } catch (UnknownHostException e) {
