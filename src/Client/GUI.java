@@ -269,20 +269,13 @@ public class GUI implements Observer{
                    // jtaNameList.getText().replace("* "+message.getMessage()+"\n","");
                     break;
                 case TYPE_JOIN_GROUP:
-                    jtaNameList.getText().replace(message.getMessage()+"\n","* "+message.getMessage()+"\n");
+                    jtaNameList.append(message.getMessage()+"\n");
                     break;
                 case TYPE_MESSAGE:
                     chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");
                     chatField.setCaretPosition(chatField.getDocument().getLength());
                     break;
             }
-        }
-        if(o instanceof ArrayList){
-            ArrayList<Group> groups = (ArrayList<Group>) o;
-            for (Group group : groups){
-                jtaNameList.append(group.getName()+"\n");
-            }
-
         }
 
         if(o instanceof HoldbackQueueMessages){
