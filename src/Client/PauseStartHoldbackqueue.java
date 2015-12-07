@@ -10,6 +10,8 @@ import java.rmi.RemoteException;
 
 /**
  * Created by c12jbr on 2015-10-14.
+ *
+ * actionlistener for the pausestartholdbackqueue button
  */
 public class PauseStartHoldbackqueue implements ActionListener {
     boolean paused;

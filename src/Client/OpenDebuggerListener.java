@@ -8,6 +8,8 @@ import java.awt.event.*;
 
 /**
  * Created by c12jbr on 2015-10-14.
+ *
+ *  * Actionlistener for open debugger button
  */
 public class OpenDebuggerListener implements ActionListener {
     private JFrame frame;
@@ -19,6 +21,13 @@ public class OpenDebuggerListener implements ActionListener {
     private JPanel border;
     private Debugg debugg;
 
+    /**
+     * Constructor creates all parts of the debug window and binds the
+     * gui to observe the debugg class of the middleware
+     *
+     * @param mainFrame - used for positioning
+     * @param gui - observer for Debugg class
+     */
     public OpenDebuggerListener(JFrame mainFrame, GUI gui) {
         this.mainFrame = mainFrame;
         debugg = new Debugg();
@@ -39,15 +48,28 @@ public class OpenDebuggerListener implements ActionListener {
         border.setBackground(Color.black);
     }
 
+    /**
+     *
+     * @return log
+     */
     public JTextArea getLog() {
         return log;
     }
 
+    /**
+     *
+     * @return waitingQueue
+     */
     public JTextArea getWaitingQueue() {
         return waitingQueue;
     }
 
 
+    /**
+     * makes the debug window visible and adds the other parts to the
+     * frame
+     * @param actionEvent
+     */
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         frame = new JFrame("DEBUGGER");
@@ -68,12 +90,22 @@ public class OpenDebuggerListener implements ActionListener {
 
     }
 
+    /**
+     * Creates button to pause or start the holdbackqueue making messages appear
+     * to be unreceived
+     * @return
+     */
     private JButton pauseStartHoldbackqueue() {
         JButton button = new JButton("Pause/Start Holdbackqueue");
         button.addActionListener(new PauseStartHoldbackqueue());
         return button;
     }
 
+    /**
+     * Creats button to shuffle the holdbackqueue making messages appear to
+     * have been received in a different order.
+     * @return
+     */
     private JButton shuffleHoldBackqueue() {
         JButton button = new JButton("Shuffle Holdbackqueue");
         button.addActionListener(new shuffleHoldbackqueueListener());
@@ -81,6 +113,10 @@ public class OpenDebuggerListener implements ActionListener {
     }
 
 
+    /**
+     * Stop the debugging when the debug window closes
+     * @return
+     */
     private WindowListener createCloseOperation() {
         WindowListener exitListener = new WindowAdapter() {
 
@@ -95,7 +131,9 @@ public class OpenDebuggerListener implements ActionListener {
         return exitListener;
     }
 
-
+    /**
+     * repaints the frame
+     */
     public void update() {
         if(frame!=null){
             frame.repaint();

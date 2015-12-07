@@ -6,62 +6,59 @@ import java.util.Set;
 
 /**
  * Created by c12jbr on 2015-10-13.
+ *
+ * Implementation of a vector clock for causal ordering
  */
 public class VectorClock implements Serializable{
     private HashMap<String,Integer> clockValue;
 
+    /**
+     * creates a vector clock and puts the local member into it
+     */
     public VectorClock() {
         clockValue = new HashMap<>();
         clockValue.put(GCom.getLocalMember().getName(),0);
     }
 
+    /**
+     * increases the local members vector value by one.
+     */
     public void triggerSelfEvent() {
         int value = clockValue.get(GCom.getLocalMember().getName());
         value++;
         clockValue.put(GCom.getLocalMember().getName(),value);
     }
+
+    /**
+     * increses the vector value of a sender
+     * @param sender - member name
+     */
     public void triggerEvent(String sender) {
         int value = clockValue.get(sender);
         value++;
         clockValue.put(sender,value);
     }
 
-
+    /**
+     *
+     * @return the clock
+     */
     public HashMap<String,Integer> getClock(){
         return clockValue;
     }
 
-
-    public void mergeWith(VectorClock vc){
-        Set<String> vcIds = vc.getClock().keySet();
-        for(String id:vcIds){
-            if(clockValue.containsKey(id)){
-                clockValue.put(id,max(clockValue.get(id),vc.getClock().get(id)));
-            }
-            else{
-                clockValue.put(id,vc.getClock().get(id));
-            }
-        }
-        GCom.getDebuggLog().add(new DebuggMessage("Clock merged: " + clockValue.toString()));
-    }
-
-    private int max(int a, int b){
-        if(a>b){
-            return a;
-        }
-        return b;
-    }
-
+    /**
+     * Compares two vector clocks to detect if the incoming vector clock
+     * is allowed to be received by the client.
+     * @param vc - incoming vector clock
+     * @param sender - sender of the message with incoming vector clock
+     * @return true/false if it's allowed to receive the message
+     */
     public boolean compare(VectorClock vc, String sender){
-//        if(compare2(vc, sender)) {
-//            return true;
-//        }
-//        return false;
+
         if(clockValue.get(sender)==null){
-            System.out.println("nollställer");
             clockValue.put(sender,0);
         }
-        //System.out.println(clockValue.toString());
         if((clockValue.get(sender)+1==vc.getClock().get(sender))||(GCom.getLocalMember().getName().equals(sender))){
             Set<String> vcIds = clockValue.keySet();
             for (String id : vcIds) {
@@ -78,33 +75,11 @@ public class VectorClock implements Serializable{
         return true;
     }
 
-    private boolean compare2(VectorClock vc, String sender) {
-
-        boolean earlier = false;
-        boolean later = false;
-        if(clockValue.get(sender)==null){
-            clockValue.put(sender,0);
-        }
-        if(clockValue.get(sender)+1 != vc.getClock().get(sender) && !GCom.getLocalMember().getName().equals(sender)){
-            return false;
-        }
-
-        Set<String> vcIds = clockValue.keySet();
-        for (String id : vcIds) {
-            if (vc.getClock().get(id)!=null && !id.equals(sender)) {
-                if(clockValue.get(id).compareTo(vc.getClock().get(id))==-1) {
-                    earlier = true;
-                }else if(clockValue.get(id).compareTo(vc.getClock().get(id))==1) {
-                    later = true;
-                }
-            }
-        }
-    if(earlier && !later){
-        return false;
-    }
-    return true;
-}
-
+    /**
+     * equals function for vector clocks
+     * @param obj
+     * @return
+     */
     @Override
     public boolean equals(Object obj){
         if(!(obj instanceof VectorClock)){
@@ -132,6 +107,10 @@ public class VectorClock implements Serializable{
         return false;
     }
 
+    /**
+     * hashcode generator
+     * @return
+     */
     @Override
     public int hashCode() {
         return 123;

@@ -1,8 +1,6 @@
 package Client;
 
-import Middleware.DebuggMessage;
 import Middleware.GCom;
-import Middleware.GroupException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -13,6 +11,8 @@ import java.rmi.RemoteException;
 
 /**
  * Created by c12jbr on 2015-10-11.
+ *
+ * Actionlistener for join group button
  */
 public class JoinGroupListener implements ActionListener {
     @Override

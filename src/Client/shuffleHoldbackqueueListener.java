@@ -7,8 +7,11 @@ import java.awt.event.ActionListener;
 
 /**
  * Created by c12jbr on 2015-11-02.
+ *
+ * Actionlistener for shuffleholdbackqueue button
  */
 public class shuffleHoldbackqueueListener implements ActionListener {
+
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         GCom.shuffleHbq();

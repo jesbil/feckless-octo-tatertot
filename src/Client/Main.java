@@ -15,6 +15,8 @@ import java.util.Observer;
 
 /**
  * Created by c12jbr on 2015-10-10.
+ *
+ * Starts the Gui and GCom
  */
 public class Main {
     public static void main(String[] args) {
@@ -35,7 +37,7 @@ public class Main {
             //GCOM initiate
             e.printStackTrace();
         } catch (IOException e) {
-            //connect to nameService
+            //GCOM initiate
             e.printStackTrace();
         } catch (AlreadyBoundException e) {
             //GCOM initiate

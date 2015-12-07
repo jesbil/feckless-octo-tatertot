@@ -42,13 +42,15 @@ public class GUI implements Observer{
     private JTextArea writeField;
 
     private JScrollPane nlsp;
-    /**
-     * Creates the GUI and asks the user of its name.
-     */
+
+
     public GUI() {
     }
 
-
+    /**
+     * Asks for and stores the name service server adress
+     * @return String or null on exit
+     */
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
@@ -78,7 +80,7 @@ public class GUI implements Observer{
         frame.setMinimumSize(new Dimension(500,200));
         frame.setLocationRelativeTo(null);
         frame.setJMenuBar(createMenuBar());
-        frame.add(createGroupNameList(),BorderLayout.WEST);
+    //    frame.add(createGroupNameList(),BorderLayout.WEST);
         frame.add(createChatArea(),BorderLayout.CENTER);
         frame.setEnabled(true);
         frame.setVisible(true);
@@ -103,7 +105,7 @@ public class GUI implements Observer{
     }
 
     /**
-     * Creates a button and gives it the actionlistener to change encryption key.
+     * Creates a menu item and gives it the actionlistener to create a group.
      *
      * @return
      */
@@ -114,6 +116,11 @@ public class GUI implements Observer{
         return item;
     }
 
+    /**
+     * Creates a menu item and gives it the actionlistener to join a group.
+     *
+     * @return
+     */
     private JMenuItem joinGroupButton(){
         JMenuItem item = new JMenuItem("Join Group");
         item.addActionListener(new JoinGroupListener());
@@ -121,6 +128,11 @@ public class GUI implements Observer{
         return item;
     }
 
+    /**
+     * Creates a menu item and gives it the actionlistener to leave a group.
+     *
+     * @return
+     */
     private JMenuItem leaveGroupButton(){
         JMenuItem item = new JMenuItem("Leave Group");
         item.addActionListener(new LeaveGroupListener());
@@ -128,6 +140,11 @@ public class GUI implements Observer{
         return item;
     }
 
+    /**
+     * Creates a menu item and gives it the actionlistener to open the debugger.
+     *
+     * @return
+     */
     private JMenuItem DebugWindowButton(){
         JMenuItem item = new JMenuItem("Open Debugger");
         debugger = new OpenDebuggerListener(frame,this);
@@ -156,7 +173,7 @@ public class GUI implements Observer{
 
     /**
      * Creates the Panel that contains the JTextArea of the chat, the JTextArea where messages are
-     * written and the buttons to encrypt, compress or send the message
+     * written and the button to send the message
      *
      * @return
      */
@@ -170,7 +187,7 @@ public class GUI implements Observer{
     }
 
     /**
-     * Creates the JTextArea that shows the chat
+     * Creates the JScrollPane that shows the chat
      *
      * @return
      */
@@ -212,7 +229,7 @@ public class GUI implements Observer{
     }
 
     /**
-     * Used to disconnect the client from a chat server when the client is closed
+     * Used to disconnect the client from GCom when the client is closed
      *
      * @return
      */
@@ -241,11 +258,9 @@ public class GUI implements Observer{
     }
 
     /**
-     * Used since the GUI observes the class Conn.
-     * Gets a byte[] and parse it to make changes in the gui
-     * for example update the user list or show a received message in the chat
+     * used at startup to know what ordering type to use
+     * @return
      */
-
     public boolean askUnordered() {
         int answer = JOptionPane.showConfirmDialog (null, "Yes for unordered. No for causal ordering", "Warning",JOptionPane.YES_NO_OPTION);
         if(answer == JOptionPane.YES_OPTION){
@@ -254,6 +269,17 @@ public class GUI implements Observer{
         return false;
     }
 
+
+    /**
+     * the GCom is observed and gives the information to update the gui here.
+     *
+     * Message - group chat message.
+     * HoldbackQueueMessages - shows up in the debugger
+     * DebuggMessage - shows in the debugger
+     *
+     * @param observable
+     * @param o Message, HolbackQueueMessages or DebuggMessage
+     */
     @Override
     public void update(Observable observable, Object o) {
 
@@ -262,7 +288,7 @@ public class GUI implements Observer{
 
             switch (message.getType()) {
                 case TYPE_CREATE_GROUP:
-                    jtaNameList.append(message.getMessage()+"\n");
+                   // jtaNameList.append(message.getMessage()+"\n");
                     break;
                 case TYPE_REMOVE_GROUP:
                   //  jtaNameList.setText(jtaNameList.getText().replace(message.getMessage() + "\n", ""));

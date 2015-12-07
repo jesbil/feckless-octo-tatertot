@@ -23,11 +23,19 @@ import java.util.Map;
 
 /**
  * Created by c12jbr on 2015-10-05.
+ *
+ * Implementation of a name service using java RMI.
+ * Stores group/groupleaders and gives this information to members asking
+ * for a specific group.
  */
 public class NameServer extends UnicastRemoteObject implements NameServiceRemote {
 
     private Map<String, Member> map;
 
+    /**
+     * Main function starts the name service server.
+     * @param args
+     */
     public static void main(String[] args) {
 
         try {
@@ -43,6 +51,12 @@ public class NameServer extends UnicastRemoteObject implements NameServiceRemote
 
     }
 
+    /**
+     * constructors initates the group / groupleader map and sets up the
+     * rmi id/port
+     * @throws RemoteException
+     * @throws AlreadyBoundException
+     */
     public NameServer() throws RemoteException, AlreadyBoundException {
         super();
         map = Collections.synchronizedMap(new HashMap<String,Member>());
@@ -51,11 +65,25 @@ public class NameServer extends UnicastRemoteObject implements NameServiceRemote
     }
 
 
+    /**
+     * returns the leader of the group
+     *
+     * @param groupName
+     * @return Leader
+     * @throws RemoteException
+     */
     @Override
     public Member getLeader(String groupName) throws RemoteException {
        return map.get(groupName);
     }
 
+    /**
+     * changes or creates a leader for a specific group
+     *
+     * @param leader - new leader
+     * @param groupName - groupname
+     * @throws RemoteException
+     */
     @Override
     public void setLeader(Member leader,String groupName) throws RemoteException {
         if(leader==null){
