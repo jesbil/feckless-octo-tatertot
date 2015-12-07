@@ -121,6 +121,7 @@ public class GCom extends Observable implements Observer {
             case TYPE_REMOVE_GROUP:
                 groupRemoved(message);
                 break;
+
         }
     }
 
@@ -227,19 +228,19 @@ public class GCom extends Observable implements Observer {
      */
     private static void leftGroup(Message message){
         groupManagement.removeMemberFromGroup(message.getMessage(), message.getSender());
-        leaderElection(message,null);
+        leaderElection(message);
     }
 
     /**
      * Elects a new leader for a group
      * @param message
-     * @param member
      */
-    protected static void leaderElection(Message message, Member member){
-        if(member!=null){
-            message.getGroup().removeMemberFromGroup(member);
-        }
+    protected static void leaderElection(Message message){
+//        if(member!=null){
+//            message.getGroup().removeMemberFromGroup(member);
+//        }
         if(!message.getSender().equals(localMember)){
+
             System.out.println(message.getSender().getName() +" sändare");
             System.out.println(groupManagement.getGroupByName(message.getGroup().getName() + " grupp"));
             System.out.println(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0)+ " ny ledare");
@@ -247,16 +248,16 @@ public class GCom extends Observable implements Observer {
                 groupManagement.getGroupByName(message.getGroup().getName()).setLeader(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0));
             }
 
-            if(localMember.equals(groupManagement.getGroupByName(message.getGroup().getName()).getLeader())){
+            // if(localMember.equals(groupManagement.getGroupByName(message.getGroup().getName()).getLeader())){
                 try {
-                    System.out.println("Byter ledare för grupp: "+message.getGroup().getName()+" tilL "+localMember.getName());
-                    NameServerCommunicator.setLeader(localMember,message.getGroup().getName());
+                    System.out.println("Byter ledare för grupp: " + message.getGroup().getName() + " tilL " + groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0));
+                    NameServerCommunicator.setLeader(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0),message.getGroup().getName());
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 } catch (NotBoundException e) {
                     e.printStackTrace();
                 }
-            }
+          //  }
         }
 
     }

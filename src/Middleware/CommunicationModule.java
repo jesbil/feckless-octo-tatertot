@@ -54,10 +54,14 @@ public class CommunicationModule extends UnicastRemoteObject implements GComRemo
                     remote.receiveMulticast(message);
                 }catch(RemoteException e) {
                     GCom.getDebuggLog().add(new DebuggMessage(("Member " + member.getName() + " disconnected!")));
+                    System.out.println("Member krashch!!");
                     GCom.removeMemberFromAllGroups(member);
+                    message.getGroup().removeMemberFromGroup(member);
+                    Message message2 = new Message(member,message.getMessage(),message.getGroup(),message.getType());
+                    GCom.leaderElection(message2);
+
 
                     //TODO: KOLLA OM DETTA FUNKAR!?!?!? FÖRSÖKER FIXA NY LEDARE OM EN LEDARE KASCHAR
-                    nonReliableMulticast(new Message(member,message.getGroup().getName(),message.getGroup(),TYPE_LEAVE_GROUP));
                 }
             } else {
                 GCom.receiveMessage(message);
