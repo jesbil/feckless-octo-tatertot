@@ -2,6 +2,8 @@ package Interface;
 
 /**
  * Created by c12jbr on 2015-10-05.
+ *
+ * Constants used in the Middleware package
  */
 public interface Constants {
     public static final String RMI_ID = "RMIID2K15";

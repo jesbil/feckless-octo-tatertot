@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Created by c12jbr on 2015-11-02.
+ * The hold back queue with all its messages
  */
 public class HoldbackQueueMessages {
     private ArrayList<Message> messages;

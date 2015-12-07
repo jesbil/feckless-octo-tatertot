@@ -16,17 +16,30 @@ import static Interface.Constants.*;
 
 /**
  * Created by c12jbr on 2015-10-08.
+ *
+ * A class that handles message sending through RMI
  */
 public class CommunicationModule extends UnicastRemoteObject implements GComRemote {
     private static Member localMember;
 
-
+    /**
+     * Constructor
+     *
+     * @param localMember
+     * @throws RemoteException
+     */
     protected CommunicationModule(Member localMember) throws RemoteException {
         super();
         this.localMember = localMember;
     }
 
-    // send
+    /**
+     * Multicasts a given message to a given group
+     *
+     * @param message
+     * @throws NotBoundException
+     * @throws UnknownHostException
+     */
     protected void nonReliableMulticast(Message message) throws NotBoundException, UnknownHostException{
 
         GCom.getDebuggLog().add(new DebuggMessage("multicasting to group: " + message.getGroup().getName()));
@@ -55,14 +68,25 @@ public class CommunicationModule extends UnicastRemoteObject implements GComRemo
 
 
 
-
+    /**
+     * Receives a multicast from a remote user
+     * @param message
+     * @throws RemoteException
+     */
     @Override
     public void receiveMulticast(Message message)  throws RemoteException{
         GCom.getDebuggLog().add(new DebuggMessage("received multicast from: "+message.getSender().getName()));
         GCom.receiveMessage(message);
     }
 
-
+    /**
+     * Remote function that returns a group from the leader in the group
+     * @param leader
+     * @param groupName
+     * @return
+     * @throws RemoteException
+     * @throws NotBoundException
+     */
     public Group fetchGroup(Member leader,String groupName) throws RemoteException, NotBoundException {
         Registry registry = LocateRegistry.getRegistry(leader.getIP(), leader.getPort());
         GComRemote remote = (GComRemote) registry.lookup(RMI_ID);
@@ -70,6 +94,12 @@ public class CommunicationModule extends UnicastRemoteObject implements GComRemo
     }
 
     @Override
+    /**
+     * Returns a group from the group leader
+     * @param groupName
+     * @return
+     * @throws RemoteException
+     */
     public Group retrieveGroup(String groupName) throws RemoteException {
         return GCom.getGroupByName(groupName);
     }

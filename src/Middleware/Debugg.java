@@ -4,10 +4,15 @@ import java.util.Observable;
 
 /**
  * Created by c12jbr on 2015-11-24.
+ *
+ * Debugger class
  */
 public class Debugg extends Observable implements Runnable {
     private boolean debugging;
 
+    /**
+     * Starts the debugger
+     */
     public void run() {
         debugging = true;
         while(debugging){
@@ -29,6 +34,9 @@ public class Debugg extends Observable implements Runnable {
         }
     }
 
+    /**
+     * Stops debugging
+     */
     public void stopDebugging(){
         debugging = false;
     }
