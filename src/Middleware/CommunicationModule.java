@@ -9,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 import static Interface.Constants.*;
 
@@ -30,8 +31,9 @@ public class CommunicationModule extends UnicastRemoteObject implements GComRemo
 
         GCom.getDebuggLog().add(new DebuggMessage("multicasting to group: " + message.getGroup().getName()));
         int nrOfRecievers = message.getGroup().getMembers().size();
+        ArrayList<Member> temp = new ArrayList<>(message.getGroup().getMembers());
         for (int i = 0; i < nrOfRecievers; i++) {
-            Member member = message.getGroup().getMembers().get(i);
+            Member member = temp.get(i);
             if (!member.equals(localMember)) {
                 try {
                     Registry registry = LocateRegistry.getRegistry(member.getIP(), member.getPort());
@@ -40,11 +42,11 @@ public class CommunicationModule extends UnicastRemoteObject implements GComRemo
                 }catch(RemoteException e) {
                     GCom.getDebuggLog().add(new DebuggMessage(("Member " + member.getName() + " disconnected!")));
                     GCom.removeMemberFromAllGroups(member);
-                    nrOfRecievers--;
-                    i--;
+
+                    //TODO: KOLLA OM DETTA FUNKAR!?!?!? FÖRSÖKER FIXA NY LEDARE OM EN LEDARE KASCHAR
+                    nonReliableMulticast(new Message(member,message.getGroup().getName(),message.getGroup(),TYPE_LEAVE_GROUP));
                 }
             } else {
-
                 GCom.receiveMessage(message);
 
             }

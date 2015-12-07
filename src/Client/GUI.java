@@ -52,7 +52,7 @@ public class GUI implements Observer{
     public String nameServerRequest() {
         String nameService = null;
         while(nameService==null){
-            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "");
+            nameService = JOptionPane.showInputDialog(null,"What name service server do you want to connect to?", "bellatrix");
             if(nameService==null){
                 int answer = JOptionPane.showConfirmDialog(null, "Do you want to exit?", "Warning",JOptionPane.YES_NO_OPTION);
                 if(answer == JOptionPane.YES_OPTION){
@@ -265,11 +265,11 @@ public class GUI implements Observer{
                     jtaNameList.append(message.getMessage()+"\n");
                     break;
                 case TYPE_REMOVE_GROUP:
-                    jtaNameList.setText(jtaNameList.getText().replace(message.getMessage() + "\n", ""));
+                  //  jtaNameList.setText(jtaNameList.getText().replace(message.getMessage() + "\n", ""));
                    // jtaNameList.getText().replace("* "+message.getMessage()+"\n","");
                     break;
                 case TYPE_JOIN_GROUP:
-                    jtaNameList.append(message.getMessage()+"\n");
+                  //  jtaNameList.append(message.getMessage()+"\n");
                     break;
                 case TYPE_MESSAGE:
                     chatField.append(message.getSender().getName()+"@"+message.getGroup().getName()+": "+message.getMessage()+"\n");

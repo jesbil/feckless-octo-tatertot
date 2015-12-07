@@ -91,6 +91,7 @@ public class GCom extends Observable implements Observer {
             NameServerCommunicator.setLeader(localMember,groupName);
             Group g = new Group(groupName);
             g.addMemberToGroup(localMember);
+            g.setLeader(localMember);
             groupManagement.addGroup(g);
             System.out.println("Grupp skapad: "+ groupName);
         }else{
@@ -103,16 +104,27 @@ public class GCom extends Observable implements Observer {
         Member leader = NameServerCommunicator.getLeader(groupName);
         if(leader!=null){
             Group g=communication.fetchGroup(leader,groupName);
+            g.setLeader(leader);
             groupManagement.addGroup(g);
             g.addMemberToGroup(localMember);
-            System.out.println(g.getMembers().size());
-            Message message = new Message(localMember,groupName,g.getVectorClock(),g,TYPE_JOIN_GROUP);
+            messageOrdering.triggerSelfEvent(g.getName());
+            Message message = new Message(localMember,groupName,getGroupByName(groupName),TYPE_JOIN_GROUP);
             communication.nonReliableMulticast(message);
         }
     }
 
     public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException{
-        Message message = new Message(localMember,groupName,getGroupByName(groupName).getVectorClock(),getGroupByName(groupName),TYPE_LEAVE_GROUP);
+        System.out.println("Lämnar grupp: "+groupName);
+        messageOrdering.triggerSelfEvent(groupName);
+        Message message = new Message(localMember,groupName,getGroupByName(groupName),TYPE_LEAVE_GROUP);
+        if(message.getGroup().getMembers().size()==1){
+            try {
+                NameServerCommunicator.setLeader(null,groupName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
         communication.nonReliableMulticast(message);
 
     }
@@ -122,27 +134,53 @@ public class GCom extends Observable implements Observer {
         if(groups==null){
             for (Group group : groupManagement.getJoinedGroups()){
                 messageOrdering.triggerSelfEvent(group.getName());
-                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
-                System.out.println("hejehejtjotjo");
+                Message message = new Message(localMember,text,group,TYPE_MESSAGE);
                 communication.nonReliableMulticast(message);
             }
         }else{
             for (Group group : groups){
                 messageOrdering.triggerSelfEvent(group.getName());
-                Message message = new Message(localMember,text,group.getVectorClock(),group,TYPE_MESSAGE);
+                Message message = new Message(localMember,text,group,TYPE_MESSAGE);
                 communication.nonReliableMulticast(message);
 
             }
         }
     }
 
-
     private static void groupJoined(Message message){
         groupManagement.addMemberToGroup(message.getMessage(), message.getSender());
+
     }
 
     private static void leftGroup(Message message){
         groupManagement.removeMemberFromGroup(message.getMessage(), message.getSender());
+        leaderElection(message,null);
+    }
+
+    protected static void leaderElection(Message message, Member member){
+        if(member!=null){
+            message.getGroup().removeMemberFromGroup(member);
+        }
+        if(!message.getSender().equals(localMember)){
+            System.out.println(message.getSender().getName() +" sändare");
+            System.out.println(groupManagement.getGroupByName(message.getGroup().getName() + " grupp"));
+            System.out.println(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0)+ " ny ledare");
+            if(message.getSender().equals(message.getGroup().getLeader())){
+                groupManagement.getGroupByName(message.getGroup().getName()).setLeader(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0));
+            }
+
+            if(localMember.equals(groupManagement.getGroupByName(message.getGroup().getName()).getLeader())){
+                try {
+                    System.out.println("Byter ledare för grupp: "+message.getGroup().getName()+" tilL "+localMember.getName());
+                    NameServerCommunicator.setLeader(localMember,message.getGroup().getName());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                } catch (NotBoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
     private static void groupRemoved(Message message) {
@@ -154,10 +192,8 @@ public class GCom extends Observable implements Observer {
     public void update(Observable observable, Object o) {
 
         deliverMessage((Message) o);
-
         setChanged();
         notifyObservers(o);
-
         messageOrdering.performNextIfPossible();
     }
 

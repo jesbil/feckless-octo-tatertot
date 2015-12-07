@@ -20,6 +20,11 @@ public class VectorClock implements Serializable{
         value++;
         clockValue.put(GCom.getLocalMember().getName(),value);
     }
+    public void triggerEvent(String sender) {
+        int value = clockValue.get(sender);
+        value++;
+        clockValue.put(sender,value);
+    }
 
 
     public HashMap<String,Integer> getClock(){
@@ -48,10 +53,29 @@ public class VectorClock implements Serializable{
     }
 
     public boolean compare(VectorClock vc, String sender){
-        if(compare2(vc, sender)) {
-            return true;
+//        if(compare2(vc, sender)) {
+//            return true;
+//        }
+//        return false;
+        if(clockValue.get(sender)==null){
+            System.out.println("nollställer");
+            clockValue.put(sender,0);
         }
-        return false;
+        //System.out.println(clockValue.toString());
+        if((clockValue.get(sender)+1==vc.getClock().get(sender))||(GCom.getLocalMember().getName().equals(sender))){
+            Set<String> vcIds = clockValue.keySet();
+            for (String id : vcIds) {
+                if (vc.getClock().get(id)!=null && !id.equals(sender)) {
+                    if(!(vc.getClock().get(id)<=clockValue.get(id))){
+                        return false;
+                    }
+                }
+            }
+        }else{
+            return false;
+        }
+
+        return true;
     }
 
     private boolean compare2(VectorClock vc, String sender) {
@@ -112,4 +136,5 @@ public class VectorClock implements Serializable{
     public int hashCode() {
         return 123;
     }
+
 }

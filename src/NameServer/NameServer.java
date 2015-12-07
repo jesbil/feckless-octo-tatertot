@@ -58,7 +58,12 @@ public class NameServer extends UnicastRemoteObject implements NameServiceRemote
 
     @Override
     public void setLeader(Member leader,String groupName) throws RemoteException {
-        map.put(groupName,leader);
-        System.out.println("Grupp: "+groupName+ "ledare: "+leader.getName());
+        if(leader==null){
+            map.remove(groupName);
+        }else{
+            map.put(groupName,leader);
+            System.out.println("Grupp: "+groupName+ "ledare: "+leader.getName());
+        }
+
     }
 }

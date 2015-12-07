@@ -40,8 +40,8 @@ public class MessageOrderingModule extends Observable{
             return false;
         }
 
-        if(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().compare(message.getVectorClock(), message.getSender().getName())){
-            GCom.getGroupByName(message.getGroup().getName()).getVectorClock().mergeWith(message.getVectorClock());
+        if(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().compare(message.getGroup().getVectorClock(), message.getSender().getName())){
+            //GCom.getGroupByName(message.getGroup().getName()).getVectorClock().mergeWith(message.getGroup().getVectorClock());
             return true;
         }
         return false;
@@ -51,10 +51,18 @@ public class MessageOrderingModule extends Observable{
 
         for (int i = 0; i < holdBackQueue.size(); i++) {
             Message message = holdBackQueue.get(i);
+            System.out.println(GCom.getLocalMember().getName()+ " Jag är lokal");
+            System.out.println(message.getSender().getName()+ " sender");
+            System.out.println(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().getClock().toString() + " min klocka före trigger");
+            System.out.println(message.getGroup().getVectorClock().getClock().toString() + " klocka i meddelande");
             if(allowedToDeliver(message)){
-                Message temp = new Message(message.getSender(),message.getMessage(),message.getVectorClock(),message.getGroup(),message.getType());
+                Message temp = new Message(message.getSender(),message.getMessage(),message.getGroup(),message.getType());
                 holdBackQueue.remove(i);
                 i--;
+                if(!GCom.getLocalMember().getName().equals(message.getSender().getName())){
+                    GCom.getGroupByName(message.getGroup().getName()).getVectorClock().triggerEvent(message.getSender().getName());
+                }
+                System.out.println(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().getClock().toString() + " min klocka");
                 setChanged();
                 notifyObservers(temp);
             }

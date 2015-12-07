@@ -10,7 +10,6 @@ public class Message implements Serializable{
     private Member sender;
     private String message;
     private int type;
-    private VectorClock vectorClock;
 
     public int getType() {
         return type;
@@ -28,14 +27,10 @@ public class Message implements Serializable{
         return group;
     }
 
-    public VectorClock getVectorClock() {
-        return vectorClock;
-    }
 
-    public Message(Member sender, String message, VectorClock vectorClock, Group group, int type){
+    public Message(Member sender, String message, Group group, int type){
         this.sender = sender;
         this.message = message;
-        this.vectorClock = vectorClock;
         this.group = group;
         this.type = type;
     }

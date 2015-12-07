@@ -11,6 +11,15 @@ public class Group implements Serializable{
     private String name;
     private ArrayList<Member> members;
     private VectorClock vectorClock;
+    private Member leader;
+
+
+    public Member getLeader() {
+        return leader;
+    }
+    public void setLeader(Member leader) {
+        this.leader = leader;
+    }
 
 
     public ArrayList<Member> getMembers(){
@@ -40,7 +49,9 @@ public class Group implements Serializable{
     public  void addMemberToGroup(Member m) {
         if(!members.contains(m)){
             members.add(m);
-            vectorClock.getClock().put(m.getName(),0);
+            if(vectorClock.getClock().get(m.getName())==null){
+                vectorClock.getClock().put(m.getName(),0);
+            }
         }
     }
 
