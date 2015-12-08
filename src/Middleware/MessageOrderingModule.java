@@ -15,6 +15,7 @@ public class MessageOrderingModule extends Observable{
     private final boolean unordered;
     private ArrayList<Message> holdBackQueue;
     private boolean paused;
+    private Message holdedMessage;
 
     /**
      * Constructor
@@ -44,7 +45,11 @@ public class MessageOrderingModule extends Observable{
             setChanged();
             notifyObservers(message);
         }else{
-            holdBackQueue.add(message);
+            if(paused && holdedMessage ==null && !message.getSender().equals(GCom.getLocalMember())){
+                holdedMessage = new Message(message.getSender(), message.getMessage(), message.getGroup(), message.getType());
+            }else{
+                holdBackQueue.add(message);
+            }
         }
     }
 
@@ -55,10 +60,6 @@ public class MessageOrderingModule extends Observable{
      * @return
      */
     protected boolean allowedToDeliver(Message message) {
-        if(paused){
-            return false;
-        }
-
         if(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().compare(message.getGroup().getVectorClock(), message.getSender().getName())){
             return true;
         }
@@ -72,10 +73,6 @@ public class MessageOrderingModule extends Observable{
 
         for (int i = 0; i < holdBackQueue.size(); i++) {
             Message message = holdBackQueue.get(i);
-            System.out.println(GCom.getLocalMember().getName()+ " Jag är lokal");
-            System.out.println(message.getSender().getName()+ " sender");
-            System.out.println(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().getClock().toString() + " min klocka före trigger");
-            System.out.println(message.getGroup().getVectorClock().getClock().toString() + " klocka i meddelande");
             if(allowedToDeliver(message)){
                 Message temp = new Message(message.getSender(),message.getMessage(),message.getGroup(),message.getType());
                 holdBackQueue.remove(i);
@@ -83,7 +80,6 @@ public class MessageOrderingModule extends Observable{
                 if(!GCom.getLocalMember().getName().equals(message.getSender().getName())){
                     GCom.getGroupByName(message.getGroup().getName()).getVectorClock().triggerEvent(message.getSender().getName());
                 }
-                System.out.println(GCom.getGroupByName(message.getGroup().getName()).getVectorClock().getClock().toString() + " min klocka");
                 setChanged();
                 notifyObservers(temp);
             }
@@ -110,6 +106,8 @@ public class MessageOrderingModule extends Observable{
      */
     protected void startQueue() {
         paused = false;
+        holdBackQueue.add(holdedMessage);
+        holdedMessage = null;
         performNextIfPossible();
     }
 

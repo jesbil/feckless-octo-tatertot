@@ -14,7 +14,7 @@ public class HoldbackQueueMessages {
     }
 
     public  String getMessage(int pos){
-        return messages.get(pos).getSender().getName()+"@"+ messages.get(pos).getGroup().getName()+": "+ messages.get(pos).getMessage() + "VC: "+messages.get(pos).getGroup().getVectorClock().getClock();
+        return messages.get(pos).getSender().getName()+"@"+ messages.get(pos).getGroup().getName()+": \nmessage: "+ messages.get(pos).getMessage() + " \nVC: "+messages.get(pos).getGroup().getVectorClock().getClock()+"\n\n";
     }
 
     public  int getSize(){

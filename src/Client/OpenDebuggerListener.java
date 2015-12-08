@@ -96,7 +96,7 @@ public class OpenDebuggerListener implements ActionListener {
      * @return
      */
     private JButton pauseStartHoldbackqueue() {
-        JButton button = new JButton("Pause/Start Holdbackqueue");
+        JButton button = new JButton("hold incoming message");
         button.addActionListener(new PauseStartHoldbackqueue());
         return button;
     }

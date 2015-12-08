@@ -71,7 +71,7 @@ public class GCom extends Observable implements Observer {
     }
 
     /**
-     * Inittiates GCom including every module
+     * Initiates GCom including every module
      *
      * @param unordered
      * @param observer
@@ -140,9 +140,8 @@ public class GCom extends Observable implements Observer {
             g.addMemberToGroup(localMember);
             g.setLeader(localMember);
             groupManagement.addGroup(g);
-            System.out.println("Grupp skapad: "+ groupName);
         }else{
-            System.out.println("Grupp kunde inte skapas");
+
         }
     }
 
@@ -174,7 +173,6 @@ public class GCom extends Observable implements Observer {
      * @throws UnknownHostException
      */
     public static void leaveGroup(String groupName) throws NotBoundException, UnknownHostException{
-        System.out.println("Lämnar grupp: "+groupName);
         messageOrdering.triggerSelfEvent(groupName);
         Message message = new Message(localMember,groupName,getGroupByName(groupName),TYPE_LEAVE_GROUP);
         if(message.getGroup().getMembers().size()==1){
@@ -240,17 +238,12 @@ public class GCom extends Observable implements Observer {
 //            message.getGroup().removeMemberFromGroup(member);
 //        }
         if(!message.getSender().equals(localMember)){
-
-            System.out.println(message.getSender().getName() +" sändare");
-            System.out.println(groupManagement.getGroupByName(message.getGroup().getName() + " grupp"));
-            System.out.println(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0)+ " ny ledare");
             if(message.getSender().equals(message.getGroup().getLeader())){
                 groupManagement.getGroupByName(message.getGroup().getName()).setLeader(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0));
             }
 
             // if(localMember.equals(groupManagement.getGroupByName(message.getGroup().getName()).getLeader())){
                 try {
-                    System.out.println("Byter ledare för grupp: " + message.getGroup().getName() + " tilL " + groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0));
                     NameServerCommunicator.setLeader(groupManagement.getGroupByName(message.getGroup().getName()).getMembers().get(0),message.getGroup().getName());
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -329,6 +322,19 @@ public class GCom extends Observable implements Observer {
      */
     public static void setNameServiceAddress(String address) {
         NameServerCommunicator.setAddress(address);
+    }
+
+    public static Group giveGroupToNewMember(String groupName) {
+        Group group = new Group(getGroupByName(groupName));
+        if(getHoldBackQueue().size()>0){
+            group.getVectorClock().getClock().clear();
+
+           Set<String> ids = getHoldBackQueue().get(getHoldBackQueue().size()-1).getGroup().getVectorClock().getClock().keySet();
+            for(String id:ids){
+                group.getVectorClock().getClock().put(id,getHoldBackQueue().get(getHoldBackQueue().size()-1).getGroup().getVectorClock().getClock().get(id));
+            }
+        }
+        return group;
     }
 }
 

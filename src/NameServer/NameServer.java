@@ -90,7 +90,7 @@ public class NameServer extends UnicastRemoteObject implements NameServiceRemote
             map.remove(groupName);
         }else{
             map.put(groupName,leader);
-            System.out.println("Grupp: "+groupName+ "ledare: "+leader.getName());
+            System.out.println("Grupp: "+groupName+ "\nledare: "+leader.getName()+"\n");
         }
 
     }
